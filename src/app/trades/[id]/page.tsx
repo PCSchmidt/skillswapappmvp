@@ -563,6 +563,13 @@ export default function TradeDetailPage({ params }: { params: { id: string } }) 
                   </button>
                 )}
                 
+                {/* Completed state - add rating button */}
+                {trade.status === 'completed' && (
+                  <Link href={`/ratings/${trade.id}`} className="btn btn-primary">
+                    Rate This Trade
+                  </Link>
+                )}
+                
                 {/* Accepted state - proposer can cancel */}
                 {trade.status === 'accepted' && isProposer() && (
                   <button

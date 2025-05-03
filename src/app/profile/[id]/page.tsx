@@ -13,6 +13,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useSupabase } from '@/contexts/SupabaseContext';
 import SkillCard from '@/components/skills/SkillCard';
+import RatingsList from '@/components/ratings/RatingsList';
+import StarRating from '@/components/ratings/StarRating';
 
 export default function UserProfilePage({ params }: { params: { id: string } }) {
   const router = useRouter();
@@ -23,6 +25,8 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isOwnProfile, setIsOwnProfile] = useState(false);
+  const [ratings, setRatings] = useState<any[]>([]);
+  const [averageRating, setAverageRating] = useState<number>(0);
   
   // Filter states
   const [activeTab, setActiveTab] = useState<'offering' | 'seeking'>('offering');
@@ -68,6 +72,28 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
           if (skillsError) throw skillsError;
           
           setSkills(skillsData || []);
+          
+          // Fetch user's ratings
+          const { data: ratingsData, error: ratingsError } = await supabase
+            .from('ratings')
+            .select(`
+              *,
+              rater:rater_id(id, full_name, profile_image_url),
+              skill:skill_id(id, title, category)
+            `)
+            .eq('ratee_id', params.id)
+            .eq('is_public', true)
+            .order('created_at', { ascending: false });
+          
+          if (ratingsError) throw ratingsError;
+          
+          setRatings(ratingsData || []);
+          
+          // Calculate average rating
+          if (ratingsData && ratingsData.length > 0) {
+            const sum = ratingsData.reduce((acc, rating) => acc + rating.rating_score, 0);
+            setAverageRating(sum / ratingsData.length);
+          }
         }
       } catch (err: any) {
         console.error('Error fetching profile:', err);
@@ -211,6 +237,48 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
               <p className="whitespace-pre-wrap text-gray-700">{profile.bio}</p>
             </div>
           )}
+          
+          {/* Ratings summary */}
+          <div className={`${profile.bio ? '' : 'border-t'} border-gray-200 px-4 py-5 sm:px-6`}>
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-lg font-medium text-gray-900">Ratings & Reviews</h2>
+              <div className="flex items-center">
+                {ratings.length > 0 && (
+                  <>
+                    <StarRating rating={averageRating} size="md" />
+                    <span className="ml-2 text-sm text-gray-500">
+                      {averageRating.toFixed(1)} ({ratings.length} {ratings.length === 1 ? 'review' : 'reviews'})
+                    </span>
+                  </>
+                )}
+              </div>
+            </div>
+            
+            <div className="space-y-4">
+              {ratings.length > 0 ? (
+                <RatingsList 
+                  ratings={ratings.slice(0, 3)} 
+                  emptyMessage="No reviews yet" 
+                  showRater={true}
+                  linkToTrade={true}
+                />
+              ) : (
+                <div className="text-center py-8">
+                  <p className="text-gray-500">
+                    {isOwnProfile ? 'You have not received any ratings yet' : 'This user has not received any ratings yet'}
+                  </p>
+                </div>
+              )}
+              
+              {ratings.length > 3 && (
+                <div className="text-center mt-4">
+                  <button className="text-primary-600 hover:text-primary-800 text-sm font-medium">
+                    View all {ratings.length} reviews
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
         
         {/* Skills section */}
