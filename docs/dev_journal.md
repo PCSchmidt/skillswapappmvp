@@ -1,5 +1,70 @@
 # SkillSwap MVP Development Journal
 
+## 2025-05-03: Email Notification System Implementation
+
+Today I implemented a comprehensive email notification system for the SkillSwap MVP. This feature extends the existing in-app notification system to deliver important updates directly to users' email inboxes, improving engagement and keeping users informed even when they're not actively using the platform.
+
+### Components Created:
+
+1. **Email Service**
+   - Created `emailService.ts` to handle sending emails through Supabase Edge Functions
+   - Implemented user preference checking before sending emails
+   - Added support for different email templates based on notification type
+   - Integrated with Resend for reliable email delivery
+
+2. **Email Templates**
+   - Built responsive HTML email templates with consistent branding
+   - Created `baseTemplate.ts` with common layout and styling
+   - Implemented specific templates for different notification types:
+     - Trade proposal notifications
+     - New message notifications
+     - Rating notifications
+   - Designed templates to work across various email clients
+
+3. **Supabase Edge Function**
+   - Implemented `send-email` Edge Function to handle email delivery
+   - Integrated with Resend API for sending emails
+   - Added error handling and response formatting
+   - Created deployment script for easy function deployment
+
+4. **Email Preferences UI**
+   - Created `EmailPreferences` component for managing notification settings
+   - Implemented toggles for different notification types
+   - Added settings for daily/weekly digest emails
+   - Built dedicated `/settings/email-preferences` page
+
+### Database Changes:
+
+1. **Email Preferences Table**
+   - Created `email_preferences` table to store user email settings
+   - Added migration script with appropriate indexes and security policies
+   - Implemented automatic preference creation for new users
+   - Added Row Level Security to ensure users can only access their own preferences
+
+### Integration with Notification System:
+
+1. **Notification Service Enhancement**
+   - Updated `notificationService.ts` to handle both in-app and email notifications
+   - Added email-specific parameters to notification data
+   - Implemented conditional email sending based on user preferences
+   - Provided consistent error handling and logging
+
+### Configurations:
+
+1. **Environment Variables**
+   - Added Resend API key to environment variables
+   - Updated `.env.example` with email-related configuration options
+   - Created `.env.local` with actual API key for development
+
+### Documentation:
+
+1. **Developer Documentation**
+   - Created comprehensive documentation in `email-notification-system.md`
+   - Included architecture diagram, usage examples, and configuration instructions
+   - Documented testing procedures and future enhancement options
+
+This email notification system enhances the user experience by ensuring users never miss important updates about their trades, messages, or ratings, even when they're not actively using the platform. The preference system gives users control over which emails they receive, helping to prevent notification fatigue.
+
 ## 2025-05-02: Notification System Implementation
 
 Today I implemented a comprehensive notification system for the SkillSwap MVP. This feature allows users to receive real-time notifications about important events like trade proposals, status changes, new messages, and ratings.
