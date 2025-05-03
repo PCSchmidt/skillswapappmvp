@@ -16,6 +16,55 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      notifications: {
+        Row: {
+          id: string
+          user_id: string
+          type: string
+          title: string
+          content: string | null
+          link: string | null
+          is_read: boolean
+          created_at: string
+          expires_at: string | null
+          metadata: any
+          priority: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          type: string
+          title: string
+          content?: string | null
+          link?: string | null
+          is_read?: boolean
+          created_at?: string
+          expires_at?: string | null
+          metadata?: any
+          priority?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          type?: string
+          title?: string
+          content?: string | null
+          link?: string | null
+          is_read?: boolean
+          created_at?: string
+          expires_at?: string | null
+          metadata?: any
+          priority?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      },
       users: {
         Row: {
           id: string
