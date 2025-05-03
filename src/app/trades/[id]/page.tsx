@@ -462,7 +462,7 @@ export default function TradeDetailPage({ params }: { params: { id: string } }) 
     <div className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Back button */}
-        <div className="mb-6">
+        <div className="mb-6 flex justify-between items-center">
           <Link
             href="/trades"
             className="flex items-center text-sm text-gray-600 hover:text-gray-900"
@@ -471,6 +471,13 @@ export default function TradeDetailPage({ params }: { params: { id: string } }) 
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
             Back to Trades
+          </Link>
+          
+          <Link href={`/messages/${trade.id}`} className="flex items-center text-sm text-primary-600 hover:text-primary-700">
+            <svg className="h-5 w-5 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+            </svg>
+            Messages
           </Link>
         </div>
         
