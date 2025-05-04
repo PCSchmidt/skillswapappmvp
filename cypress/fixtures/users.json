@@ -1,0 +1,19 @@
+{
+  "testUser": {
+    "email": "test@example.com",
+    "password": "password123",
+    "fullName": "Test User",
+    "location": "Boston, MA"
+  },
+  "secondaryUser": {
+    "email": "user2@example.com",
+    "password": "password123",
+    "fullName": "Secondary User",
+    "location": "New York, NY"
+  },
+  "newUser": {
+    "fullName": "New Test User",
+    "location": "Chicago, IL",
+    "password": "SecurePass123"
+  }
+}

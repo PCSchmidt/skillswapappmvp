@@ -1,0 +1,41 @@
+{
+  "userSkills": [
+    {
+      "title": "JavaScript Tutoring",
+      "description": "Learn modern JavaScript with hands-on projects. I can help with React, Vue, and Node.js applications. Perfect for beginners or those looking to level up their JS skills.",
+      "category": "Programming"
+    },
+    {
+      "title": "Guitar Lessons",
+      "description": "Beginner to intermediate guitar lessons focusing on acoustic and electric guitar. I teach music theory, chord progressions, and popular songs.",
+      "category": "Music"
+    },
+    {
+      "title": "Photography Basics",
+      "description": "Learn how to take great photos with any camera. I'll teach composition, lighting, and basic editing techniques to make your photos stand out.",
+      "category": "Photography"
+    }
+  ],
+  "searchResults": [
+    {
+      "title": "Graphic Design",
+      "description": "Professional graphic design for logos, branding, social media, and more. I specialize in minimalist and modern design aesthetics.",
+      "category": "Design"
+    },
+    {
+      "title": "Spanish Language Tutoring",
+      "description": "Conversational Spanish lessons for beginners to advanced learners. Focus on practical vocabulary and real-world usage.",
+      "category": "Languages"
+    },
+    {
+      "title": "Home Cooking Classes",
+      "description": "Learn to cook delicious home-style meals with simple ingredients. I specialize in Italian and Mediterranean cuisine.",
+      "category": "Cooking"
+    },
+    {
+      "title": "Yoga Instruction",
+      "description": "Personalized yoga instruction focusing on proper alignment and breathing techniques. Suitable for all experience levels.",
+      "category": "Fitness"
+    }
+  ]
+}
