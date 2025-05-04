@@ -1,5 +1,71 @@
 # SkillSwap MVP Development Journal
 
+## 2025-05-03: Tests for Trading and Messaging Components
+
+Today I expanded our test coverage to include comprehensive tests for the messaging and trading systems in the SkillSwap MVP. This continues our Phase 4 implementation plan focused on testing and quality assurance.
+
+### Messaging System Tests:
+
+1. **MessageList Component**
+   - Implemented tests for message rendering with accurate sender/receiver formatting
+   - Added tests for unread message status indicators
+   - Created tests for empty state and loading skeletons
+   - Verified auto-scroll functionality when new messages arrive
+   - Tested click event handlers for message interaction
+
+2. **MessageComposer Component**
+   - Added tests for message input validation (enabling/disabling send button)
+   - Implemented tests for message submission via button click and Enter key
+   - Created tests for the Shift+Enter multiline input functionality
+   - Verified error state display when message sending fails
+   - Tested auto-resizing behavior for longer messages
+
+3. **ConversationList Component**
+   - Created tests for rendering conversation previews with correct data
+   - Implemented tests for unread badge indicators
+   - Added tests for conversation selection and navigation
+   - Verified empty state rendering when no conversations exist
+   - Tested active conversation highlighting
+
+### Trading System Tests:
+
+1. **TradeProposalForm Component**
+   - Implemented tests for skill selection validation
+   - Added tests for notes field functionality
+   - Created tests for form submission with correct payload
+   - Verified error handling for API failures
+   - Tested validation rules for preventing same skill selection
+
+### Testing Approach:
+
+1. **Realistic Data Mocking**
+   - Created representative test data that matches our database schema
+   - Mocked Supabase responses for both success and error cases
+   - Implemented comprehensive component mocking for complex UI components
+
+2. **User Interaction Testing**
+   - Used fireEvent to simulate clicks, typing, and keyboard shortcuts
+   - Verified proper DOM updates in response to user actions
+   - Tested all interactive elements for expected behavior
+
+3. **Edge Cases and Error Handling**
+   - Included tests for empty states and loading indicators
+   - Verified proper error message display when operations fail
+   - Tested validation logic and form submission rules
+
+This testing phase is critical to ensure our messaging and trading systems function reliably, as they represent core interactions in the SkillSwap platform. The comprehensive test suite provides confidence in our implementation and creates a safety net for future enhancements.
+
+### Next Steps:
+
+1. Continue implementing tests for:
+   - User authentication components
+   - Profile management features
+   - Skill discovery and search functionality
+   - Database performance tests
+
+2. Implement end-to-end testing with Cypress or similar tools
+3. Set up performance monitoring for critical operations
+
 ## 2025-05-03: Testing Framework Implementation
 
 Today I implemented comprehensive testing for the SkillSwap MVP, focusing on several critical components of the application. This work represents our transition into Phase 4 of the implementation plan (Testing and Refinement).
