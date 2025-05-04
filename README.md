@@ -1,111 +1,159 @@
 # SkillSwap MVP
 
-SkillSwap is a platform that enables users to trade skills in a hyper-local community, fostering knowledge exchange and community building.
+SkillSwap is a platform that enables users to exchange skills and services directly with each other through a barter system, without monetary transactions.
 
 ## Project Overview
 
-This repository contains the Minimum Viable Product (MVP) implementation of the SkillSwap platform. The application is built with:
+This repository contains the MVP (Minimum Viable Product) version of SkillSwap, built with:
 
-- **Frontend**: Next.js with TypeScript and Tailwind CSS
-- **Backend**: Supabase for authentication, database, and storage
-- **AI Integration**: OpenAI for enhancing user experience and recommendations
-
-## Key Features
-
-- User authentication and profile management
-- Skill listing (offering and seeking)
-- Skill discovery with filters and search
-- Skill matching and trade proposals
-- In-app messaging
-- Rating system for completed trades
-- Responsive design for all devices
-
-## Project Structure
-
-```
-skillswap_mvp/
-├── config/                  # Configuration files
-├── context/                 # Domain context files
-├── docs/                    # Documentation
-├── memory/                  # Memory Bank storage
-├── public/                  # Static assets
-├── src/
-│   ├── ai/                  # AI integration components
-│   │   ├── context/         # AI context management
-│   │   ├── memory/          # Memory Bank implementation
-│   │   └── tools/           # AI tools and utilities
-│   ├── app/                 # Next.js app directory
-│   ├── components/          # React components
-│   │   ├── auth/            # Authentication components
-│   │   ├── skills/          # Skill-related components
-│   │   └── ...              # Other UI components
-│   ├── lib/                 # Utility libraries
-│   │   └── supabase/        # Supabase client and helpers
-│   └── types/               # TypeScript type definitions
-├── supabase/                # Supabase configuration
-│   ├── migrations/          # Database migration scripts
-│   └── seed/                # Seed data for development
-└── tests/                   # Test files
-```
-
-## Database Schema
-
-The application uses a relational database with the following core tables:
-
-- `users`: User profiles and authentication
-- `skills`: Skills offered or sought by users
-- `trades`: Trade proposals and agreements
-- `messages`: In-app messaging between users
-- `ratings`: User ratings for completed trades
+- **Frontend**: Next.js 14, React, Tailwind CSS
+- **Backend**: Serverless API routes (Next.js)
+- **Database**: PostgreSQL via Supabase
+- **Authentication**: Supabase Auth
+- **Hosting**: Vercel
+- **CI/CD**: GitHub Actions
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 18.17.0 or later
-- A Supabase account and project
-- An OpenAI API key (for AI features)
+- Node.js (v18.17.0 or later)
+- npm (v9.6.7 or later)
+- Supabase CLI (for local development)
+- Git
 
-### Installation
+### Local Development Setup
 
-1. Clone the repository:
-   ```
-   git clone https://github.com/username/skillswap-mvp.git
+1. **Clone the repository**
+
+   ```bash
+   git clone https://github.com/your-organization/skillswap-mvp.git
    cd skillswap-mvp
    ```
 
-2. Install dependencies:
-   ```
+2. **Install dependencies**
+
+   ```bash
    npm install
    ```
 
-3. Set up environment variables:
-   - Copy `.env.example` to `.env.local` and fill in your credentials
+3. **Set up environment variables**
 
-4. Run the development server:
+   ```bash
+   cp .env.example .env.local
+   # Edit .env.local with your local configuration
    ```
+
+4. **Set up Supabase locally**
+
+   ```bash
+   # Install Supabase CLI if not already installed
+   npm install -g supabase
+
+   # Start local Supabase
+   supabase start
+
+   # Apply migrations
+   supabase db reset
+   ```
+
+5. **Run the development server**
+
+   ```bash
    npm run dev
    ```
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser
+   The application will be available at [http://localhost:3000](http://localhost:3000)
 
-### Database Setup
+### Testing
 
-1. Create a new Supabase project
-2. Run the migration scripts in the `supabase/migrations` directory
-3. (Optional) Seed the database with test data using scripts in `supabase/seed`
+#### Running Unit Tests
 
-## Development Guidelines
+```bash
+npm test
+```
 
-- Follow the project structure
-- Use TypeScript for type safety
-- Write unit tests for new features
-- Follow the component design patterns established in the codebase
+#### Running E2E Tests
+
+```bash
+# Start the application in test mode
+npm run dev:test
+
+# In a separate terminal
+npm run cypress
+```
+
+## Deployment
+
+### Deployment Environments
+
+The application supports three deployment environments:
+
+1. **Development**: Local development environment
+2. **Staging**: Pre-production testing environment
+3. **Production**: Live production environment
+
+### Deployment Process
+
+We use GitHub Actions for CI/CD. The workflow is as follows:
+
+- Pushes to the `dev` branch automatically deploy to the staging environment
+- Pushes to the `master` branch automatically deploy to production
+- Pull requests trigger test runs but don't deploy automatically
+
+For detailed deployment instructions, see:
+- [Deployment Guide](./docs/deployment.md)
+- [Production Database Setup](./docs/production_database_setup.md)
+- [Deployment Checklist](./docs/deployment_checklist.md)
+
+### Required Environment Variables
+
+For a complete list of required environment variables, see [.env.example](./.env.example).
+
+## Architecture
+
+### Directory Structure
+
+- `/src`: Source code
+  - `/app`: Next.js app directory with routes and API endpoints
+  - `/components`: React components
+  - `/contexts`: React context providers
+  - `/lib`: Utility functions and services
+  - `/types`: TypeScript type definitions
+- `/public`: Static assets
+- `/supabase`: Supabase configuration
+  - `/migrations`: Database migrations
+  - `/functions`: Supabase Edge Functions
+  - `/seed`: Seed data for development
+- `/tests`: Test files
+- `/docs`: Documentation
+
+### Key Features
+
+- User authentication and profile management
+- Skill creation and management
+- Search and discovery of skills
+- Trade proposal and management system
+- Messaging between users
+- Ratings and reviews
+- Mobile-responsive design
+- Progressive Web App (PWA) capabilities
+
+## Documentation
+
+- [Implementation Plan](./implementation_plan.md) - Detailed project roadmap
+- [Development Journal](./docs/dev_journal.md) - Progress log and technical notes
+- [Monitoring Setup](./docs/monitoring.md) - Error tracking and performance monitoring
+- [API Documentation](./docs/api.md) - API endpoint references
+
+## Contributing
+
+1. Create a feature branch from `dev`
+2. Make your changes
+3. Ensure tests pass
+4. Create a pull request to merge back into `dev`
+5. Request a code review
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Contributors
-
-- SkillSwap Team
+This project is proprietary and confidential. Unauthorized copying, transfer, or use is strictly prohibited.
