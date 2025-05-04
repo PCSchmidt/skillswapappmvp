@@ -1,3 +1,7 @@
+// This file sets up the configuration for Next.js
+// Including Sentry integration for error monitoring
+const { withSentryConfig } = require('@sentry/nextjs');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -31,4 +35,17 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+// Sentry webpack plugin configuration
+const sentryWebpackPluginOptions = {
+  // Additional options for the Sentry webpack plugin
+  silent: process.env.NODE_ENV === 'production', // Suppresses all logs in production
+  
+  // For all available options, see:
+  // https://github.com/getsentry/sentry-webpack-plugin#options
+};
+
+// Export configuration with Sentry
+module.exports = withSentryConfig(
+  nextConfig,
+  sentryWebpackPluginOptions
+);
