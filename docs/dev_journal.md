@@ -1,4 +1,4 @@
-# SkillSwap MVP Development Journal
+![1746384501581](image/dev_journal/1746384501581.png)# SkillSwap MVP Development Journal
 
 ## May 4, 2025 (Night) - Finalizing User Documentation and Launch Materials (Phase 5)
 

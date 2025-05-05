@@ -1,4 +1,4 @@
--- Migration for Performance Optimization (Phase 4.2)
+                                -- Migration for Performance Optimization (Phase 4.2)
 -- This migration adds additional database indexes and optimizes existing ones
 
 -- Add composite indexes for frequently joined tables
