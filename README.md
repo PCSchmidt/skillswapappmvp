@@ -27,7 +27,7 @@ This repository contains the MVP (Minimum Viable Product) version of SkillSwap, 
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/your-organization/skillswap-mvp.git
+   git clone https://github.com/PCSchmidt/skillswapappmvp.git
    cd skillswap-mvp
    ```
 
@@ -105,6 +105,7 @@ For detailed deployment instructions, see:
 - [Deployment Guide](./docs/deployment.md)
 - [Production Database Setup](./docs/production_database_setup.md)
 - [Deployment Checklist](./docs/deployment_checklist.md)
+- [Vercel Deployment Guide](./docs/vercel_deployment_guide.md)
 
 ### Required Environment Variables
 
@@ -139,20 +140,40 @@ For a complete list of required environment variables, see [.env.example](./.env
 - Mobile-responsive design
 - Progressive Web App (PWA) capabilities
 
+## Performance Optimization
+
+SkillSwap MVP includes several performance optimizations:
+
+- Client-side data caching for faster repeat views
+- Server-side rendering (SSR) for critical pages
+- Optimized database queries with proper indexing
+- Image optimization and lazy loading
+- Component-level code splitting
+- Service worker for offline capabilities
+
 ## Documentation
 
 - [Implementation Plan](./implementation_plan.md) - Detailed project roadmap
 - [Development Journal](./docs/dev_journal.md) - Progress log and technical notes
 - [Monitoring Setup](./docs/monitoring.md) - Error tracking and performance monitoring
-- [API Documentation](./docs/api.md) - API endpoint references
+- [API Documentation](./docs/api_documentation.md) - API endpoint references
+- [User Guide](./docs/user_guide.md) - End-user documentation
 
 ## Contributing
+
+We welcome contributions to the SkillSwap project! Please read our [Contributing Guidelines](.github/CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
+
+### Quick Contribution Steps
 
 1. Create a feature branch from `dev`
 2. Make your changes
 3. Ensure tests pass
-4. Create a pull request to merge back into `dev`
+4. Create a pull request to merge back into `dev` using our [PR template](.github/PULL_REQUEST_TEMPLATE.md)
 5. Request a code review
+
+## Security
+
+Security is a priority for the SkillSwap platform. Please report any security vulnerabilities responsibly by contacting the maintainers directly rather than opening a public issue.
 
 ## License
 
