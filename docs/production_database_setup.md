@@ -40,22 +40,68 @@ Before setting up the production database, ensure you have:
 1. Install the Supabase CLI if not already installed:
    ```bash
    npm install -g supabase
+   # Or for a specific version:
+   npm install supabase@2.22.12
    ```
 
 2. Login to the Supabase CLI:
    ```bash
-   supabase login
+   npx supabase login
    ```
 
 3. Link your local project to the production Supabase instance:
    ```bash
-   supabase link --project-ref your-production-project-ref
+   cd skillswap_mvp
+   npx supabase link --project-ref your-production-project-ref
    ```
 
-4. Push migrations to production:
+4. Reset and apply migrations to production (use with caution - this will reset all data):
    ```bash
-   supabase db push
+   npx supabase db reset --linked
    ```
+   
+   Or alternatively, just push migrations without resetting (for incremental updates):
+   ```bash
+   npx supabase db push
+   ```
+
+### Implemented Migration Strategy
+
+We have successfully applied the following migration strategy for our production database (May 2025):
+
+1. **Migration Sequencing**:
+   - Created numbered migrations (001, 002, etc.) for core schema
+   - Used timestamp-based migrations (YYYYMMDDHHMMSS) for incremental features
+   - Example: `20250506000000_create_email_preferences_table.sql`
+
+2. **Migration Dependencies**:
+   - Ensured proper sequencing of interdependent tables and indexes
+   - Added conditional logic for operations that depend on table existence:
+   ```sql
+   DO $$
+   BEGIN
+     IF EXISTS (
+       SELECT FROM pg_tables
+       WHERE schemaname = 'public' AND tablename = 'table_name'
+     ) THEN
+       EXECUTE 'CREATE INDEX IF NOT EXISTS idx_name ON table_name(column)';
+     END IF;
+   END $$;
+   ```
+
+3. **Applied Migrations**:
+   - 001_initial_schema.sql: Core tables (users, skills, trades, messages)
+   - 002_add_ratings_table.sql: Rating system implementation
+   - 003_add_notifications_table.sql: Notification system
+   - 004_performance_optimization.sql: Indexes, materialized views, caching
+   - 20250506000000_create_email_preferences_table.sql: Email preferences
+
+4. **Migration Verification**:
+   After applying migrations, verify they were successfully applied:
+   ```bash
+   npx supabase migration list
+   ```
+   This will show which migrations have been applied to both local and remote databases.
 
 ### Option 2: Manual SQL Execution
 

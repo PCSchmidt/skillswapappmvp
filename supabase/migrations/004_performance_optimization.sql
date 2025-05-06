@@ -15,13 +15,21 @@ CREATE INDEX IF NOT EXISTS idx_trades_skills ON public.trades(skill_offered_id, 
 CREATE INDEX IF NOT EXISTS idx_messages_trade_timestamp ON public.messages(trade_id, created_at);
 CREATE INDEX IF NOT EXISTS idx_notifications_user_read_timestamp ON public.notifications(user_id, is_read, created_at);
 
--- Add indexes for email preferences lookups
-CREATE INDEX IF NOT EXISTS idx_email_preferences_notification_types ON public.email_preferences(
-  user_id, 
-  notify_trade_proposal, 
-  notify_trade_status_accepted, 
-  notify_new_message
-);
+-- Add indexes for email preferences lookups (if table exists)
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT FROM pg_tables
+    WHERE schemaname = 'public' AND tablename = 'email_preferences'
+  ) THEN
+    EXECUTE 'CREATE INDEX IF NOT EXISTS idx_email_preferences_notification_types ON public.email_preferences(
+      user_id,
+      notify_trade_proposal,
+      notify_trade_status_accepted,
+      notify_new_message
+    )';
+  END IF;
+END $$;
 
 -- Add index for ratings summary
 CREATE INDEX IF NOT EXISTS idx_ratings_ratee_score ON public.ratings(ratee_id, rating_score, is_public);
