@@ -1,8 +1,7 @@
 {
   "version": 2,
   "regions": ["iad1"],
-  "buildCommand": "npm ci && NEXT_TELEMETRY_DISABLED=1 npm run build",
-  "installCommand": "npm install --no-save typescript@5.0.4 eslint@8.57.0 eslint-config-next@14.0.4 @typescript-eslint/eslint-plugin@6.19.1 @typescript-eslint/parser@6.19.1",
+  "buildCommand": "cp vercel-package-minimal.json package.json && npm install && NEXT_TELEMETRY_DISABLED=1 npm run build",
   "env": {
     "NODE_ENV": "production",
     "NEXT_TELEMETRY_DISABLED": "1",
