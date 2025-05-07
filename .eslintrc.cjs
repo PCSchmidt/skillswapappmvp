@@ -35,17 +35,17 @@ module.exports = {
         {
           'pattern': '@/**',
           'group': 'internal',
-          'position': 'before'
-        }
+          'position': 'before',
+        },
       ],
       'alphabetize': {
         'order': 'asc',
-        'caseInsensitive': true
-      }
+        'caseInsensitive': true,
+      },
     }],
     'no-restricted-imports': ['error', {
-      'patterns': ['../**/*/']
-    }]
+      'patterns': ['../**/*/'],
+    }],
   },
   settings: {
     react: {
@@ -54,9 +54,9 @@ module.exports = {
     'import/resolver': {
       typescript: {
         alwaysTryTypes: true,
-        project: './tsconfig.json'
-      }
-    }
+        project: './tsconfig.json',
+      },
+    },
   },
   ignorePatterns: [
     'node_modules/',
@@ -65,10 +65,10 @@ module.exports = {
     'public/',
     '**/*.d.ts',
     '*.config.js',
-    'eslint.config.js'
+    'eslint.config.js',
   ],
   include: ['./src/**/*'],
-  exclude: ['./node_modules/**/*'],
+  exclude: ['./node_modules/**/*', './.next/**/*'],
   overrides: [
     {
       files: ['*.ts', '*.tsx'],
