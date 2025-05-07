@@ -1,0 +1,2 @@
+# Ignore package-lock.json to force fresh install
+package-lock.json
