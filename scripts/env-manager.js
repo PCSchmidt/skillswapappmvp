@@ -183,21 +183,21 @@ function generateEnvFile(env, envVars, options) {
       }
       
       // Overwrite file
-      writeEnvFile(env, filePath, envVars);
+      writeEnvFile(env, filePath, envVars, options);
     });
   } else {
     // Create new file or force overwrite
     if (fs.existsSync(filePath) && options.force) {
       console.log(`${colors.yellow}Overwriting existing file '${fileName}' with --force flag.${colors.reset}`);
     }
-    writeEnvFile(env, filePath, envVars);
+    writeEnvFile(env, filePath, envVars, options);
   }
 }
 
 /**
  * Write environment variables to file
  */
-function writeEnvFile(env, filePath, envVars) {
+function writeEnvFile(env, filePath, envVars, options) {
   // Update environment variables based on environment
   const updatedEnvVars = { ...envVars };
   
@@ -230,6 +230,7 @@ function writeEnvFile(env, filePath, envVars) {
     fileContent += `${key}=${value}\n`;
   }
   
+  const fileName = path.basename(filePath);
   fs.writeFileSync(filePath, fileContent);
   console.log(`${colors.green}Generated environment file: ${fileName}${colors.reset}`);
 }
