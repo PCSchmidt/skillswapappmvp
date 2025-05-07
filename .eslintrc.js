@@ -17,6 +17,7 @@ module.exports = {
     },
     ecmaVersion: 2021,
     sourceType: 'module',
+    project: ['./tsconfig.json'],
   },
   plugins: ['@typescript-eslint', 'import'],
   rules: {
@@ -50,7 +51,8 @@ module.exports = {
     },
     'import/resolver': {
       typescript: {
-        alwaysTryTypes: true
+        alwaysTryTypes: true,
+        project: './tsconfig.json'
       }
     }
   },
@@ -61,5 +63,6 @@ module.exports = {
     'public/',
     '**/*.d.ts',
     '*.config.js',
+    'eslint.config.js'
   ],
 };
