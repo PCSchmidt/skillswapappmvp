@@ -1,71 +1,136 @@
-# Path Import Fixes for Vercel Deployment
+# Path Resolution Fix for Deployment
 
-## Issue Summary
+This document outlines the steps required to fix the path resolution issues encountered during the Vercel deployment.
 
-The application was failing to build on Vercel due to import path resolution issues. Specifically, the build was failing with the following errors:
+## Current Issues
+
+Based on the build logs, we're experiencing the following errors:
 
 ```
 Failed to compile.
 ./src/app/auth/complete-profile/page.tsx
-Module not found: Can't resolve '../../../lib/supabase/client'
+Module not found: Can't resolve '@/lib/supabase/client'
+https://nextjs.org/docs/messages/module-not-found
 
 ./src/app/auth/resend-verification/page.tsx
-Module not found: Can't resolve '../../../lib/supabase/client'
+Module not found: Can't resolve '@/lib/supabase/client'
+https://nextjs.org/docs/messages/module-not-found
+
+./src/app/auth/reset-password/page.tsx
+Module not found: Can't resolve '@/lib/supabase/client'
+https://nextjs.org/docs/messages/module-not-found
 
 ./src/app/auth/verify/page.tsx
-Module not found: Can't resolve '../../../lib/supabase/client'
+Module not found: Can't resolve '@/lib/supabase/client'
+https://nextjs.org/docs/messages/module-not-found
 
 ./src/components/auth/SignupForm.tsx
-Module not found: Can't resolve '@/lib/supabase/client'
+Module not found: Can't resolve '../../lib/supabase/client'
+https://nextjs.org/docs/messages/module-not-found
 ```
 
-## Root Cause
+## Root Cause Analysis
 
-The issue was caused by inconsistent import path styles across the codebase:
+The issue revolves around path resolution during the build process:
 
-1. Some files were using relative imports (e.g., `../../../lib/supabase/client`) 
-2. Others were using path aliases (e.g., `@/lib/supabase/client`)
-3. In local development, both styles worked, but during Vercel build, the path resolution was stricter
-
-## Changes Made
-
-We standardized all imports to use the path aliases defined in `tsconfig.json`:
-
-1. In `SignupForm.tsx`, we corrected an alias-style import:
-   ```diff
-   - import { supabase } from '@/lib/supabase/client';
-   + import { supabase } from '../../lib/supabase/client';
+1. The project uses path aliases configured in `tsconfig.json`:
+   ```json
+   "paths": {
+     "@/*": ["./src/*"],
+     "@components/*": ["./src/components/*"],
+     "@lib/*": ["./src/lib/*"],
+     "@types/*": ["./src/types/*"],
+     "@ai/*": ["./src/ai/*"]
+   }
    ```
 
-2. In the auth page components, we updated the relative imports to use aliases:
-   ```diff
-   - import { supabase } from '../../../lib/supabase/client';
-   + import { supabase } from '@/lib/supabase/client';
-   ```
+2. These aliases work locally but are failing in the Vercel build environment.
 
-## Path Alias Configuration
+3. The most common cause is that while TypeScript understands these aliases, webpack might need additional configuration to resolve them during the build process.
 
-The project has path aliases configured in `tsconfig.json`:
+4. Additionally, there's an inconsistency in import paths - some files use `@/lib/supabase/client` while others use relative paths like `../../lib/supabase/client`.
 
-```json
-"paths": {
-  "@/*": ["./src/*"],
-  "@components/*": ["./src/components/*"],
-  "@lib/*": ["./src/lib/*"],
-  "@types/*": ["./src/types/*"],
-  "@ai/*": ["./src/ai/*"]
+## Solution Approaches
+
+### Approach 1: Create a Re-export Index File
+
+1. Create a centralized re-export file to ensure consistent paths:
+
+```typescript
+// src/lib/supabase/index.ts
+export * from './client';
+export * from './cachedClient';
+```
+
+2. Update all imports to use this consistent path:
+   - Change `import { supabase } from '@/lib/supabase/client'` to `import { supabase } from '@/lib/supabase'`
+   - Change `import { supabase } from '../../lib/supabase/client'` to `import { supabase } from '@/lib/supabase'`
+
+### Approach 2: Ensure Next.js Path Resolution is Properly Configured
+
+1. Update the `next.config.js` to explicitly handle path aliases:
+
+```javascript
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  productionBrowserSourceMaps: false,
+  output: 'standalone',
+  webpack: (config, { isServer }) => {
+    // Add path resolution for webpack
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': path.resolve(__dirname, 'src/'),
+      '@components': path.resolve(__dirname, 'src/components/'),
+      '@lib': path.resolve(__dirname, 'src/lib/'),
+      '@types': path.resolve(__dirname, 'src/types/'),
+      '@ai': path.resolve(__dirname, 'src/ai/')
+    };
+    return config;
+  }
 }
+
+module.exports = nextConfig
 ```
 
-## Best Practices Moving Forward
+### Approach 3: Fix Inconsistent Import Paths
 
-1. **For src/app and src/components directories:** Use path aliases (`@/`) to avoid deep nesting issues
-2. **For imports within the same directory:** Use relative imports (`./` or `../`)
-3. **For utility functions and shared components:** Always use path aliases
-4. **Always test production builds locally** with `npm run build` before deployment
+1. Standardize all import statements to use one consistent pattern:
 
-## Additional Notes
+For all auth-related files that are failing:
+   - `src/app/auth/complete-profile/page.tsx`
+   - `src/app/auth/resend-verification/page.tsx`
+   - `src/app/auth/reset-password/page.tsx`
+   - `src/app/auth/verify/page.tsx`
+   - `src/components/auth/SignupForm.tsx`
 
-- When updating import paths, ensure you update all references to maintain consistency
-- Always push path fixes to the relevant branch before attempting deployment
-- Document any path-related issues in this file for future reference
+Update imports from:
+```typescript
+import { supabase } from '@/lib/supabase/client';
+// or
+import { supabase } from '../../lib/supabase/client';
+```
+
+To:
+```typescript
+import { supabase } from '@/lib/supabase/client';
+```
+
+## Recommended Action Plan
+
+1. Create the re-export index file for Supabase client (Approach 1)
+2. Update the next.config.js to explicitly handle path aliases (Approach 2)
+3. Commit changes and trigger a new deployment
+4. Monitor build logs for any remaining path resolution issues
+
+## Long-term Recommendations
+
+1. Establish a consistent import pattern across the codebase
+2. Create ESLint rules to enforce these patterns
+3. Include a pre-build verification step in the CI/CD pipeline to catch path resolution issues early

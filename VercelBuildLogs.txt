@@ -1,0 +1,19 @@
+Failed to compile.
+./src/app/auth/complete-profile/page.tsx
+Module not found: Can't resolve '@/lib/supabase/client'
+https://nextjs.org/docs/messages/module-not-found
+./src/app/auth/resend-verification/page.tsx
+Module not found: Can't resolve '@/lib/supabase/client'
+https://nextjs.org/docs/messages/module-not-found
+./src/app/auth/reset-password/page.tsx
+Module not found: Can't resolve '@/lib/supabase/client'
+https://nextjs.org/docs/messages/module-not-found
+./src/app/auth/verify/page.tsx
+Module not found: Can't resolve '@/lib/supabase/client'
+https://nextjs.org/docs/messages/module-not-found
+./src/components/auth/SignupForm.tsx
+Module not found: Can't resolve '../../lib/supabase/client'
+https://nextjs.org/docs/messages/module-not-found
+> Build failed because of webpack errors
+Error: Command "npm run build" exited with 1
+Exiting build container

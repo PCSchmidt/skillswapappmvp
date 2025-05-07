@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
+const path = require('path');
+
 const nextConfig = {
   reactStrictMode: true,
   // Disable TypeScript checking during build to prevent type errors from failing the build
@@ -13,12 +15,21 @@ const nextConfig = {
   },
   // Disable source maps in production for smaller bundles
   productionBrowserSourceMaps: false,
-  // Increase maximum memory allocation
-  experimental: {
-    memoryOverrideManifest: true,
-  },
   // Configure output for better deployment
   output: 'standalone',
+  // Configure webpack for path aliases
+  webpack: (config, { isServer }) => {
+    // Add path resolution for webpack
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': path.resolve(__dirname, 'src/'),
+      '@components': path.resolve(__dirname, 'src/components/'),
+      '@lib': path.resolve(__dirname, 'src/lib/'),
+      '@types': path.resolve(__dirname, 'src/types/'),
+      '@ai': path.resolve(__dirname, 'src/ai/')
+    };
+    return config;
+  }
 }
 
 module.exports = nextConfig
