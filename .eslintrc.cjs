@@ -34,7 +34,8 @@ module.exports = {
       'pathGroups': [
         {
           'pattern': '@/**',
-          'group': 'internal'
+          'group': 'internal',
+          'position': 'before'
         }
       ],
       'alphabetize': {
@@ -66,4 +67,5 @@ module.exports = {
     '*.config.js',
     'eslint.config.js'
   ],
+  include: ['./src/**/*']
 };
