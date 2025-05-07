@@ -3,7 +3,7 @@
   "regions": ["iad1"],
   "buildCommand": "npm run build",
   "functions": {
-    "api/*": {
+    "src/app/api/**/*": {
       "memory": 1024
     }
   },
