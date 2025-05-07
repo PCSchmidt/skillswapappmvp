@@ -1,5 +1,25 @@
 # SkillSwap MVP Development Journal
 
+## May 7, 2025 (Morning) - Staging Environment Setup and Deployment (Phase 5)
+
+Following yesterday's successful production database setup, today we're proceeding with the staging environment configuration and initial deployment:
+
+### Today's Tasks
+
+1. **Complete Staging Environment Setup**
+   - Run environment variable export scripts for staging environment
+   - Initialize the Vercel staging project with GitHub integration
+   - Configure staging-specific settings in Vercel dashboard
+   - Set up staging subdomain (staging.skillswap.app)
+
+2. **Perform Initial Staging Deployment**
+   - Deploy the application to staging using our automated workflow
+   - Run verification scripts to ensure all systems are operational
+   - Document any issues encountered during staging deployment
+   - Update all relevant documentation with deployment outcomes
+
+This systematic approach will allow us to validate our application with the production database connection before proceeding to the final production deployment. All test results and issues will be thoroughly documented to guide any necessary adjustments before we move to production.
+
 ## May 6, 2025 - Production Database Setup and Migration (Phase 5)
 
 Today we successfully completed the production database setup for the SkillSwap MVP, advancing our deployment preparation:
