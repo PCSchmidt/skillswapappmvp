@@ -67,5 +67,14 @@ module.exports = {
     '*.config.js',
     'eslint.config.js'
   ],
-  include: ['./src/**/*']
+  include: ['./src/**/*'],
+  exclude: ['./node_modules/**/*'],
+  overrides: [
+    {
+      files: ['*.ts', '*.tsx'],
+      parserOptions: {
+        project: ['./tsconfig.json'],
+      },
+    },
+  ],
 };
