@@ -1,3 +1,4 @@
+/** @type {import('eslint').Linter.ConfigSchema} */
 module.exports = {
   root: true,
   env: {
