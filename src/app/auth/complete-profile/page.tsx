@@ -9,7 +9,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@lib/supabase';
 import { useSupabase } from '@/contexts/SupabaseContext';
 import Link from 'next/link';
 

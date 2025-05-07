@@ -9,12 +9,12 @@ We have successfully resolved the import path resolution issues that were causin
    - This provides a consistent import path across the codebase
 
 2. **Standardized import statements** in all affected components:
-   - Updated `src/app/auth/complete-profile/page.tsx`
-   - Updated `src/app/auth/verify/page.tsx`
-   - Updated `src/app/auth/reset-password/page.tsx`
-   - Updated `src/app/auth/resend-verification/page.tsx` 
-   - Updated `src/components/auth/SignupForm.tsx`
-   - Changed imports from varied patterns to consistently use `@/lib/supabase` or `../../lib/supabase`
+   - Updated `src/app/auth/complete-profile/page.tsx` to use `@lib/supabase`
+   - Updated `src/app/auth/verify/page.tsx` to use `@lib/supabase`
+   - Updated `src/app/auth/reset-password/page.tsx` to use `@lib/supabase`
+   - Updated `src/app/auth/resend-verification/page.tsx` to use `@lib/supabase`
+   - Updated `src/components/auth/SignupForm.tsx` to use `@lib/supabase`
+   - Changed imports from varied patterns to consistently use `@lib/supabase` (without the leading slash)
 
 3. **Enhanced webpack configuration** in next.config.js:
    - Added explicit path alias configuration for webpack
