@@ -62,20 +62,27 @@ This document outlines the specific tasks and steps required to set up and deplo
 - [ ] Verify deployment was successful in Vercel dashboard
 
 #### Troubleshooting ESLint Configuration
-If the deployment fails with ESLint configuration errors:
-- [ ] Fix ESLint dependency conflicts:
-  ```bash
-  npm install eslint@8.57.0 --save-dev
-  ```
-- [ ] Ensure the eslint-config-next version is compatible:
-  ```bash
-  npm install eslint-config-next@14.0.4 --save-dev
-  ```
-- [ ] Address any ESLint plugin conflicts:
-  ```bash
-  npm install @typescript-eslint/eslint-plugin@^8.0.0 --save-dev
-  ```
-- [ ] Create or update .eslintrc.js with proper configuration
+If the deployment fails with ESLint dependency conflicts:
+
+1. **Option 1: Temporarily Remove ESLint from package.json**
+   - Remove ESLint and related dependencies from package.json
+   - Add them to a separate package-overrides.json file
+   - Create a .vercelignore file to ignore package-lock.json
+   
+2. **Option 2: Update vercel.json with Build Command Override**
+   - Add a custom buildCommand that installs specific ESLint versions:
+   ```json
+   {
+     "buildCommand": "npm install eslint@8.57.0 eslint-config-next@14.0.4 @typescript-eslint/eslint-plugin@6.19.1 @typescript-eslint/parser@6.19.1 && npm run build"
+   }
+   ```
+
+3. **Option 3: Update .eslintrc.js Configuration**
+   - Create a comprehensive ESLint configuration file that avoids conflicts
+   - Disable rules that might cause issues with the specific Next.js version
+   - Include proper parser options and plugin configurations
+
+All three approaches may be needed for complex projects with dependency conflicts.
 
 ### Post-Deployment Verification
 - [ ] Run the verification script:
