@@ -41,6 +41,7 @@ program
   .command('generate [env]')
   .description('Generate environment files for different environments')
   .option('--from <source>', 'Source environment file to copy from', '.env.example')
+  .option('--force', 'Overwrite existing files without confirmation', false)
   .action((env = 'all', options) => {
     const envs = env === 'all' ? ENVIRONMENTS : [env];
     
@@ -64,7 +65,7 @@ program
     
     // Generate environment files
     for (const targetEnv of envs) {
-      generateEnvFile(targetEnv, envVars);
+      generateEnvFile(targetEnv, envVars, options);
     }
   });
 
@@ -162,12 +163,12 @@ function parseEnvFile(content) {
 /**
  * Generate environment file for a specific environment
  */
-function generateEnvFile(env, envVars) {
+function generateEnvFile(env, envVars, options) {
   const fileName = `.env.${env}`;
   const filePath = path.resolve(process.cwd(), fileName);
   
   // Check if file already exists
-  if (fs.existsSync(filePath)) {
+  if (fs.existsSync(filePath) && !options.force) {
     console.log(`${colors.yellow}Warning: File '${fileName}' already exists.${colors.reset}`);
     const rl = readline.createInterface({
       input: process.stdin,
@@ -185,7 +186,10 @@ function generateEnvFile(env, envVars) {
       writeEnvFile(env, filePath, envVars);
     });
   } else {
-    // Create new file
+    // Create new file or force overwrite
+    if (fs.existsSync(filePath) && options.force) {
+      console.log(`${colors.yellow}Overwriting existing file '${fileName}' with --force flag.${colors.reset}`);
+    }
     writeEnvFile(env, filePath, envVars);
   }
 }
