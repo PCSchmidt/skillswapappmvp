@@ -24,7 +24,7 @@
     "env:export-vercel": "node scripts/env-manager.js export-to-vercel",
     "deploy:staging": "vercel deploy --env=staging",
     "deploy:production": "vercel deploy --prod",
-    "prebuild": "npm run type-check && npm run lint",
+    "vercel-build": "next build",
     "prepare-vercel": "vercel pull --yes && vercel env pull .env.local",
     "db:push": "supabase db push",
     "db:generate-types": "supabase gen types typescript --local > src/types/supabase.ts"

@@ -1,2 +1,28 @@
-# Ignore package-lock.json to force fresh install
-package-lock.json
+# Directories
+.git
+node_modules
+cypress
+scripts
+tests
+docs
+memory
+supabase
+
+# Files
+README.md
+*.log
+.env
+.env.*
+*.md
+*.bat
+*.sh
+**/tsconfig.tsbuildinfo
+**/jest.config.*
+cypress.config.js
+.eslintrc.*
+
+# Keep everything needed for the build
+!next.config.js
+!tsconfig.json
+!package.json
+!vercel.json
