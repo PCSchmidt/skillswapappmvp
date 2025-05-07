@@ -38,11 +38,10 @@ program
   .version('1.0.0');
 
 program
-  .command('generate')
+  .command('generate [env]')
   .description('Generate environment files for different environments')
-  .argument('[env]', 'Environment to generate (development, staging, production, or all)', 'all')
   .option('--from <source>', 'Source environment file to copy from', '.env.example')
-  .action((env, options) => {
+  .action((env = 'all', options) => {
     const envs = env === 'all' ? ENVIRONMENTS : [env];
     
     // Validate environment
@@ -70,9 +69,8 @@ program
   });
 
 program
-  .command('validate')
+  .command('validate <env>')
   .description('Validate environment variables for a specific environment')
-  .argument('<env>', 'Environment to validate (development, staging, production)')
   .option('--file <file>', 'Environment file to validate', (env) => `.env.${env}`)
   .action((env, options) => {
     // Validate environment
@@ -100,9 +98,8 @@ program
   });
 
 program
-  .command('export-to-vercel')
+  .command('export-to-vercel <env>')
   .description('Export environment variables to Vercel')
-  .argument('<env>', 'Environment to export (staging, production)')
   .option('--file <file>', 'Environment file to export', (env) => `.env.${env}`)
   .action((env, options) => {
     // Only allow exporting to staging or production
