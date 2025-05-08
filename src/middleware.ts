@@ -65,27 +65,38 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(homeUrl);
   }
   
-  // Create supabase server client
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get: (name) => req.cookies.get(name)?.value,
-        set: (name, value, options) => {
-          res.cookies.set({ name, value, ...options });
-        },
-        remove: (name, options) => {
-          res.cookies.set({ name, value: '', ...options });
-        },
-      },
-    }
-  );
+  // Check if Supabase environment variables are set
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   
-  // Refresh session if needed
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  // Initialize session as undefined (can be Session | null | undefined)
+  let session: any = null;
+  
+  // Only create Supabase client if environment variables are set
+  if (supabaseUrl && supabaseAnonKey) {
+    // Create supabase server client
+    const supabase = createServerClient(
+      supabaseUrl,
+      supabaseAnonKey,
+      {
+        cookies: {
+          get: (name) => req.cookies.get(name)?.value,
+          set: (name, value, options) => {
+            res.cookies.set({ name, value, ...options });
+          },
+          remove: (name, options) => {
+            res.cookies.set({ name, value: '', ...options });
+          },
+        },
+      }
+    );
+    
+    // Refresh session if needed
+    const { data } = await supabase.auth.getSession();
+    session = data.session;
+  } else {
+    console.warn('Supabase URL or anonymous key is missing. Make sure to set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY environment variables.');
+  }
   
   // pathname is already defined above
   

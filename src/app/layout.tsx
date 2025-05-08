@@ -5,6 +5,7 @@ import './globals.css';
 import SupabaseProvider from '@/contexts/SupabaseContext';
 import ResponsiveProvider from '@/contexts/ResponsiveContext';
 import Navbar from '@/components/navigation/Navbar';
+import Footer from '@/components/layout/Footer';
 import { registerServiceWorker } from '@/lib/utils/registerServiceWorker';
 
 export interface RootLayoutProps {
@@ -38,44 +39,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
                 </Suspense>
               </main>
           
-              <footer className="bg-neutral-800 text-white py-8 md:py-12">
-                <div className="container-custom">
-                  <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
-                    <div>
-                      <h3 className="font-bold text-lg mb-3 md:mb-4">SkillSwap</h3>
-                      <p className="text-neutral-300 text-sm md:text-base">Trade skills, learn together, build community.</p>
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-lg mb-3 md:mb-4">Explore</h3>
-                      <ul className="space-y-1 md:space-y-2 text-sm md:text-base">
-                        <li><a href="/skills/browse" className="text-neutral-300 hover:text-white">Browse Skills</a></li>
-                        <li><a href="/skills/browse" className="text-neutral-300 hover:text-white">Categories</a></li>
-                        <li><a href="/trades" className="text-neutral-300 hover:text-white">Trades</a></li>
-                      </ul>
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-lg mb-3 md:mb-4">Resources</h3>
-                      <ul className="space-y-1 md:space-y-2 text-sm md:text-base">
-                        <li><a href="#" className="text-neutral-300 hover:text-white">Help Center</a></li>
-                        <li><a href="#" className="text-neutral-300 hover:text-white">Guidelines</a></li>
-                        <li><a href="#" className="text-neutral-300 hover:text-white">Safety</a></li>
-                      </ul>
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-lg mb-3 md:mb-4">Company</h3>
-                      <ul className="space-y-1 md:space-y-2 text-sm md:text-base">
-                        <li><a href="#" className="text-neutral-300 hover:text-white">About</a></li>
-                        <li><a href="#" className="text-neutral-300 hover:text-white">Contact</a></li>
-                        <li><a href="#" className="text-neutral-300 hover:text-white">Privacy</a></li>
-                        <li><a href="#" className="text-neutral-300 hover:text-white">Terms</a></li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div className="border-t border-neutral-700 mt-6 md:mt-8 pt-6 md:pt-8 text-center text-neutral-400 text-sm">
-                    &copy; {new Date().getFullYear()} SkillSwap. All rights reserved.
-                  </div>
-                </div>
-              </footer>
+              <Footer />
             </div>
           </ResponsiveProvider>
         </SupabaseProvider>

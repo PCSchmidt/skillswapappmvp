@@ -2,48 +2,23 @@
 
 import React from 'react';
 import Link from 'next/link';
-import SkillList from '@/components/skills/SkillList';
 import Image from 'next/image';
+import Section from '@/components/layout/Section';
+import Container from '@/components/layout/Container';
+
+// Import our newly created components
+import FeaturedSkills from '@/components/skills/FeaturedSkills';
+import SkillCategories from '@/components/skills/SkillCategories';
+import TestimonialsCarousel from '@/components/testimonials/TestimonialsCarousel';
+import HeroSection from '@/components/landing/HeroSection';
+import HowItWorks from '@/components/landing/HowItWorks';
+import CallToAction from '@/components/landing/CallToAction';
 
 export default function HomePage() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="bg-gradient-primary text-white py-24">
-        <div className="container-custom">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="text-left">
-              <h1 className="font-heading font-bold mb-6">
-                Trade Skills, Build Community
-              </h1>
-              <p className="text-xl mb-8 text-white/90">
-                SkillSwap connects people to exchange skills and knowledge in a collaborative, 
-                community-driven marketplace. Share what you know, learn what you don't.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link 
-                  href="/skills/discover" 
-                  className="btn-outline border-white text-white hover:bg-white/10 px-6 py-3"
-                >
-                  Discover Skills
-                </Link>
-                <Link 
-                  href="/signup" 
-                  className="btn bg-accent-yellow-500 hover:bg-accent-yellow-600 text-neutral-900 font-semibold px-6 py-3"
-                >
-                  Join SkillSwap
-                </Link>
-              </div>
-            </div>
-            <div className="rounded-lg overflow-hidden shadow-xl hidden md:block">
-              {/* Placeholder for hero image - would be replaced with actual image */}
-              <div className="bg-primary-800 h-80 flex items-center justify-center">
-                <span className="text-xl opacity-70">Community collaboration illustration</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <HeroSection />
 
       {/* Value Proposition */}
       <section className="py-16">
@@ -95,138 +70,27 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* How It Works Section */}
-      <section className="py-16 bg-neutral-50">
-        <div className="container-custom">
-          <h2 className="text-3xl font-bold text-center mb-12">How SkillSwap Works</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center p-6 bg-white rounded-lg shadow-md hover-lift transition-normal">
-              <div className="w-16 h-16 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
-                1
-              </div>
-              <h3 className="text-xl font-semibold mb-2">List Your Skills</h3>
-              <p className="text-neutral-700">
-                Share what you're good at or what you want to learn. From coding to cooking, 
-                any skill can be valuable to someone else.
-              </p>
-            </div>
-            
-            <div className="text-center p-6 bg-white rounded-lg shadow-md hover-lift transition-normal">
-              <div className="w-16 h-16 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
-                2
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Connect & Arrange</h3>
-              <p className="text-neutral-700">
-                Find people with matching interests, chat to discuss details, 
-                and arrange a time and place to meet up.
-              </p>
-            </div>
-            
-            <div className="text-center p-6 bg-white rounded-lg shadow-md hover-lift transition-normal">
-              <div className="w-16 h-16 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
-                3
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Exchange Skills</h3>
-              <p className="text-neutral-700">
-                Meet up and share knowledge. Rate your experience afterward to 
-                help build a trusted community of learners.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* How It Works Section - Using our new component */}
+      <HowItWorks />
 
-      {/* Featured Skills Section */}
-      <section className="section">
-        <div className="container-custom">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-3xl font-bold">Featured Skills</h2>
-            <Link href="/skills/discover" className="text-primary-600 hover:text-primary-700 font-medium group">
-              View All Skills <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
-            </Link>
-          </div>
-          
-          <SkillList limit={6} featured={true} />
-        </div>
-      </section>
+      {/* Featured Skills Section - Using our new component */}
+      <FeaturedSkills 
+        title="Featured Skills"
+        subtitle="Discover our community's most popular skills ready for exchange"
+        limit={6}
+      />
+      
+      {/* Skill Categories Section */}
+      <SkillCategories
+        title="Explore Skill Categories"
+        subtitle="Browse through skill categories to find what you're looking for"
+      />
 
-      {/* Testimonials Section */}
-      <section className="section bg-neutral-50">
-        <div className="container-custom">
-          <h2 className="text-3xl font-bold text-center mb-12">What Our Community Says</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="card p-6">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center text-primary-700 font-bold">
-                  JD
-                </div>
-                <div className="ml-3">
-                  <h4 className="font-medium">John Doe</h4>
-                  <div className="flex text-accent-yellow-400">
-                    <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
-                  </div>
-                </div>
-              </div>
-              <p className="text-neutral-700">
-                "I've learned more about photography in two skill-swap sessions than I did in months of YouTube tutorials. The personal connections make all the difference."
-              </p>
-            </div>
-            
-            <div className="card p-6">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-secondary-100 rounded-full flex items-center justify-center text-secondary-700 font-bold">
-                  AS
-                </div>
-                <div className="ml-3">
-                  <h4 className="font-medium">Aisha Smith</h4>
-                  <div className="flex text-accent-yellow-400">
-                    <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
-                  </div>
-                </div>
-              </div>
-              <p className="text-neutral-700">
-                "Teaching Spanish while learning graphic design has been amazing. I'm saving money while building skills and making friends in my community."
-              </p>
-            </div>
-            
-            <div className="card p-6">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-tertiary-100 rounded-full flex items-center justify-center text-tertiary-700 font-bold">
-                  MJ
-                </div>
-                <div className="ml-3">
-                  <h4 className="font-medium">Michael Johnson</h4>
-                  <div className="flex text-accent-yellow-400">
-                    <span>★</span><span>★</span><span>★</span><span>★</span><span>☆</span>
-                  </div>
-                </div>
-              </div>
-              <p className="text-neutral-700">
-                "As a retiree, SkillSwap lets me share decades of woodworking experience while learning about modern technology from younger members. It's a win-win."
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Testimonials Section - Using our carousel component */}
+      <TestimonialsCarousel />
 
-      {/* Call to Action */}
-      <section className="section bg-gradient-secondary text-white">
-        <div className="container-custom text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to Start Swapping?</h2>
-          <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-            Join our community today and start exchanging skills, 
-            expanding your knowledge, and making meaningful connections.
-          </p>
-          <Link 
-            href="/signup" 
-            className="btn-lg bg-white text-secondary-600 hover:bg-white/90 font-semibold shadow-md"
-          >
-            Create Your Free Account
-          </Link>
-        </div>
-      </section>
+      {/* Call to Action Section - Using our new component */}
+      <CallToAction theme="secondary" />
     </div>
   );
 }
