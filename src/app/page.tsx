@@ -1,10 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import Section from '@/components/layout/Section';
 import Container from '@/components/layout/Container';
+import { useRouter } from 'next/navigation';
 
 // Import our newly created components
 import FeaturedSkills from '@/components/skills/FeaturedSkills';
@@ -14,11 +15,45 @@ import HeroSection from '@/components/landing/HeroSection';
 import HowItWorks from '@/components/landing/HowItWorks';
 import CallToAction from '@/components/landing/CallToAction';
 
+// Import Phase 5 components
+import SearchComponent from '@/components/search/SearchComponent';
+import SkillFilters from '@/components/skills/SkillFilters';
+import AuthPreview from '@/components/auth/AuthPreview';
+
 export default function HomePage() {
+  const router = useRouter();
+  const [filteredSkills, setFilteredSkills] = useState<any[]>([]);
+  const [isFiltering, setIsFiltering] = useState(false);
+  
+  // Handle search from the hero section
+  const handleHeroSearch = (searchTerm: string) => {
+    if (searchTerm.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchTerm)}`);
+    }
+  };
+  
+  // Handle filter changes
+  const handleFilterChange = (filters: any) => {
+    setIsFiltering(true);
+    // In a real implementation, this would fetch filtered skills from the API
+    // For the preview, we'll just simulate a delay
+    setTimeout(() => {
+      setIsFiltering(false);
+    }, 500);
+  };
+
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
-      <HeroSection />
+      {/* Hero Section with Search */}
+      <HeroSection>
+        <div className="max-w-2xl mx-auto mt-8">
+          <SearchComponent 
+            placeholder="Search for skills (e.g., 'Web Design', 'Spanish Lessons')" 
+            className="w-full"
+            onSearch={handleHeroSearch}
+          />
+        </div>
+      </HeroSection>
 
       {/* Value Proposition */}
       <section className="py-16">
@@ -73,12 +108,49 @@ export default function HomePage() {
       {/* How It Works Section - Using our new component */}
       <HowItWorks />
 
-      {/* Featured Skills Section - Using our new component */}
-      <FeaturedSkills 
-        title="Featured Skills"
-        subtitle="Discover our community's most popular skills ready for exchange"
-        limit={6}
-      />
+      {/* Skills Section with Filtering - Using Phase 5 components */}
+      <Section className="py-16 bg-gray-50">
+        <Container>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Explore Skills</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
+              Use our interactive filters to find exactly what you're looking for
+            </p>
+            
+            <div className="max-w-2xl mx-auto">
+              <SearchComponent 
+                placeholder="Search skills by title, description, or tags"
+                className="mb-8"
+              />
+            </div>
+          </div>
+          
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* Sidebar with filters */}
+            <div className="w-full lg:w-1/4">
+              <SkillFilters
+                onFilterChange={handleFilterChange}
+                className="bg-white p-6 rounded-xl shadow-sm"
+              />
+            </div>
+            
+            {/* Featured skills grid */}
+            <div className="w-full lg:w-3/4">
+              {isFiltering ? (
+                <div className="flex justify-center items-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-600"></div>
+                </div>
+              ) : (
+                <FeaturedSkills 
+                  title=""
+                  subtitle=""
+                  limit={6}
+                />
+              )}
+            </div>
+          </div>
+        </Container>
+      </Section>
       
       {/* Skill Categories Section */}
       <SkillCategories
@@ -88,6 +160,61 @@ export default function HomePage() {
 
       {/* Testimonials Section - Using our carousel component */}
       <TestimonialsCarousel />
+
+      {/* Auth Preview Section */}
+      <Section className="py-16 bg-gradient-to-br from-primary-50 to-secondary-50">
+        <Container>
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+                Join Our Community Today
+              </h2>
+              <p className="text-lg text-gray-700 mb-8">
+                Create your free account to start sharing skills, connecting with others,
+                and building a stronger local community through knowledge exchange.
+              </p>
+              <div className="space-y-6">
+                <div className="flex items-start gap-3">
+                  <div className="bg-primary-100 text-primary-600 p-2 rounded-full shrink-0 mt-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-gray-900">Personalized Profile</h3>
+                    <p className="text-gray-600">Showcase your skills and interests to connect with like-minded people</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="bg-primary-100 text-primary-600 p-2 rounded-full shrink-0 mt-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-gray-900">Messaging System</h3>
+                    <p className="text-gray-600">Direct messaging to arrange skill exchanges and discuss details</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="bg-primary-100 text-primary-600 p-2 rounded-full shrink-0 mt-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-gray-900">Review System</h3>
+                    <p className="text-gray-600">Build your reputation through meaningful exchanges and reviews</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <AuthPreview variant="card" className="max-w-md mx-auto" />
+            </div>
+          </div>
+        </Container>
+      </Section>
 
       {/* Call to Action Section - Using our new component */}
       <CallToAction theme="secondary" />

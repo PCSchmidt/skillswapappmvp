@@ -20,6 +20,7 @@ interface HeroSectionProps {
   badgeText?: string;
   imagePlaceholder?: boolean;
   trustBadge?: boolean;
+  children?: React.ReactNode;
 }
 
 export default function HeroSection({
@@ -31,7 +32,8 @@ export default function HeroSection({
   ctaSecondaryLink = "/skills/discover",
   badgeText = "Launching Summer 2025",
   imagePlaceholder = true,
-  trustBadge = true
+  trustBadge = true,
+  children
 }: HeroSectionProps) {
   // Replace newline characters with <br /> for line breaks in title
   const formattedTitle = title.split('\n').map((line, i) => (
@@ -86,6 +88,10 @@ export default function HeroSection({
                 </Link>
               )}
             </div>
+            
+            {children && (
+              <div className="mt-6">{children}</div>
+            )}
             
             {trustBadge && (
               <div className="mt-12 flex items-center gap-3 text-white/90">
