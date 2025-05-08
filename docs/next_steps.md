@@ -11,7 +11,7 @@ This document outlines the progress and upcoming steps for the SkillSwap MVP dev
 | Phase 3 | Database Structure & API Layer | ✅ Complete |
 | Phase 4 | Landing Page & Core UI | ✅ Complete |
 | Phase 5 | Interactive Elements | ✅ Complete |
-| Phase 6 | Skill Matching Logic | 🔄 Pending |
+| Phase 6 | Skill Matching Logic | 🔄 In Progress |
 | Phase 7 | Messaging System | ⏳ Not Started |
 | Phase 8 | Notifications & Email Integration | ⏳ Not Started |
 | Phase 9 | Final Testing & Optimization | ⏳ Not Started |
@@ -26,28 +26,31 @@ This document outlines the progress and upcoming steps for the SkillSwap MVP dev
 - ✅ Connected all interactive elements to the main landing page
 - ✅ Ensured mobile responsiveness for all new components
 
-## Immediate Next Steps (Phase 6)
+## Current Focus (Phase 6)
 
-1. **User Profile Page**
-   - Create user profile page with personal information
-   - Show user's offered and requested skills
-   - Allow editing of profile information
+1. **User Profile Page** 🔄
+   - Creating user profile page with personal information
+   - Implementing offered and requested skills sections
+   - Developing profile editing functionality
+   - Adding user metrics and statistics display
 
-2. **Skill Details Page**
-   - Create detailed view for individual skills
-   - Add request/offer buttons with appropriate actions
-   - Implement messaging preview between users
+2. **Skill Details Page** 🔄
+   - Creating detailed view for individual skills
+   - Implementing request/offer interaction buttons
+   - Adding skill owner information and contact options
+   - Developing similar skills recommendation section
 
-3. **Skill Matching Logic**
-   - Implement algorithm to match users based on complementary skills
-   - Create user recommendations system
-   - Add matching score visualization
-   - Develop "similar skills" suggestions
+3. **Skill Matching Logic** ⏳
+   - Designing algorithm to match users based on complementary skills
+   - Building recommendation system with scoring mechanism
+   - Implementing filtering and sorting for match quality
+   - Creating "similar skills" suggestion engine
 
-4. **Dashboard**
-   - Create user dashboard showing matches, requests, and messages
-   - Implement notification system for new interactions
-   - Add activity history and statistics
+4. **User Dashboard** ⏳
+   - Creating personalized dashboard with key metrics
+   - Implementing request management interface
+   - Developing activity history and exchange tracking
+   - Adding notification system for interactions
 
 ## Technical Debt to Address
 

@@ -6,8 +6,8 @@ This document tracks the implementation progress of Phase 6 for the SkillSwap MV
 
 | Component | Status | Description |
 |-----------|--------|-------------|
-| User Profile Page | ⏳ Pending | Page displaying user information and skills |
-| Skill Details Page | ⏳ Pending | Detailed view for individual skills |
+| User Profile Page | 🔄 In Progress | Page displaying user information and skills |
+| Skill Details Page | 🔄 In Progress | Detailed view for individual skills |
 | Skill Matching Algorithm | ⏳ Pending | Logic to connect users with complementary skills |
 | User Dashboard | ⏳ Pending | Personal dashboard with matches and activity |
 | Recommendations Panel | ⏳ Pending | Component showing skill matches based on user profile |
@@ -58,9 +58,9 @@ This document tracks the implementation progress of Phase 6 for the SkillSwap MV
 
 | Task | Start Date | Target Completion | Status |
 |------|------------|-------------------|--------|
-| Initial planning | TBD | TBD | Not Started |
-| User Profile Page | TBD | TBD | Not Started |
-| Skill Details Page | TBD | TBD | Not Started |
-| Matching Algorithm | TBD | TBD | Not Started |
-| User Dashboard | TBD | TBD | Not Started |
-| Integration & Testing | TBD | TBD | Not Started |
+| Initial planning | May 8, 2025 | May 9, 2025 | In Progress |
+| User Profile Page | May 9, 2025 | May 13, 2025 | Scheduled |
+| Skill Details Page | May 11, 2025 | May 15, 2025 | Scheduled |
+| Matching Algorithm | May 15, 2025 | May 20, 2025 | Not Started |
+| User Dashboard | May 18, 2025 | May 23, 2025 | Not Started |
+| Integration & Testing | May 22, 2025 | May 27, 2025 | Not Started |

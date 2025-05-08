@@ -1,392 +1,397 @@
 /**
- * Skill Detail Page
+ * Skill Details Page
  * 
- * This page displays the details of a specific skill and options
- * to interact with the skill owner (e.g., propose a trade).
+ * Displays detailed information about a specific skill, 
+ * including contact options and similar skills.
  */
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useSupabase } from '@/contexts/SupabaseContext';
-import { Database } from '@/types/supabase';
-import TradeProposalForm from '@/components/trades/TradeProposalForm';
+import { Skill } from '@/components/skills/SkillCard';
+import Container from '@/components/layout/Container';
+import Section from '@/components/layout/Section';
+import NotificationBar from '@/components/notifications/NotificationBar';
 
-type Skill = Database['public']['Tables']['skills']['Row'] & {
-  users?: {
-    id: string;
-    full_name: string | null;
-    profile_image_url: string | null;
-    location_city: string | null;
-    location_state: string | null;
-    bio: string | null;
-  } | null;
-};
+interface SkillOwner {
+  id: string;
+  full_name?: string;
+  username?: string;
+  avatar_url?: string;
+  bio?: string;
+  location?: string;
+  social_links?: Record<string, string>;
+}
 
-export default function SkillDetailPage({ params }: { params: { id: string } }) {
+export default function SkillDetailsPage() {
+  const params = useParams();
   const router = useRouter();
   const { supabase, user } = useSupabase();
-  
   const [skill, setSkill] = useState<Skill | null>(null);
+  const [owner, setOwner] = useState<SkillOwner | null>(null);
+  const [similarSkills, setSimilarSkills] = useState<Skill[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [userOwnsSkill, setUserOwnsSkill] = useState(false);
-  const [showTradeForm, setShowTradeForm] = useState(false);
-  const [tradeSuccess, setTradeSuccess] = useState(false);
-  const [tradeId, setTradeId] = useState<string | null>(null);
-  
-  // Fetch skill data on initial load
+  const [contactModalOpen, setContactModalOpen] = useState(false);
+  const [notification, setNotification] = useState<{
+    type: 'success' | 'error' | 'info';
+    message: string;
+  } | null>(null);
+
+  const skillId = params.id as string;
+
   useEffect(() => {
-    const fetchSkill = async () => {
+    async function loadSkillData() {
+      if (!skillId) return;
+
       try {
-        const { data, error } = await supabase
+        // Fetch skill data
+        const { data: skillData, error: skillError } = await supabase
           .from('skills')
-          .select(`
-            *,
-            users:user_id (
-              id,
-              full_name,
-              profile_image_url,
-              location_city,
-              location_state,
-              bio
-            )
-          `)
-          .eq('id', params.id)
+          .select('*')
+          .eq('id', skillId)
+          .eq('is_active', true)
           .single();
-        
-        if (error) {
-          throw error;
+
+        if (skillError) throw skillError;
+        if (!skillData) {
+          router.push('/search');
+          return;
         }
-        
-        if (data) {
-          setSkill(data);
-          // Check if the current user owns this skill
-          if (user && data.user_id === user.id) {
-            setUserOwnsSkill(true);
-          }
-        }
-      } catch (err: any) {
-        console.error('Error fetching skill:', err);
-        setError('Failed to load skill details');
+
+        setSkill(skillData);
+
+        // Fetch owner profile data
+        const { data: ownerData, error: ownerError } = await supabase
+          .from('profiles')
+          .select('id, full_name, username, avatar_url, bio, location, social_links')
+          .eq('id', skillData.user_id)
+          .single();
+
+        if (ownerError) throw ownerError;
+        setOwner(ownerData);
+
+        // Fetch similar skills
+        const { data: similarData, error: similarError } = await supabase
+          .from('skills')
+          .select('*')
+          .eq('category', skillData.category)
+          .eq('is_active', true)
+          .neq('id', skillId)
+          .limit(4);
+
+        if (similarError) throw similarError;
+        setSimilarSkills(similarData || []);
+      } catch (error) {
+        console.error('Error loading skill data:', error);
+        setNotification({
+          type: 'error',
+          message: 'Failed to load skill details. Please try again later.',
+        });
       } finally {
         setLoading(false);
       }
-    };
-    
-    fetchSkill();
-  }, [params.id, supabase, user]);
-  
-  // Format availability for display
-  const formatAvailability = (availabilityJson: string | null) => {
-    if (!availabilityJson) return 'Not specified';
-    
-    try {
-      const days = JSON.parse(availabilityJson);
-      if (!Array.isArray(days) || days.length === 0) return 'Not specified';
-      return days.join(', ');
-    } catch (e) {
-      return 'Not specified';
     }
-  };
-  
-  // Format experience level for display
-  const formatExperienceLevel = (level: string | null) => {
-    if (!level) return 'Not specified';
-    return level.charAt(0).toUpperCase() + level.slice(1);
-  };
-  
-  // Handle skill deletion
-  const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this skill?')) {
-      return;
-    }
-    
-    try {
-      const { error } = await supabase
-        .from('skills')
-        .delete()
-        .eq('id', params.id)
-        .eq('user_id', user?.id); // Safety check to ensure user owns the skill
-      
-      if (error) {
-        throw error;
-      }
-      
-      // Redirect to dashboard after successful deletion
-      router.push('/dashboard');
-    } catch (err: any) {
-      console.error('Error deleting skill:', err);
-      setError('Failed to delete skill');
-    }
-  };
-  
-  // Handle trade proposal
-  const handleProposeTrade = () => {
+
+    loadSkillData();
+  }, [skillId, supabase, router]);
+
+  const handleContactRequest = async () => {
     if (!user) {
-      router.push(`/login?redirect=/skills/${params.id}`);
+      router.push('/auth/signin?callbackUrl=' + encodeURIComponent(`/skills/${skillId}`));
       return;
     }
-    
-    setShowTradeForm(true);
+
+    try {
+      // Create a skill exchange request
+      const { error } = await supabase
+        .from('skill_exchange_requests')
+        .insert({
+          requestor_id: user.id,
+          skill_id: skillId,
+          skill_owner_id: skill?.user_id,
+          status: 'pending',
+          created_at: new Date().toISOString(),
+        });
+
+      if (error) throw error;
+
+      setNotification({
+        type: 'success',
+        message: 'Contact request sent! The skill owner will be notified.',
+      });
+      setContactModalOpen(false);
+    } catch (error) {
+      console.error('Error sending contact request:', error);
+      setNotification({
+        type: 'error',
+        message: 'Failed to send contact request. Please try again.',
+      });
+    }
   };
-  
-  // Handle trade success
-  const handleTradeSuccess = (newTradeId: string) => {
-    setTradeId(newTradeId);
-    setTradeSuccess(true);
-    setShowTradeForm(false);
-  };
-  
-  // Handle trade form cancel
-  const handleTradeCancel = () => {
-    setShowTradeForm(false);
-  };
-  
-  // Show loading state
+
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="spinner mb-4"></div>
-          <p className="text-gray-700">Loading skill details...</p>
-        </div>
-      </div>
-    );
-  }
-  
-  // Show error state
-  if (error || !skill) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center max-w-md mx-auto px-4">
-          <div className="text-error-600 text-5xl mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
+      <Section>
+        <Container>
+          <div className="flex items-center justify-center min-h-[60vh]">
+            <div className="flex flex-col items-center">
+              <div className="w-16 h-16 border-t-4 border-primary-600 border-solid rounded-full animate-spin"></div>
+              <p className="mt-4 text-gray-600">Loading skill details...</p>
+            </div>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Skill Not Found</h1>
-          <p className="text-gray-600 mb-6">
-            {error || 'The skill you are looking for does not exist or has been removed.'}
-          </p>
-          <Link href="/dashboard" className="btn btn-primary">
-            Return to Dashboard
-          </Link>
-        </div>
-      </div>
+        </Container>
+      </Section>
     );
   }
+
+  if (!skill || !owner) {
+    return (
+      <Section>
+        <Container>
+          <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-2">Skill Not Found</h2>
+            <p className="text-gray-600 mb-6">We couldn't find the skill you're looking for.</p>
+            <button
+              onClick={() => router.push('/search')}
+              className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50"
+            >
+              Browse Skills
+            </button>
+          </div>
+        </Container>
+      </Section>
+    );
+  }
+
+  const isOwner = user && user.id === owner.id;
+  const displayName = owner.full_name || owner.username || 'User';
+  const avatarSrc = owner.avatar_url || '/images/default-avatar.png';
   
-  // Determine badge colors for experience level and offering type
   const experienceBadgeColor = {
-    beginner: 'bg-blue-100 text-blue-800',
-    intermediate: 'bg-green-100 text-green-800',
-    expert: 'bg-purple-100 text-purple-800',
+    beginner: 'bg-blue-100 text-blue-800 border-blue-200',
+    intermediate: 'bg-green-100 text-green-800 border-green-200',
+    expert: 'bg-purple-100 text-purple-800 border-purple-200',
   }[skill.experience_level || 'beginner'];
-  
+
   const offeringBadgeColor = skill.is_offering
-    ? 'bg-primary-100 text-primary-800'
-    : 'bg-secondary-100 text-secondary-800';
-  
+    ? 'bg-primary-100 text-primary-800 border-primary-200'
+    : 'bg-secondary-100 text-secondary-800 border-secondary-200';
+
   const offeringText = skill.is_offering ? 'Offering' : 'Seeking';
-  
+
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Back button */}
-        <div className="mb-6">
+    <>
+      {notification && (
+        <NotificationBar
+          type={notification.type}
+          message={notification.message}
+          onClose={() => setNotification(null)}
+        />
+      )}
+
+      <Section className="py-8">
+        <Container>
           <button
             onClick={() => router.back()}
-            className="flex items-center text-sm text-gray-600 hover:text-gray-900"
+            className="flex items-center text-gray-600 hover:text-primary-600 mb-6"
           >
-            <svg className="h-5 w-5 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
             </svg>
             Back
           </button>
-        </div>
-        
-        {/* Trade success message */}
-        {tradeSuccess && (
-          <div className="mb-6 bg-success-100 border border-success-400 text-success-700 px-4 py-5 rounded-md shadow-sm">
-            <div className="flex items-start">
-              <div className="flex-shrink-0">
-                <svg className="h-6 w-6 text-success-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <div className="ml-3">
-                <h3 className="text-lg font-medium">Trade Proposed Successfully!</h3>
-                <div className="mt-2 text-sm">
-                  <p>
-                    Your trade proposal has been sent. You can view and manage your trades in your dashboard.
-                  </p>
-                  <div className="mt-4">
-                    <Link 
-                      href={`/trades/${tradeId}`} 
-                      className="text-success-700 font-medium hover:text-success-600"
-                    >
-                      View Trade Details →
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-        
-        {/* Trade proposal form or main content */}
-        {showTradeForm ? (
-          <div className="mb-6">
-            <TradeProposalForm 
-              requestedSkill={skill}
-              onCancel={handleTradeCancel}
-              onSuccess={handleTradeSuccess}
-            />
-          </div>
-        ) : (
-          /* Main content - only show if not showing the trade form */
-          !tradeSuccess && (
-            <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-              {/* Header section */}
-              <div className="px-4 py-5 border-b border-gray-200 sm:px-6">
-                <div className="flex justify-between flex-wrap gap-4">
-                  <div>
-                    <h1 className="text-2xl font-bold text-gray-900">{skill.title}</h1>
-                    <p className="mt-1 text-sm text-gray-500">
-                      {skill.category} {skill.subcategory ? `• ${skill.subcategory}` : ''}
-                    </p>
-                  </div>
-                  
-                  <div className="flex items-start gap-2">
-                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${offeringBadgeColor}`}>
+
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div className="p-6">
+              <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-6">
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900 mb-2">{skill.title}</h1>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    <span className={`text-xs px-2 py-1 rounded-full font-medium border ${offeringBadgeColor}`}>
                       {offeringText}
                     </span>
                     
                     {skill.experience_level && (
-                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${experienceBadgeColor}`}>
-                        {formatExperienceLevel(skill.experience_level)}
+                      <span className={`text-xs px-2 py-1 rounded-full font-medium border ${experienceBadgeColor}`}>
+                        {skill.experience_level.charAt(0).toUpperCase() + skill.experience_level.slice(1)}
                       </span>
                     )}
                     
                     {skill.is_remote_friendly && (
-                      <span className="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">
-                        Remote Friendly
+                      <span className="text-xs px-2 py-1 rounded-full font-medium border bg-green-50 text-green-700 border-green-200">
+                        Remote
                       </span>
                     )}
                   </div>
                 </div>
+
+                {!isOwner && (
+                  <button
+                    onClick={() => setContactModalOpen(true)}
+                    className="mt-4 md:mt-0 px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50"
+                  >
+                    Request Contact Info
+                  </button>
+                )}
+
+                {isOwner && (
+                  <button
+                    onClick={() => router.push('/profile')}
+                    className="mt-4 md:mt-0 inline-flex items-center text-primary-600 hover:text-primary-700"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 mr-1">
+                      <path d="M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z" />
+                      <path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z" />
+                    </svg>
+                    Edit in Profile
+                  </button>
+                )}
               </div>
-              
-              <div className="px-4 py-5 sm:p-6">
-                {/* Description */}
-                <div className="mb-8">
-                  <h2 className="text-lg font-medium text-gray-900 mb-2">Description</h2>
-                  <p className="text-gray-700 whitespace-pre-wrap">
-                    {skill.description || 'No description provided.'}
-                  </p>
-                </div>
-                
-                {/* Details section */}
-                <div className="mb-8 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
-                  {/* Availability */}
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="md:col-span-2 space-y-6">
+                  {skill.description && (
+                    <div>
+                      <h2 className="text-lg font-semibold text-gray-900 mb-2">Description</h2>
+                      <p className="text-gray-700 whitespace-pre-line">{skill.description}</p>
+                    </div>
+                  )}
+
                   <div>
-                    <h3 className="text-sm font-medium text-gray-500">Availability</h3>
-                    <p className="mt-1 text-gray-900">
-                      {formatAvailability(skill.availability as string)}
+                    <h2 className="text-lg font-semibold text-gray-900 mb-2">Category</h2>
+                    <p className="text-gray-700">
+                      {skill.category}
+                      {skill.subcategory && ` > ${skill.subcategory}`}
                     </p>
                   </div>
-                  
-                  {/* Hourly Value */}
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-500">Estimated Value</h3>
-                    <p className="mt-1 text-gray-900">
-                      {skill.hourly_equivalent_value 
-                        ? `$${skill.hourly_equivalent_value.toFixed(2)}/hour` 
-                        : 'Not specified'}
-                    </p>
-                  </div>
+
+                  {skill.hourly_equivalent_value && (
+                    <div>
+                      <h2 className="text-lg font-semibold text-gray-900 mb-2">Value</h2>
+                      <p className="text-gray-700">${skill.hourly_equivalent_value}/hour equivalent</p>
+                    </div>
+                  )}
                 </div>
-                
-                {/* User/owner information */}
-                {skill.users && (
-                  <div className="mt-8 pt-8 border-t border-gray-200">
-                    <h2 className="text-lg font-medium text-gray-900 mb-4">
-                      {skill.is_offering ? 'Offered by' : 'Requested by'}
-                    </h2>
+
+                <div>
+                  <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <h2 className="text-lg font-semibold text-gray-900 mb-4">About the {skill.is_offering ? 'Provider' : 'Requester'}</h2>
                     
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0 relative h-16 w-16 rounded-full overflow-hidden bg-gray-200">
-                        {skill.users.profile_image_url ? (
-                          <Image
-                            src={skill.users.profile_image_url}
-                            alt={skill.users.full_name || 'User profile'}
-                            fill
-                            className="object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-primary-100 text-primary-600 font-semibold text-2xl">
-                            {(skill.users.full_name?.charAt(0) || '?').toUpperCase()}
-                          </div>
-                        )}
+                    <div className="flex items-center mb-4">
+                      <div className="w-12 h-12 relative rounded-full overflow-hidden bg-gray-200 flex-shrink-0">
+                        <Image
+                          src={avatarSrc}
+                          alt={displayName}
+                          fill
+                          sizes="48px"
+                          className="object-cover"
+                        />
                       </div>
-                      
-                      <div className="ml-4">
-                        <h3 className="text-lg font-medium text-gray-900">
-                          {skill.users.full_name || 'Anonymous User'}
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          {skill.users.location_city && skill.users.location_state
-                            ? `${skill.users.location_city}, ${skill.users.location_state}`
-                            : skill.users.location_city || skill.users.location_state || 'Location not specified'}
-                        </p>
-                        
-                        {skill.users.bio && (
-                          <p className="mt-2 text-sm text-gray-600 line-clamp-2">
-                            {skill.users.bio}
-                          </p>
+                      <div className="ml-3">
+                        <p className="font-medium text-gray-900">{displayName}</p>
+                        {owner.location && (
+                          <p className="text-sm text-gray-500">{owner.location}</p>
                         )}
                       </div>
                     </div>
-                  </div>
-                )}
-                
-                {/* Action buttons */}
-                <div className="mt-8 pt-4 border-t border-gray-200 flex flex-wrap justify-end gap-3">
-                  {userOwnsSkill ? (
-                    // Actions for skill owner
-                    <>
-                      <Link 
-                        href={`/skills/${params.id}/edit`}
-                        className="btn btn-secondary"
-                      >
-                        Edit Skill
-                      </Link>
+                    
+                    {owner.bio && (
+                      <div className="mb-4">
+                        <p className="text-sm text-gray-700 line-clamp-3">{owner.bio}</p>
+                      </div>
+                    )}
+                    
+                    {!isOwner && (
                       <button
-                        onClick={handleDelete}
-                        className="btn btn-error"
+                        onClick={() => setContactModalOpen(true)}
+                        className="w-full px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50"
                       >
-                        Delete Skill
+                        Request Contact Info
                       </button>
-                    </>
-                  ) : (
-                    // Actions for other users
-                    <button
-                      onClick={handleProposeTrade}
-                      className="btn btn-primary"
-                    >
-                      {skill.is_offering ? 'Request This Skill' : 'Offer Your Help'}
-                    </button>
-                  )}
+                    )}
+
+                    {isOwner && (
+                      <button
+                        onClick={() => router.push('/profile')}
+                        className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50"
+                      >
+                        View Profile
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
-          )
-        )}
-      </div>
-    </div>
+          </div>
+
+          {similarSkills.length > 0 && (
+            <div className="mt-10">
+              <h2 className="text-xl font-bold text-gray-900 mb-6">Similar Skills</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {similarSkills.map(similarSkill => (
+                  <div 
+                    key={similarSkill.id}
+                    onClick={() => router.push(`/skills/${similarSkill.id}`)}
+                    className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 cursor-pointer hover:shadow-md transition-shadow"
+                  >
+                    <h3 className="font-semibold text-gray-900 mb-2 line-clamp-1">{similarSkill.title}</h3>
+                    <div className="flex items-center mb-2">
+                      <span className={`text-xs px-2 py-1 rounded-full font-medium border ${
+                        similarSkill.is_offering
+                          ? 'bg-primary-100 text-primary-800 border-primary-200'
+                          : 'bg-secondary-100 text-secondary-800 border-secondary-200'
+                      }`}>
+                        {similarSkill.is_offering ? 'Offering' : 'Seeking'}
+                      </span>
+                    </div>
+                    {similarSkill.description && (
+                      <p className="text-sm text-gray-700 line-clamp-2">{similarSkill.description}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </Container>
+      </Section>
+
+      {/* Contact Modal */}
+      {contactModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-6 shadow-xl">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold text-gray-900">Contact Request</h3>
+              <button onClick={() => setContactModalOpen(false)} className="text-gray-500 hover:text-gray-700">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <p className="text-gray-700 mb-4">
+              Request contact information for this skill? The owner will be notified and can choose to share their details with you.
+            </p>
+            
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => setContactModalOpen(false)}
+                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleContactRequest}
+                className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50"
+              >
+                Send Request
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

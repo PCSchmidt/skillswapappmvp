@@ -1,5 +1,36 @@
 # Development Journal
 
+## May 8, 2025 - Phase 6 Kickoff: User Profiles & Skill Matching
+
+Today we're kicking off Phase 6 of the SkillSwap MVP development, focusing on user profiles and the core skill matching functionality. This phase will bring to life the central value proposition of the platform.
+
+### Key Focus Areas:
+1. **User Profile Implementation**
+   - Creating detailed user profile pages
+   - Implementing profile management features
+   - Building skill listing and management interface
+
+2. **Skill Details & Interaction**
+   - Developing detailed skill view pages
+   - Implementing interaction mechanisms between users
+   - Creating skill request and offer workflows
+
+3. **Matching Algorithm Development**
+   - Building the complementary skill matching logic
+   - Implementing scoring and ranking system
+   - Creating recommendation engine for skill matches
+
+4. **Personal Dashboard**
+   - Developing user-specific dashboard
+   - Creating activity tracking and history features
+   - Implementing notification systems
+
+### Technical Approach:
+- Building with TypeScript and React following established patterns
+- Using Supabase for backend storage and real-time features
+- Implementing responsive design following our design system
+- Creating reusable components for consistency
+
 ## May 8, 2025 - Phase 5 Completion: Interactive Elements
 
 Today we successfully completed Phase 5 of the SkillSwap MVP development, implementing all the planned interactive elements. 
