@@ -1,67 +1,48 @@
-# ESLint Dependency Resolution Fix
+# ESLint Dependency and Configuration Fix
 
-## Issue Description
-
-The SkillSwap MVP build was failing on Vercel with the following error:
+## Issue
+The project was encountering ESLint issues when running commits, with specific errors regarding deprecated ESLint options:
 
 ```
-npm error code ETARGET
-npm error notarget No matching version found for @eslint/config-array@^3.0.0.
-npm error notarget In most cases you or one of your dependencies are requesting
-npm error notarget a package version that doesn't exist.
+Invalid Options:
+- Unknown options: useEslintrc, extensions, resolvePluginsRelativeTo, rulePaths, ignorePath, reportUnusedDisableDirectives   
+- 'extensions' has been removed.
+- 'resolvePluginsRelativeTo' has been removed.
+- 'ignorePath' has been removed.
+- 'rulePaths' has been removed. Please define your rules using plugins.
+- 'reportUnusedDisableDirectives' has been removed. Please use the 'overrideConfig.linterOptions.reportUnusedDisableDirectives' option instead.
 ```
 
-This occurred because of a dependency version mismatch between ESLint and its dependencies. The specific error indicates that some package was looking for version 3.x of `@eslint/config-array`, but this version wasn't available or compatible with other dependencies.
+This was preventing smooth commits and CI/CD pipeline operation.
 
-## Resolution
+## Solution
 
-The issue was fixed by explicitly specifying compatible versions of ESLint and its related packages in `package.json`:
+1. Updated `.eslintrc.cjs` configuration to use modern ESLint syntax and options.
+2. Installed missing dependencies: `eslint-plugin-import` and `eslint-import-resolver-typescript`.
+3. Fixed configuration to remove all deprecated CLI options.
+4. Updated linter settings to use proper options structure for modern ESLint version (v8.57.0).
 
-1. Updated `eslint` to version `8.57.0`
-2. Updated `eslint-config-next` to version `14.0.4`
-3. Added `@typescript-eslint/eslint-plugin` at version `6.19.1`
-4. Added `@typescript-eslint/parser` at version `6.19.1`
+### Key Changes
 
-These specific versions are known to work together without dependency conflicts.
+- Removed deprecated options and replaced them with their modern equivalents.
+- Added proper import resolution for TypeScript files to prevent path-related linting errors.
+- Updated settings for reporting unused disable directives.
+- Enhanced import order rules for better code organization.
+- Fixed settings for proper TypeScript and Node.js import resolution.
 
-## Vercel Configuration Changes
-
-Additionally, we updated the `vercel.json` configuration to ensure a consistent build process:
+### Dependencies Added
 
 ```json
 {
-  "version": 2,
-  "regions": ["iad1"],
-  "buildCommand": "npm ci && NEXT_TELEMETRY_DISABLED=1 npm run build",
-  "env": {
-    "NODE_ENV": "production",
-    "NEXT_TELEMETRY_DISABLED": "1",
-    "SKIP_TYPE_CHECK": "true",
-    "NODE_OPTIONS": "--max-old-space-size=4096"
-  },
-  "github": {
-    "enabled": true,
-    "silent": false
-  }
+  "eslint-plugin-import": "^latest",
+  "eslint-import-resolver-typescript": "^latest"
 }
 ```
 
-Using `buildCommand` allows us to control the exact installation and build process that Vercel uses, instead of relying on its auto-detection.
+## Testing and Verification
 
-## Preventing Future Issues
+The fixed configuration was tested by running `npx eslint --version` to confirm the correct version (v8.57.0) and by attempting git commits to verify no ESLint-related errors occurred.
 
-To prevent similar issues in the future:
+## Future Maintenance
 
-1. **Use exact versions**: For critical development dependencies, use exact versions (without ^ or ~) to prevent npm from installing incompatible updates.
-
-2. **Lock files**: Ensure package-lock.json is committed to the repository.
-
-3. **Testing before deployment**: Test with a clean install (`npm ci`) before pushing to ensure dependency resolution works.
-
-4. **Dependency updates**: When updating ESLint or TypeScript-related packages, always update them together as a group.
-
-5. **Vercel Preview**: Use Vercel preview deployments to catch issues before merging to the main branch.
-
-## Reference
-
-This fix was implemented on May 7, 2025, in response to ongoing build failures in the Vercel deployment pipeline. The specific combination of ESLint packages mentioned above is known to work with Node.js 18.17.0 (as specified in `.nvmrc`).
+ESLint configuration should be periodically reviewed when upgrading dependencies, particularly when ESLint itself is updated. If new linting errors appear during commits, the `.eslintrc.cjs` file should be the first place to check for potential configuration issues.

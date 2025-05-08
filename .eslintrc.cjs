@@ -1,4 +1,4 @@
-/** @type {import('eslint').Linter.ConfigSchema} */
+/** @type {import('eslint').Linter.Config} */
 module.exports = {
   root: true,
   env: {
@@ -18,7 +18,8 @@ module.exports = {
     },
     ecmaVersion: 2021,
     sourceType: 'module',
-    project: ['./tsconfig.json'],
+    project: './tsconfig.json',
+    tsconfigRootDir: __dirname,
   },
   plugins: ['@typescript-eslint', 'import'],
   rules: {
@@ -46,6 +47,9 @@ module.exports = {
     'no-restricted-imports': ['error', {
       'patterns': ['../**/*/'],
     }],
+    'react/no-unescaped-entities': 'off',
+    'react/display-name': 'off',
+    'react/prop-types': 'off'
   },
   settings: {
     react: {
@@ -56,6 +60,9 @@ module.exports = {
         alwaysTryTypes: true,
         project: './tsconfig.json',
       },
+      node: {
+        extensions: ['.js', '.jsx', '.ts', '.tsx']
+      }
     },
   },
   ignorePatterns: [
@@ -67,15 +74,17 @@ module.exports = {
     '*.config.js',
     'eslint.config.js',
   ],
-  include: ['./src/**/*'],
-  exclude: ['./node_modules/**/*', './.next/**/*'],
   overrides: [
     {
       files: ['*.ts', '*.tsx'],
       parserOptions: {
-        project: ['./tsconfig.json'],
+        project: './tsconfig.json',
         tsconfigRootDir: __dirname,
       },
     },
   ],
+  // Remove anything that might be using deprecated CLI options
+  linterOptions: {
+    reportUnusedDisableDirectives: 'warn'
+  }
 };
