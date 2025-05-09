@@ -29,7 +29,8 @@ export function truncateText(text: string, maxLength: number): string {
 /**
  * Debounce function to prevent excessive calls
  */
-export function debounce<T extends (...args: any[]) => any>(func: T, wait: number): (...args: Parameters<T>) => void {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function debounce<T extends (...args: any[]) => ReturnType<T>>(func: T, wait: number): (...args: Parameters<T>) => void {
   let timeout: NodeJS.Timeout;
   
   return function(...args: Parameters<T>): void {
@@ -75,4 +76,29 @@ export function getInitials(name: string): string {
     .join('')
     .toUpperCase()
     .substring(0, 2);
+}
+
+/**
+ * Calculate the distance between two geographical points using the Haversine formula
+ * Returns the distance in kilometers
+ */
+export function calculateGeoDistance(
+  lat1: number, 
+  lon1: number, 
+  lat2: number, 
+  lon2: number
+): number {
+  const R = 6371; // Radius of the Earth in km
+  const dLat = (lat2 - lat1) * (Math.PI / 180);
+  const dLon = (lon2 - lon1) * (Math.PI / 180);
+  
+  const a = 
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const distance = R * c; // Distance in km
+  
+  return distance;
 }

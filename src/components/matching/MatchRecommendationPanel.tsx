@@ -1,163 +1,224 @@
-/**
- * MatchRecommendationPanel.tsx
- * Panel component that displays recommended skill matches for a user
- */
-
 import React, { useState, useEffect } from 'react';
-import { 
-  findBestMatches, 
-  SkillMatch
-} from './MatchingAlgorithm';
-import { Skill } from '@/types';
+import Image from 'next/image';
 import Link from 'next/link';
+import { User, MatchResult } from '../../lib/matching/matchingAlgorithm';
+import { classNames } from '../../lib/utils';
+import Card from '../ui/Card';
+import { useSupabase } from '../../contexts/SupabaseContext';
 
 interface MatchRecommendationPanelProps {
-  userRequestedSkills: Skill[];
-  availableOfferedSkills: Skill[];
-  isLoading?: boolean;
+  /**
+   * List of match results to display
+   */
+  matches: MatchResult[];
+  
+  /**
+   * Number of matches to display at once
+   * @default 3
+   */
+  displayCount?: number;
+  
+  /**
+   * Whether to show detailed match explanations
+   * @default true
+   */
+  showMatchDetails?: boolean;
+  
+  /**
+   * Custom class names
+   */
+  className?: string;
+  
+  /**
+   * Callback when a match is selected
+   */
+  onSelectMatch?: (match: MatchResult) => void;
+  
+  /**
+   * Callback when a user dismisses a match
+   */
+  onDismissMatch?: (matchId: string) => void;
+  
+  /**
+   * The panel's title
+   * @default "Recommended Skill Exchanges"
+   */
+  title?: string;
 }
 
+/**
+ * Match Recommendation Panel Component
+ * 
+ * Displays potential skill exchange matches with match scores, explanations,
+ * and actions to contact or dismiss the match.
+ */
 const MatchRecommendationPanel: React.FC<MatchRecommendationPanelProps> = ({
-  userRequestedSkills,
-  availableOfferedSkills,
-  isLoading = false
+  matches,
+  displayCount = 3,
+  showMatchDetails = true,
+  className = '',
+  onSelectMatch,
+  onDismissMatch,
+  title = "Recommended Skill Exchanges"
 }) => {
-  const [matches, setMatches] = useState<SkillMatch[]>([]);
-  const [isCalculating, setIsCalculating] = useState<boolean>(true);
-
-  // Calculate matches when skills change
+  const [visibleMatches, setVisibleMatches] = useState<MatchResult[]>([]);
+  const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set());
+  const { supabase } = useSupabase();
+  
+  // Prepare visible matches - filter out dismissed ones and limit to display count
   useEffect(() => {
-    if (!userRequestedSkills.length || !availableOfferedSkills.length) {
-      setMatches([]);
-      setIsCalculating(false);
-      return;
+    const filteredMatches = matches
+      .filter(match => !dismissedIds.has(match.user.id))
+      .slice(0, displayCount);
+    
+    setVisibleMatches(filteredMatches);
+  }, [matches, dismissedIds, displayCount]);
+  
+  // Handle match dismissal
+  const handleDismiss = (match: MatchResult) => {
+    const newDismissedIds = new Set(dismissedIds);
+    newDismissedIds.add(match.user.id);
+    setDismissedIds(newDismissedIds);
+    
+    if (onDismissMatch) {
+      onDismissMatch(match.user.id);
     }
-
-    // Simulate a slight delay for complex calculations
-    const timer = setTimeout(() => {
-      const calculatedMatches = findBestMatches(
-        userRequestedSkills,
-        availableOfferedSkills
-      );
-      
-      setMatches(calculatedMatches);
-      setIsCalculating(false);
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [userRequestedSkills, availableOfferedSkills]);
-
-  if (isLoading || isCalculating) {
-    return (
-      <div className="p-4 border rounded-lg bg-white shadow-sm">
-        <h2 className="text-xl font-semibold mb-4">Finding Matches</h2>
-        <div className="animate-pulse flex flex-col space-y-3">
-          <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-          <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-          <div className="h-20 bg-gray-200 rounded w-full"></div>
-          <div className="h-20 bg-gray-200 rounded w-full"></div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!matches.length) {
-    return (
-      <div className="p-4 border rounded-lg bg-white shadow-sm">
-        <h2 className="text-xl font-semibold mb-2">Skill Matches</h2>
-        <p className="text-gray-600 mb-4">
-          We couldn't find any matches for your requested skills at the moment.
-        </p>
-        <div className="p-4 bg-gray-100 rounded-md">
-          <p className="text-sm text-gray-600">
-            Try adding more skills you're looking for or check back later as new users join the platform.
+  };
+  
+  // Handle match selection
+  const handleSelect = (match: MatchResult) => {
+    if (onSelectMatch) {
+      onSelectMatch(match);
+    }
+  };
+  
+  // Render score color based on match quality
+  const getScoreColor = (score: number): string => {
+    if (score >= 85) return 'text-green-600';
+    if (score >= 70) return 'text-blue-600';
+    if (score >= 50) return 'text-amber-600';
+    return 'text-gray-600';
+  };
+  
+  return (
+    <div className={classNames('rounded-lg overflow-hidden', className)}>
+      <div className="bg-white shadow">
+        <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
+          <h3 className="text-lg font-medium leading-6 text-gray-900">
+            {title}
+          </h3>
+          <p className="mt-1 max-w-2xl text-sm text-gray-500">
+            People with complementary skills who might be a good match for you.
           </p>
         </div>
+        
+        {visibleMatches.length > 0 ? (
+          <ul className="divide-y divide-gray-200">
+            {visibleMatches.map((match) => (
+              <li key={match.user.id} className="p-4 hover:bg-gray-50 transition-colors duration-150">
+                <div className="flex items-start space-x-4">
+                  {/* Avatar */}
+                  <div className="flex-shrink-0">
+                    <div className="relative w-12 h-12 rounded-full overflow-hidden bg-gray-100">
+                      {match.user.avatar_url ? (
+                        <Image
+                          src={match.user.avatar_url}
+                          alt={match.user.display_name}
+                          layout="fill"
+                          objectFit="cover"
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center h-full text-lg font-medium">
+                          {match.user.display_name.substring(0, 2)}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* User info and match details */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex justify-between">
+                      <Link href={`/profile/${match.user.id}`} className="hover:underline">
+                        <span className="text-base font-medium text-primary">
+                          {match.user.display_name}
+                        </span>
+                      </Link>
+                      <span className={classNames('font-semibold', getScoreColor(match.score))}>
+                        {match.score}% Match
+                      </span>
+                    </div>
+                    
+                    {/* Skill match info */}
+                    <div className="mt-1 text-sm text-gray-600">
+                      {match.matchedSkills.offered.length > 0 && (
+                        <p>
+                          <span className="font-medium">Skills:</span> {
+                            match.matchedSkills.offered.map(skill => skill.name).join(', ')
+                          }
+                        </p>
+                      )}
+                    </div>
+                    
+                    {/* Match reasons */}
+                    {showMatchDetails && match.matchReasons.length > 0 && (
+                      <div className="mt-2">
+                        <ul className="text-xs text-gray-500 space-y-1">
+                          {match.matchReasons.slice(0, 2).map((reason, index) => (
+                            <li key={index} className="flex items-start">
+                              <span className="inline-block h-4 w-4 mr-1 text-green-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                </svg>
+                              </span>
+                              {reason}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Action buttons */}
+                <div className="mt-3 flex justify-end space-x-2">
+                  <button
+                    onClick={() => handleDismiss(match)}
+                    className="inline-flex items-center px-2.5 py-1.5 border border-gray-300 text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                  >
+                    Not Interested
+                  </button>
+                  <button
+                    onClick={() => handleSelect(match)}
+                    className="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                  >
+                    Contact
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div className="px-4 py-6 text-center text-gray-500">
+            <p>No matches currently available.</p>
+            <p className="mt-1 text-sm">Try updating your skills or preferences to find more matches.</p>
+          </div>
+        )}
       </div>
-    );
-  }
-
-  return (
-    <div className="p-4 border rounded-lg bg-white shadow-sm">
-      <h2 className="text-xl font-semibold mb-2">Suggested Matches</h2>
-      <p className="text-gray-600 mb-4">
-        Based on the skills you're looking for, we've found these potential matches:
-      </p>
-
-      <div className="space-y-4">
-        {matches.slice(0, 3).map((match, index) => (
-          <MatchCard key={`${match.offeredSkill.id}-${index}`} match={match} />
-        ))}
-      </div>
-
-      {matches.length > 3 && (
-        <div className="mt-4 text-center">
+      
+      {/* See all matches button */}
+      {matches.length > displayCount && (
+        <div className="mt-2 text-center">
           <Link 
             href="/matches" 
-            className="inline-block px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center px-4 py-2 text-sm font-medium text-primary hover:underline"
           >
-            View All {matches.length} Matches
+            View all matches
+            <svg className="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+            </svg>
           </Link>
         </div>
       )}
-    </div>
-  );
-};
-
-interface MatchCardProps {
-  match: SkillMatch;
-}
-
-const MatchCard: React.FC<MatchCardProps> = ({ match }) => {
-  const { offeredSkill, user, matchScore } = match;
-  
-  // Format match score as percentage
-  const matchPercentage = Math.round(matchScore.score * 100);
-  
-  return (
-    <div className="border rounded-lg p-3 hover:shadow-md transition-shadow">
-      <div className="flex justify-between items-start">
-        <div>
-          <h3 className="font-medium text-lg">{offeredSkill.title}</h3>
-          <p className="text-sm text-gray-600">
-            by {user.username || `User ${user.id.substring(0, 6)}`}
-          </p>
-        </div>
-        <div className="bg-green-100 text-green-800 rounded-full px-3 py-1 text-sm font-medium">
-          {matchPercentage}% Match
-        </div>
-      </div>
-      
-      <p className="mt-2 text-sm text-gray-600 line-clamp-2">
-        {offeredSkill.description}
-      </p>
-      
-      <div className="mt-3 text-xs text-gray-500">
-        <div className="flex flex-wrap gap-2">
-          <span className="bg-gray-100 px-2 py-1 rounded">
-            {offeredSkill.category}
-          </span>
-          <span className="bg-gray-100 px-2 py-1 rounded">
-            {offeredSkill.level}
-          </span>
-        </div>
-      </div>
-      
-      <div className="mt-3 flex justify-between items-center">
-        <Link
-          href={`/skills/${offeredSkill.id}`}
-          className="text-blue-600 text-sm font-medium hover:underline"
-        >
-          View Details
-        </Link>
-        
-        <Link
-          href={`/contact/${user.id}?skill=${offeredSkill.id}`}
-          className="bg-blue-600 text-white px-3 py-1 rounded-md text-sm hover:bg-blue-700 transition-colors"
-        >
-          Contact
-        </Link>
-      </div>
     </div>
   );
 };
