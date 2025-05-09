@@ -13,7 +13,7 @@ This document outlines the progress and upcoming steps for the SkillSwap MVP dev
 | Phase 5 | Interactive Elements | ✅ Complete |
 | Phase 6 | Skill Matching & Exchange | ✅ Complete |
 | Phase 7 | User Dashboard | ✅ Complete |
-| Phase 8 | Notifications & Email Integration | ⏳ Not Started |
+| Phase 8 | Notifications & Email Integration | 🔄 In Progress |
 | Phase 9 | Final Testing & Optimization | ⏳ Not Started |
 | Phase 10 | Deployment & Launch | 🔄 In Progress |
 
@@ -50,23 +50,41 @@ This document outlines the progress and upcoming steps for the SkillSwap MVP dev
 
 ## Next Steps (Phase 8 - Notifications & Email Integration)
 
-1. **Notification System Enhancement** ⏳
-   - Implementing real-time in-app notifications
-   - Creating notification center with read/unread status
-   - Developing notification preferences management
-   - Adding different notification types and priorities
+1. **Real-time Notification System Enhancement** 🔄
+   - Implementing NotificationCenter component
+   - Creating NotificationBadge component for unread counts
+   - Setting up real-time subscription with Supabase Realtime
+   - Implementing notification grouping by type and context
+   - Adding priority system (low, normal, high, urgent)
+   - Developing notification expiration logic
 
 2. **Email Integration** ⏳
-   - Setting up transactional email services
-   - Creating email templates for important actions
-   - Implementing email verification flow
-   - Adding email preference management
+   - Creating EmailPreferencesForm component
+   - Implementing EmailTemplatePreview component
+   - Setting up Supabase Edge Function for email delivery
+   - Implementing email templates for:
+     - Welcome emails
+     - Verification emails
+     - Password reset emails
+     - Trade proposal notifications
+     - Message notifications
+     - Rating notifications
+     - Status change notifications
+   - Adding email tracking and analytics
 
 3. **Push Notification Setup** ⏳
-   - Implementing web push notifications
+   - Creating PushNotificationPrompt component
+   - Implementing ServiceWorkerRegistration
+   - Configuring service worker for push notifications
+   - Implementing push notification subscription management
    - Creating notification permission flow
-   - Building notification scheduling system
-   - Developing notification analytics
+   - Adding scheduling system for delayed notifications
+
+4. **Notification Preference Management** ⏳
+   - Developing NotificationSettingsPage
+   - Creating ChannelPreferences component
+   - Implementing FrequencySettings component
+   - Adding "do not disturb" time windows
 
 ## Future Development (Phase 9 - Testing & Optimization)
 
