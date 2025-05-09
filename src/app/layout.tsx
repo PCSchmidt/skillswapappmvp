@@ -1,47 +1,42 @@
-'use client';
+/**
+ * Copyright Paul C. Schmidt 2025. All rights reserved.
+ * Unauthorized use, reproduction, or distribution of this software is prohibited.
+ */
 
-import React, { lazy, Suspense, useEffect } from 'react';
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
 import './globals.css';
-import SupabaseProvider from '@/contexts/SupabaseContext';
-import ResponsiveProvider from '@/contexts/ResponsiveContext';
-import Navbar from '@/components/navigation/Navbar';
-import Footer from '@/components/layout/Footer';
-import { registerServiceWorker } from '@/lib/utils/registerServiceWorker';
+import '../styles/globals.css';
+import { Toaster } from 'react-hot-toast';
+import ErrorProvider from '@components/ui/ErrorProvider';
+import Footer from '../components/layout/Footer';
+import Navbar from '../components/navigation/Navbar';
+import { SupabaseProvider } from '../contexts/SupabaseContext';
 
-export interface RootLayoutProps {
+const inter = Inter({ subsets: ['latin'] });
+
+export const metadata: Metadata = {
+  title: 'SkillSwap - Exchange Skills with Others',
+  description: 'A platform for exchanging skills and knowledge with others in your community',
+};
+
+export default function RootLayout({
+  children,
+}: {
   children: React.ReactNode;
-}
-
-export default function RootLayout({ children }: RootLayoutProps) {
-  // Register service worker for PWA functionality
-  useEffect(() => {
-    registerServiceWorker();
-  }, []);
+}) {
   return (
     <html lang="en">
-      <head>
-        <title>SkillSwap - Trade skills, learn together</title>
-        <meta name="description" content="A skill-sharing and bartering platform enabling users to trade skills in a hyper-local community" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover" />
-        <meta name="theme-color" content="#4F46E5" />
-        <link rel="icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" href="/icon-192x192.png" />
-      </head>
-      <body className="min-h-screen antialiased">
+      <body className={inter.className}>
         <SupabaseProvider>
-          <ResponsiveProvider>
-            <div className="flex min-h-screen flex-col">
+          <ErrorProvider>
+            <div className="flex flex-col min-h-screen">
               <Navbar />
-              
-              <main className="flex-grow">
-                <Suspense fallback={<div className="p-8 flex justify-center">Loading...</div>}>
-                  {children}
-                </Suspense>
-              </main>
-          
+              <main className="flex-grow">{children}</main>
               <Footer />
             </div>
-          </ResponsiveProvider>
+            <Toaster position="top-right" />
+          </ErrorProvider>
         </SupabaseProvider>
       </body>
     </html>
