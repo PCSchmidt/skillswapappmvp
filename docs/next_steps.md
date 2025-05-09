@@ -75,9 +75,17 @@ This document outlines the progress and upcoming steps for the SkillSwap MVP dev
    - ✅ Created NotificationBadge component for unread counts
    - ✅ Developed notification expiration logic
 
-2. **Email Integration** ⏳
-   - Creating EmailPreferencesForm component
-   - Implementing EmailTemplatePreview component
+2. **Email Integration** 🔄
+   - ✅ Created EmailPreferencesForm component with:
+     - Preference toggles for different notification types
+     - Email frequency options (immediate, daily, weekly)
+     - Unsubscribe link generation and management
+     - Database integration with email_preferences table
+   - ✅ Implemented EmailTemplatePreview component with:
+     - Template gallery with multiple notification types
+     - Interactive template selection and preview
+     - Full-size preview mode with zoom functionality
+     - Subject line and content previews
    - Setting up Supabase Edge Function for email delivery
    - Implementing email templates for:
      - Welcome emails
