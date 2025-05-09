@@ -1,3 +1,5 @@
+"use client";
+
 import * as Sentry from '@sentry/nextjs';
 import React, { ErrorInfo, ReactNode } from 'react';
 import ErrorBoundary from './ErrorBoundary';
