@@ -12,13 +12,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useSupabase } from '@/contexts/SupabaseContext';
-import NotificationList from './NotificationList';
-import Card from '@/components/ui/Card';
-import Section from '@/components/layout/Section';
+import Column from '@/components/layout/Column';
 import Container from '@/components/layout/Container';
 import Grid from '@/components/layout/Grid';
-import Column from '@/components/layout/Column';
+import Section from '@/components/layout/Section';
+import Card from '@/components/ui/Card';
+import { useSupabase } from '@/contexts/SupabaseContext';
+import NotificationList from './NotificationList';
 
 // Define the Notification type
 type Notification = {

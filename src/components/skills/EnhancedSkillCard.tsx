@@ -6,9 +6,9 @@
 
 'use client';
 
-import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import React from 'react';
 import { Database } from '@/types/supabase';
 
 type Skill = Database['public']['Tables']['skills']['Row'] & {

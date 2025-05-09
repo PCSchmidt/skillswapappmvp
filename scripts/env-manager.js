@@ -10,9 +10,9 @@
  * - Export/Import environment variables to/from Vercel
  */
 
+const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
 const readline = require('readline');
 const commander = require('commander');
 const program = new commander.Command();

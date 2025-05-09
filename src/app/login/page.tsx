@@ -2,9 +2,9 @@
  * Login Page
  */
 
+import Link from 'next/link';
 import React from 'react';
 import LoginForm from '@/components/auth/LoginForm';
-import Link from 'next/link';
 
 export const metadata = {
   title: 'Sign In | SkillSwap',

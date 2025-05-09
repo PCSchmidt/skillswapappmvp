@@ -11,7 +11,7 @@
  * 4. Return sorted matches with match scores and explanations
  */
 
-import { Database } from '../../types/supabase';
+// import { Database } from '../../types/supabase';
 import { calculateGeoDistance } from '../utils';
 
 // Define the types for the matching algorithm
@@ -522,7 +522,7 @@ export function sortMatches(
   }
 }
 
-export default {
+const matchingAlgorithm = {
   findMatches,
   calculateMatchScore,
   findComplementarySkills,
@@ -534,3 +534,5 @@ export default {
   filterMatchesByPreferences,
   sortMatches
 };
+
+export default matchingAlgorithm;

@@ -8,9 +8,9 @@
  * prevent the specific issue we encountered with @eslint/config-array.
  */
 
+const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
 const chalk = require('chalk') || { red: (text) => `\x1b[31m${text}\x1b[0m`, green: (text) => `\x1b[32m${text}\x1b[0m`, yellow: (text) => `\x1b[33m${text}\x1b[0m`, blue: (text) => `\x1b[34m${text}\x1b[0m` };
 
 // Critical package combinations that must be compatible

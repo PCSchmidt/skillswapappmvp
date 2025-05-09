@@ -7,14 +7,14 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { useSupabase } from '@/contexts/SupabaseContext';
-import { Skill } from '@/components/skills/SkillCard';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import Container from '@/components/layout/Container';
 import Section from '@/components/layout/Section';
 import NotificationBar from '@/components/notifications/NotificationBar';
+import { Skill } from '@/components/skills/SkillCard';
+import { useSupabase } from '@/contexts/SupabaseContext';
 
 interface SkillOwner {
   id: string;

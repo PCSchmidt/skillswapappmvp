@@ -3,9 +3,9 @@
  * Handles the messaging functionality between users for skill exchanges
  */
 
+import Image from 'next/image';
 import React, { useState, useEffect, useRef } from 'react';
 import { Message, UserProfile } from '@/types';
-import Image from 'next/image';
 
 interface MessageSystemProps {
   exchangeId: string;

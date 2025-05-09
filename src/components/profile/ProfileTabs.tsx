@@ -7,9 +7,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useSupabase } from '@/contexts/SupabaseContext';
 import SkillCard, { Skill } from '@/components/skills/SkillCard';
 import SkillForm from '@/components/skills/SkillForm';
+import { useSupabase } from '@/contexts/SupabaseContext';
 
 interface ProfileTabsProps {
   userId: string;

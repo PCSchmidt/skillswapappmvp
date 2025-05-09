@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSupabase } from '@/contexts/SupabaseContext';
 import Card from '@/components/ui/Card';
 import Input from '@/components/ui/Input';
+import { useSupabase } from '@/contexts/SupabaseContext';
 
 interface EmailPreferenceOption {
   id: string;

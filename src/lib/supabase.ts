@@ -5,8 +5,8 @@
  * It's placed in the root of the lib directory for easy access from all components.
  */
 
-import { createClient } from '@supabase/supabase-js';
 import { createBrowserClient } from '@supabase/ssr';
+import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/supabase';
 
 // Initialize the Supabase client

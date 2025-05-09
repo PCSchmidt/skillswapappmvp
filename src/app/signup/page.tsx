@@ -2,9 +2,9 @@
  * Signup Page
  */
 
+import Link from 'next/link';
 import React from 'react';
 import SignupForm from '@/components/auth/SignupForm';
-import Link from 'next/link';
 
 export const metadata = {
   title: 'Create Account | SkillSwap',

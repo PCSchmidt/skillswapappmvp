@@ -6,10 +6,10 @@
 
 'use client';
 
-import React, { useState } from 'react';
 import Link from 'next/link';
-import Section from '../layout/Section';
+import React, { useState } from 'react';
 import Container from '../layout/Container';
+import Section from '../layout/Section';
 
 interface BenefitItem {
   text: string;

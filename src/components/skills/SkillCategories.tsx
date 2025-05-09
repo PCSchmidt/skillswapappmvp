@@ -6,10 +6,10 @@
 
 'use client';
 
-import React from 'react';
 import Link from 'next/link';
-import Section from '@/components/layout/Section';
+import React from 'react';
 import Container from '@/components/layout/Container';
+import Section from '@/components/layout/Section';
 
 interface Category {
   id: string;

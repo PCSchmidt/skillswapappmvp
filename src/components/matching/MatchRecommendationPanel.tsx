@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { User, MatchResult } from '../../lib/matching/matchingAlgorithm';
-import { classNames } from '../../lib/utils';
-import Card from '../ui/Card';
+import React, { useState, useEffect } from 'react';
 import { useSupabase } from '../../contexts/SupabaseContext';
+import { MatchResult } from '../../lib/matching/matchingAlgorithm';
+import { classNames } from '../../lib/utils';
 
 interface MatchRecommendationPanelProps {
   /**
@@ -63,7 +62,7 @@ const MatchRecommendationPanel: React.FC<MatchRecommendationPanelProps> = ({
 }) => {
   const [visibleMatches, setVisibleMatches] = useState<MatchResult[]>([]);
   const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set());
-  const { supabase } = useSupabase();
+  const { } = useSupabase();
   
   // Prepare visible matches - filter out dismissed ones and limit to display count
   useEffect(() => {

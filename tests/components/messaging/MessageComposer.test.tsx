@@ -4,8 +4,8 @@
  * Tests for the component that allows users to compose and send messages
  */
 
-import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import React from 'react';
 import '@testing-library/jest-dom';
 import MessageComposer from '@/components/messaging/MessageComposer';
 

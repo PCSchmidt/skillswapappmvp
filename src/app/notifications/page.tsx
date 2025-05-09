@@ -7,10 +7,10 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSupabase } from '@/contexts/SupabaseContext';
+import React, { useState, useEffect } from 'react';
 import NotificationList from '@/components/notifications/NotificationList';
+import { useSupabase } from '@/contexts/SupabaseContext';
 
 // Define Notification type manually since it's not in the Database types yet
 type Notification = {

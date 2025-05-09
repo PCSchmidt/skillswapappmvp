@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
 import { useSupabase } from '@/contexts/SupabaseContext';
 
 interface FilterOption {
@@ -120,7 +120,7 @@ export default function SkillFilters({
 
     // Update URL with filter params if no callback is provided
     if (!onFilterChange) {
-      let url = '/skills?';
+      const url = '/skills?';
       const params = new URLSearchParams();
 
       selectedCategories.forEach(cat => params.append('category', cat));

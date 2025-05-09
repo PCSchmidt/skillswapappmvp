@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import Section from '@/components/layout/Section';
+import React, { useEffect, useState } from 'react';
 import Container from '@/components/layout/Container';
 import Grid from '@/components/layout/Grid';
-import EnhancedSkillCard from '@/components/skills/EnhancedSkillCard';
+import Section from '@/components/layout/Section';
 import SearchComponent from '@/components/search/SearchComponent';
+import EnhancedSkillCard from '@/components/skills/EnhancedSkillCard';
 import SkillFilters from '@/components/skills/SkillFilters';
 
 // Mock data for demonstration purposes

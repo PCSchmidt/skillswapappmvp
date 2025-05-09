@@ -7,11 +7,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import EnhancedSkillCard from './EnhancedSkillCard';
-import Section from '@/components/layout/Section';
 import Container from '@/components/layout/Container';
+import Section from '@/components/layout/Section';
 import { useSupabase } from '@/contexts/SupabaseContext';
 import { Database } from '@/types/supabase';
+import EnhancedSkillCard from './EnhancedSkillCard';
 
 type Skill = Database['public']['Tables']['skills']['Row'] & {
   users?: {

@@ -6,11 +6,11 @@
 
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useSupabase } from '../../contexts/SupabaseContext';
+import { useRouter } from 'next/navigation';
+import React, { useState } from 'react';
 import { supabase } from '@/lib/supabase';
+import { useSupabase } from '../../contexts/SupabaseContext';
 
 export default function SignupForm() {
   const router = useRouter();

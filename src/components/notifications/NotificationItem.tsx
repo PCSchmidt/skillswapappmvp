@@ -5,8 +5,8 @@
  * and read status.
  */
 
-import React from 'react';
 import Link from 'next/link';
+import React from 'react';
 import { Database } from '@/types/supabase';
 
 // Define Notification type manually since it's not in the Database types yet

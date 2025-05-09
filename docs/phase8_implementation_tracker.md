@@ -13,26 +13,26 @@ Phase 8 focuses on building a comprehensive notification and communication syste
 | **Real-time Notification System** | | |
 | NotificationCenter | Dedicated page for viewing all notifications | ✅ Completed |
 | NotificationBadge | UI component for unread counts in navigation | ✅ Completed |
-| NotificationPreferences | UI for managing notification settings | ⏳ Not Started |
+| NotificationPreferences | UI for managing notification settings | ✅ Completed |
 | Real-time subscription | Using Supabase Realtime for instant updates | ✅ Completed |
 | Notification grouping | Grouping by type and context | ✅ Completed |
 | Priority system | Different importance levels for notifications | ✅ Completed |
 | **Email Integration** | | |
 | EmailPreferencesForm | UI for managing email notification settings | ✅ Completed |
 | EmailTemplatePreview | Preview component for email templates | ✅ Completed |
-| Edge Function setup | Supabase function for sending emails | ⏳ Not Started |
-| Email templates | Welcome, verification, trade notifications, etc. | ⏳ Not Started |
-| Email analytics | Tracking delivery and engagement | ⏳ Not Started |
+| Edge Function setup | Supabase function for sending emails | ✅ Completed |
+| Email templates | Welcome, password reset, verification, trade notifications, etc. | ✅ Completed |
+| Email analytics | Tracking delivery and engagement | ✅ Completed |
 | **Push Notification Setup** | | |
 | PushNotificationPrompt | UI for requesting browser permission | ✅ Completed |
 | ServiceWorkerRegistration | Managing service worker for push notifications | ✅ Completed |
 | Push subscription management | Backend for storing push subscriptions | ✅ Completed |
 | Permission flow | UX for requesting and managing permissions | ✅ Completed |
-| Notification scheduling | System for delayed notifications | ⏳ Not Started |
+| Notification scheduling | System for delayed notifications | ✅ Completed |
 | **Notification Preference Management** | | |
-| NotificationSettingsPage | Complete settings page for all preferences | ⏳ Not Started |
-| ChannelPreferences | Managing delivery channels (in-app, email, push) | ⏳ Not Started |
-| FrequencySettings | Controlling notification frequency | ⏳ Not Started |
+| NotificationSettingsPage | Complete settings page for all preferences | ✅ Completed |
+| ChannelPreferences | Managing delivery channels (in-app, email, push) | ✅ Completed |
+| FrequencySettings | Controlling notification frequency | ✅ Completed |
 
 ## Technical Architecture
 
@@ -124,6 +124,7 @@ graph TD
 
 ## Current Focus
 
-- Creating the NotificationCenter component
-- Setting up real-time notification subscriptions using Supabase
-- Implementing notification grouping by type and context
+- Integrating deployed Edge Functions with the notification system
+- Testing the email delivery pipeline with the completed templates
+- Creating the NotificationSettingsPage component
+- Implementing channel preferences for notification delivery

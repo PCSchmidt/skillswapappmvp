@@ -6,10 +6,10 @@
 
 'use client';
 
-import React from 'react';
-import { useSupabase } from '@/contexts/SupabaseContext';
-import EmailPreferences from '@/components/settings/EmailPreferences';
 import { redirect } from 'next/navigation';
+import React from 'react';
+import EmailPreferences from '@/components/settings/EmailPreferences';
+import { useSupabase } from '@/contexts/SupabaseContext';
 
 export default function EmailPreferencesPage() {
   const { session, isLoading } = useSupabase();

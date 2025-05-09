@@ -1,10 +1,10 @@
 'use client';
 
-import React from 'react';
 import Link from 'next/link';
+import React from 'react';
+import { Column } from './Column';
 import { Container } from './Container';
 import { Grid } from './Grid';
-import { Column } from './Column';
 
 export interface FooterProps {
   className?: string;

@@ -10,8 +10,8 @@
  * 4. Validating that static assets load properly
  */
 
-const https = require('https');
 const http = require('http');
+const https = require('https');
 const { URL } = require('url');
 const { program } = require('commander');
 

@@ -7,10 +7,10 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSupabase } from '@/contexts/SupabaseContext';
+import React, { useState, useEffect } from 'react';
 import SkillForm from '@/components/skills/SkillForm';
+import { useSupabase } from '@/contexts/SupabaseContext';
 
 export default function EditSkillPage({ params }: { params: { id: string } }) {
   const router = useRouter();

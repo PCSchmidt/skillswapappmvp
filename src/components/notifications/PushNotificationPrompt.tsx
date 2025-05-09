@@ -1,8 +1,8 @@
 'use client';
 
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useState, useEffect } from 'react';
 import Card from '@/components/ui/Card';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 interface PushNotificationPromptProps {
   className?: string;

@@ -7,8 +7,8 @@
 'use client';
 
 import React from 'react';
-import Section from '../layout/Section';
 import Container from '../layout/Container';
+import Section from '../layout/Section';
 
 interface Step {
   number: number;

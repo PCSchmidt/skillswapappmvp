@@ -7,8 +7,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useSupabase } from '@/contexts/SupabaseContext';
 import { Skill } from '@/components/skills/SkillCard';
+import { useSupabase } from '@/contexts/SupabaseContext';
 
 interface SkillFormProps {
   userId: string;

@@ -1,13 +1,13 @@
-import React from 'react';
 import { Metadata } from 'next';
-import { Container } from '@/components/layout/Container';
-import Section from '@/components/layout/Section';
-import Grid from '@/components/layout/Grid';
-import StatCard from '@/components/dashboard/StatCard';
+import React from 'react';
 import ActivityFeed from '@/components/dashboard/ActivityFeed';
 import ExchangeStatusSection from '@/components/dashboard/ExchangeStatusSection';
-import RecommendationPanel from '@/components/dashboard/RecommendationPanel';
 import QuickActions, { commonActions } from '@/components/dashboard/QuickActions';
+import RecommendationPanel from '@/components/dashboard/RecommendationPanel';
+import StatCard from '@/components/dashboard/StatCard';
+import { Container } from '@/components/layout/Container';
+import Grid from '@/components/layout/Grid';
+import Section from '@/components/layout/Section';
 
 export const metadata: Metadata = {
   title: 'Dashboard | SkillSwap',

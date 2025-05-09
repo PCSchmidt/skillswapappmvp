@@ -7,13 +7,13 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import Image from 'next/image';
-import { useSupabase } from '@/contexts/SupabaseContext';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
 import RatingForm from '@/components/ratings/RatingForm';
 import RatingsList from '@/components/ratings/RatingsList';
+import { useSupabase } from '@/contexts/SupabaseContext';
 import { Database } from '@/types/supabase';
 
 type TradeWithDetails = Database['public']['Tables']['trades']['Row'] & {

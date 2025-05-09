@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { NextResponse } from 'next/server';
 
 /**
  * Dynamically generate sitemap.xml for the application

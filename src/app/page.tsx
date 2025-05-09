@@ -1,24 +1,24 @@
 'use client';
 
-import React, { useState } from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
-import Section from '@/components/layout/Section';
-import Container from '@/components/layout/Container';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-
-// Import our newly created components
-import FeaturedSkills from '@/components/skills/FeaturedSkills';
-import SkillCategories from '@/components/skills/SkillCategories';
-import TestimonialsCarousel from '@/components/testimonials/TestimonialsCarousel';
+import React, { useState } from 'react';
+import AuthPreview from '@/components/auth/AuthPreview';
+import CallToAction from '@/components/landing/CallToAction';
 import HeroSection from '@/components/landing/HeroSection';
 import HowItWorks from '@/components/landing/HowItWorks';
-import CallToAction from '@/components/landing/CallToAction';
+import Container from '@/components/layout/Container';
+import Section from '@/components/layout/Section';
+
+// Import our newly created components
+import SearchComponent from '@/components/search/SearchComponent';
+import FeaturedSkills from '@/components/skills/FeaturedSkills';
+import SkillCategories from '@/components/skills/SkillCategories';
+import SkillFilters from '@/components/skills/SkillFilters';
+import TestimonialsCarousel from '@/components/testimonials/TestimonialsCarousel';
 
 // Import Phase 5 components
-import SearchComponent from '@/components/search/SearchComponent';
-import SkillFilters from '@/components/skills/SkillFilters';
-import AuthPreview from '@/components/auth/AuthPreview';
 
 export default function HomePage() {
   const router = useRouter();

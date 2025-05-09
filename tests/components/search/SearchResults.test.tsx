@@ -4,8 +4,8 @@
  * Tests for the component that displays search results
  */
 
-import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import React from 'react';
 import '@testing-library/jest-dom';
 import SearchResults from '@/components/search/SearchResults';
 

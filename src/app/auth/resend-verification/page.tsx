@@ -7,10 +7,10 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabase';
 
 export default function ResendVerification() {
   const router = useRouter();

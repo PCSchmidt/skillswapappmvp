@@ -1,5 +1,9 @@
 # SkillSwap MVP Deployment Guide
 
+## License
+
+Copyright Paul C. Schmidt 2025. All rights reserved. Unauthorized use, reproduction, or distribution of this software is prohibited.
+
 ## Deployment Verification Status
 
 ⚠️ **Note: ESLint dependency issues fixed and pending deployment verification**

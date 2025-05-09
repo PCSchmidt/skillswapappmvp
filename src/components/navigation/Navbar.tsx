@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useSupabase } from '@/contexts/SupabaseContext';
 import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
 import NotificationDropdown from '@/components/notifications/NotificationDropdown';
-import { Container } from '../layout/Container';
+import { useSupabase } from '@/contexts/SupabaseContext';
 import { classNames } from '../../lib/utils';
+import { Container } from '../layout/Container';
 
 const Navbar = () => {
   const { user, signOut, isLoading, supabase } = useSupabase();

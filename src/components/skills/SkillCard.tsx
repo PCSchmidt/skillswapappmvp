@@ -7,8 +7,8 @@
 'use client';
 
 import React from 'react';
-import { Database } from '@/types/supabase';
 import Card from '@/components/ui/Card';
+import { Database } from '@/types/supabase';
 
 export type Skill = Database['public']['Tables']['skills']['Row'];
 

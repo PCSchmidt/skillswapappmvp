@@ -6,10 +6,10 @@
 
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
-import Section from '@/components/layout/Section';
+import React, { useState, useEffect, useCallback } from 'react';
 import Container from '@/components/layout/Container';
+import Section from '@/components/layout/Section';
 
 interface Testimonial {
   id: string;

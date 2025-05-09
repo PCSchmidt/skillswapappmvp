@@ -7,15 +7,15 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSupabase } from '@/contexts/SupabaseContext';
-import ProfileHeader from '@/components/profile/ProfileHeader';
-import ProfileTabs from '@/components/profile/ProfileTabs';
-import { Skill } from '@/components/skills/SkillCard';
+import { useEffect, useState } from 'react';
 import Container from '@/components/layout/Container';
 import Section from '@/components/layout/Section';
 import NotificationBar from '@/components/notifications/NotificationBar';
+import ProfileHeader from '@/components/profile/ProfileHeader';
+import ProfileTabs from '@/components/profile/ProfileTabs';
+import { Skill } from '@/components/skills/SkillCard';
+import { useSupabase } from '@/contexts/SupabaseContext';
 
 export default function ProfilePage() {
   const router = useRouter();

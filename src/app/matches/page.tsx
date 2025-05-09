@@ -6,10 +6,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Container from '@/components/layout/Container';
-import Section from '@/components/layout/Section';
-import Grid from '@/components/layout/Grid';
 import Column from '@/components/layout/Column';
+import Container from '@/components/layout/Container';
+import Grid from '@/components/layout/Grid';
+import Section from '@/components/layout/Section';
 import { findBestMatches, SkillMatch } from '@/components/matching/MatchingAlgorithm';
 import { Skill } from '@/types';
 
