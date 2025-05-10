@@ -1,7 +1,7 @@
 -- Create email preferences table
 CREATE TABLE IF NOT EXISTS public.email_preferences (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
   notify_trade_proposal BOOLEAN NOT NULL DEFAULT TRUE,
   notify_trade_status_accepted BOOLEAN NOT NULL DEFAULT TRUE,
   notify_trade_status_declined BOOLEAN NOT NULL DEFAULT TRUE,
@@ -36,7 +36,7 @@ CREATE POLICY "Users can update their own email preferences"
   FOR UPDATE
   USING (auth.uid() = user_id);
 
--- Function to automatically create email preferences when a new user profile is created
+-- Function to automatically create email preferences when a new user is created
 CREATE OR REPLACE FUNCTION public.create_initial_email_preferences()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -46,10 +46,10 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Trigger to create email preferences for new profiles
-DROP TRIGGER IF EXISTS create_email_preferences_for_new_profile ON public.profiles;
-CREATE TRIGGER create_email_preferences_for_new_profile
-  AFTER INSERT ON public.profiles
+-- Trigger to create email preferences for new users
+DROP TRIGGER IF EXISTS create_email_preferences_for_new_user ON public.users;
+CREATE TRIGGER create_email_preferences_for_new_user
+  AFTER INSERT ON public.users
   FOR EACH ROW
   EXECUTE FUNCTION public.create_initial_email_preferences();
 
