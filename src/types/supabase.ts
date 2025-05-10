@@ -1,404 +1,224 @@
 /**
- * Supabase Database Types
+ * Types for Supabase client interactions
  * 
- * This file defines TypeScript types for the Supabase database tables.
- * These types should be kept in sync with the actual database schema.
+ * This file contains shared type definitions for Supabase responses and database models
+ * to ensure consistent typing across the application and tests.
  */
 
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+/**
+ * Generic Supabase response type 
+ */
+export interface SupabaseResponse<T> {
+  data: T | null;
+  error: SupabaseError | null;
+}
 
+/**
+ * Supabase error type
+ */
+export interface SupabaseError {
+  message: string;
+  details?: string;
+  hint?: string;
+  code?: string;
+}
+
+/**
+ * User settings table model
+ */
+export interface UserSettings {
+  user_id: string;
+  email_notifications: boolean;
+  push_notifications: boolean;
+  marketing_emails: boolean;
+  location_sharing: boolean;
+  profile_visibility: string;
+  theme_preference: string;
+  notification_frequency?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+/**
+ * Profile table model
+ */
+export interface Profile {
+  id: string;
+  username?: string;
+  full_name?: string;
+  avatar_url?: string;
+  bio?: string;
+  location?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+/**
+ * Skill table model
+ */
+export interface Skill {
+  id: string;
+  title: string;
+  description: string;
+  user_id: string;
+  category: string;
+  subcategory?: string | null;
+  experience_level: string;
+  location?: string;
+  is_remote: boolean;
+  is_remote_friendly?: boolean;
+  availability: string;
+  tags?: string[];
+  is_offering?: boolean;
+  is_active?: boolean;
+  hourly_equivalent_value?: number;
+  created_at?: string;
+  updated_at?: string;
+  // Include relationships for joined queries
+  users?: {
+    id: string;
+    username?: string;
+    full_name?: string | null;
+    avatar_url?: string;
+    profile_image_url?: string | null;
+    location?: string;
+    location_city?: string | null;
+    location_state?: string | null;
+    [key: string]: any;
+  } | null;
+}
+
+/**
+ * Type guard to check if a Supabase response contains an error
+ * Fixed return type to correctly implement type predicate pattern
+ */
+export function isSupabaseError<T>(response: SupabaseResponse<T>): response is SupabaseResponse<T> & { error: SupabaseError } {
+  return response.error !== null;
+}
+
+/**
+ * Type for Supabase query builder functions
+ */
+export interface SupabaseQueryBuilder<T> {
+  select: (columns?: string) => SupabaseSelectQuery<T>;
+  insert: (values: Partial<T> | Partial<T>[]) => SupabaseInsertQuery<T>;
+  update: (values: Partial<T>) => SupabaseUpdateQuery<T>;
+  delete: () => SupabaseDeleteQuery<T>;
+}
+
+/**
+ * Type for Supabase select query
+ */
+export interface SupabaseSelectQuery<T> {
+  eq: (column: string, value: any) => SupabaseFilterQuery<T>;
+  in: (column: string, values: any[]) => SupabaseFilterQuery<T>;
+  order: (column: string, options?: { ascending?: boolean }) => SupabaseSelectQuery<T>;
+  limit: (count: number) => SupabaseSelectQuery<T>;
+}
+
+/**
+ * Type for Supabase filter query
+ */
+export interface SupabaseFilterQuery<T> {
+  single: () => Promise<SupabaseResponse<T>>;
+  eq: (column: string, value: any) => SupabaseFilterQuery<T>;
+  in: (column: string, values: any[]) => SupabaseFilterQuery<T>;
+}
+
+/**
+ * Type for Supabase insert query
+ */
+export interface SupabaseInsertQuery<T> {
+  select: (columns?: string) => Promise<SupabaseResponse<T[]>>;
+}
+
+/**
+ * Type for Supabase update query
+ */
+export interface SupabaseUpdateQuery<T> {
+  eq: (column: string, value: any) => SupabaseFilterQueryWithModifier<T>;
+  match: (query: Partial<T>) => SupabaseFilterQueryWithModifier<T>;
+}
+
+/**
+ * Type for Supabase delete query
+ */
+export interface SupabaseDeleteQuery<T> {
+  eq: (column: string, value: any) => SupabaseFilterQueryWithModifier<T>;
+  match: (query: Partial<T>) => SupabaseFilterQueryWithModifier<T>;
+}
+
+/**
+ * Type for Supabase filter query with modifier
+ */
+export interface SupabaseFilterQueryWithModifier<T> {
+  then: (callback: (response: SupabaseResponse<T>) => void) => {
+    catch: (callback: (error: any) => void) => void;
+  };
+}
+
+/**
+ * Type for Supabase session
+ */
+export interface SupabaseSession {
+  user: {
+    id: string;
+    email?: string;
+    aud?: string;
+    role?: string;
+  };
+  access_token?: string;
+  refresh_token?: string;
+}
+
+/**
+ * Type for Supabase client
+ */
+export interface SupabaseClient {
+  from: <T>(table: string) => SupabaseQueryBuilder<T>;
+  auth: {
+    signIn: (credentials: { email: string; password: string }) => Promise<SupabaseResponse<any>>;
+    signUp: (credentials: { email: string; password: string }) => Promise<SupabaseResponse<any>>;
+    signOut: () => Promise<SupabaseResponse<any>>;
+    session: () => SupabaseSession | null;
+  };
+}
+
+/**
+ * Generated Database Types
+ * This interface mimics the structure expected by components that were using
+ * the Supabase-generated Database type.
+ */
 export interface Database {
   public: {
     Tables: {
-      notifications: {
-        Row: {
-          id: string
-          user_id: string
-          type: string
-          title: string
-          content: string | null
-          link: string | null
-          is_read: boolean
-          created_at: string
-          expires_at: string | null
-          metadata: any
-          priority: string | null
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          type: string
-          title: string
-          content?: string | null
-          link?: string | null
-          is_read?: boolean
-          created_at?: string
-          expires_at?: string | null
-          metadata?: any
-          priority?: string | null
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          type?: string
-          title?: string
-          content?: string | null
-          link?: string | null
-          is_read?: boolean
-          created_at?: string
-          expires_at?: string | null
-          metadata?: any
-          priority?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "notifications_user_id_fkey"
-            columns: ["user_id"]
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          }
-        ]
-      },
-      users: {
-        Row: {
-          id: string
-          email: string
-          phone: string | null
-          full_name: string | null
-          bio: string | null
-          profile_image_url: string | null
-          location_city: string | null
-          location_state: string | null
-          location_country: string | null
-          location_lat: number | null
-          location_lng: number | null
-          location_visibility: string | null
-          created_at: string
-          updated_at: string
-          last_active_at: string
-          is_verified: boolean
-          account_status: string
-          marketing_consent: boolean
-          tos_accepted_version: string | null
-          tos_accepted_at: string | null
-          preferred_language: string | null
-          preferred_currency: string | null
-          time_zone: string | null
-        }
-        Insert: {
-          id?: string
-          email: string
-          phone?: string | null
-          full_name?: string | null
-          bio?: string | null
-          profile_image_url?: string | null
-          location_city?: string | null
-          location_state?: string | null
-          location_country?: string | null
-          location_lat?: number | null
-          location_lng?: number | null
-          location_visibility?: string | null
-          created_at?: string
-          updated_at?: string
-          last_active_at?: string
-          is_verified?: boolean
-          account_status?: string
-          marketing_consent?: boolean
-          tos_accepted_version?: string | null
-          tos_accepted_at?: string | null
-          preferred_language?: string | null
-          preferred_currency?: string | null
-          time_zone?: string | null
-        }
-        Update: {
-          id?: string
-          email?: string
-          phone?: string | null
-          full_name?: string | null
-          bio?: string | null
-          profile_image_url?: string | null
-          location_city?: string | null
-          location_state?: string | null
-          location_country?: string | null
-          location_lat?: number | null
-          location_lng?: number | null
-          location_visibility?: string | null
-          created_at?: string
-          updated_at?: string
-          last_active_at?: string
-          is_verified?: boolean
-          account_status?: string
-          marketing_consent?: boolean
-          tos_accepted_version?: string | null
-          tos_accepted_at?: string | null
-          preferred_language?: string | null
-          preferred_currency?: string | null
-          time_zone?: string | null
-        }
-      }
+      user_settings: {
+        Row: UserSettings;
+        Insert: Omit<UserSettings, 'created_at' | 'updated_at'>;
+        Update: Partial<Omit<UserSettings, 'user_id' | 'created_at' | 'updated_at'>>;
+      };
+      profiles: {
+        Row: Profile;
+        Insert: Omit<Profile, 'created_at' | 'updated_at'>;
+        Update: Partial<Omit<Profile, 'id' | 'created_at' | 'updated_at'>>;
+      };
       skills: {
-        Row: {
-          id: string
-          user_id: string
-          title: string
-          description: string | null
-          category: string
-          subcategory: string | null
-          experience_level: string | null
-          hourly_equivalent_value: number | null
-          availability: Json | null
-          is_offering: boolean
-          is_remote_friendly: boolean
-          created_at: string
-          updated_at: string
-          is_active: boolean
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          title: string
-          description?: string | null
-          category: string
-          subcategory?: string | null
-          experience_level?: string | null
-          hourly_equivalent_value?: number | null
-          availability?: Json | null
-          is_offering?: boolean
-          is_remote_friendly?: boolean
-          created_at?: string
-          updated_at?: string
-          is_active?: boolean
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          title?: string
-          description?: string | null
-          category?: string
-          subcategory?: string | null
-          experience_level?: string | null
-          hourly_equivalent_value?: number | null
-          availability?: Json | null
-          is_offering?: boolean
-          is_remote_friendly?: boolean
-          created_at?: string
-          updated_at?: string
-          is_active?: boolean
-        }
-      }
-      trades: {
-        Row: {
-          id: string
-          proposer_id: string | null
-          receiver_id: string | null
-          skill_offered_id: string | null
-          skill_requested_id: string | null
-          status: string | null
-          proposed_hours: number | null
-          proposed_schedule: Json | null
-          agreed_schedule: Json | null
-          location_type: string | null
-          location_details: string | null
-          trade_notes: string | null
-          created_at: string
-          updated_at: string
-          completed_at: string | null
-          cancellation_reason: string | null
-          cancellation_initiator: string | null
-        }
-        Insert: {
-          id?: string
-          proposer_id?: string | null
-          receiver_id?: string | null
-          skill_offered_id?: string | null
-          skill_requested_id?: string | null
-          status?: string | null
-          proposed_hours?: number | null
-          proposed_schedule?: Json | null
-          agreed_schedule?: Json | null
-          location_type?: string | null
-          location_details?: string | null
-          trade_notes?: string | null
-          created_at?: string
-          updated_at?: string
-          completed_at?: string | null
-          cancellation_reason?: string | null
-          cancellation_initiator?: string | null
-        }
-        Update: {
-          id?: string
-          proposer_id?: string | null
-          receiver_id?: string | null
-          skill_offered_id?: string | null
-          skill_requested_id?: string | null
-          status?: string | null
-          proposed_hours?: number | null
-          proposed_schedule?: Json | null
-          agreed_schedule?: Json | null
-          location_type?: string | null
-          location_details?: string | null
-          trade_notes?: string | null
-          created_at?: string
-          updated_at?: string
-          completed_at?: string | null
-          cancellation_reason?: string | null
-          cancellation_initiator?: string | null
-        }
-      }
-      messages: {
-        Row: {
-          id: string
-          trade_id: string | null
-          sender_id: string | null
-          receiver_id: string | null
-          content: string
-          is_read: boolean
-          created_at: string
-          attachment_url: string | null
-          attachment_type: string | null
-        }
-        Insert: {
-          id?: string
-          trade_id?: string | null
-          sender_id?: string | null
-          receiver_id?: string | null
-          content: string
-          is_read?: boolean
-          created_at?: string
-          attachment_url?: string | null
-          attachment_type?: string | null
-        }
-        Update: {
-          id?: string
-          trade_id?: string | null
-          sender_id?: string | null
-          receiver_id?: string | null
-          content?: string
-          is_read?: boolean
-          created_at?: string
-          attachment_url?: string | null
-          attachment_type?: string | null
-        }
-      }
-      ratings: {
-        Row: {
-          id: string
-          trade_id: string | null
-          rater_id: string | null
-          ratee_id: string | null
-          skill_id: string | null
-          rating_score: number
-          review_text: string | null
-          created_at: string
-          is_public: boolean
-        }
-        Insert: {
-          id?: string
-          trade_id?: string | null
-          rater_id?: string | null
-          ratee_id?: string | null
-          skill_id?: string | null
-          rating_score: number
-          review_text?: string | null
-          created_at?: string
-          is_public?: boolean
-        }
-        Update: {
-          id?: string
-          trade_id?: string | null
-          rater_id?: string | null
-          ratee_id?: string | null
-          skill_id?: string | null
-          rating_score?: number
-          review_text?: string | null
-          created_at?: string
-          is_public?: boolean
-        }
-      }
-      supported_languages: {
-        Row: {
-          code: string
-          name: string
-          native_name: string
-          is_rtl: boolean
-          is_active: boolean
-          fallback_language: string | null
-        }
-        Insert: {
-          code: string
-          name: string
-          native_name: string
-          is_rtl?: boolean
-          is_active?: boolean
-          fallback_language?: string | null
-        }
-        Update: {
-          code?: string
-          name?: string
-          native_name?: string
-          is_rtl?: boolean
-          is_active?: boolean
-          fallback_language?: string | null
-        }
-      }
-      skill_translations: {
-        Row: {
-          skill_id: string
-          language_code: string
-          title: string
-          description: string | null
-        }
-        Insert: {
-          skill_id: string
-          language_code: string
-          title: string
-          description?: string | null
-        }
-        Update: {
-          skill_id?: string
-          language_code?: string
-          title?: string
-          description?: string | null
-        }
-      }
-      category_translations: {
-        Row: {
-          category_id: string
-          language_code: string
-          name: string
-          description: string | null
-        }
-        Insert: {
-          category_id: string
-          language_code: string
-          name: string
-          description?: string | null
-        }
-        Update: {
-          category_id?: string
-          language_code?: string
-          name?: string
-          description?: string | null
-        }
-      }
-    }
+        Row: Skill;
+        Insert: Omit<Skill, 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Omit<Skill, 'id' | 'user_id' | 'created_at' | 'updated_at'>>;
+      };
+      // Add other tables as needed
+    };
     Views: {
-      [_ in never]: never
-    }
+      [key: string]: {
+        Row: Record<string, any>;
+      };
+    };
     Functions: {
-      [_ in never]: never
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
+      [key: string]: {
+        Args: Record<string, any>;
+        Returns: any;
+      };
+    };
+  };
 }

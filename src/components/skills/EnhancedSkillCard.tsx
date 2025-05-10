@@ -9,17 +9,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
-import { Database } from '@/types/supabase';
-
-type Skill = Database['public']['Tables']['skills']['Row'] & {
-  users?: {
-    id: string;
-    full_name: string | null;
-    profile_image_url: string | null;
-    location_city: string | null;
-    location_state: string | null;
-  } | null;
-};
+import { Skill } from '@/types/supabase';
 
 interface EnhancedSkillCardProps {
   skill: Skill;

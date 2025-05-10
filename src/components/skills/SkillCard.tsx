@@ -8,9 +8,10 @@
 
 import React from 'react';
 import Card from '@/components/ui/Card';
-import { Database } from '@/types/supabase';
+import { Skill } from '@/types/supabase';
 
-export type Skill = Database['public']['Tables']['skills']['Row'];
+// Re-export the Skill type for backward compatibility
+export type { Skill };
 
 export interface SkillCardProps {
   skill: Skill;
