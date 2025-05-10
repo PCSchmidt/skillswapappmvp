@@ -18,10 +18,41 @@ const customJestConfig = {
     'src/**/*.{js,jsx,ts,tsx}',
     '!src/**/*.d.ts',
     '!**/node_modules/**',
+    '!src/**/_*.{js,jsx,ts,tsx}',
+    '!src/**/*.stories.{js,jsx,ts,tsx}',
+    '!src/pages/_*.{js,jsx,ts,tsx}',
+    '!src/pages/api/**/*.{js,jsx,ts,tsx}',
   ],
+  coverageThreshold: {
+    global: {
+      statements: 70,
+      branches: 60,
+      functions: 70,
+      lines: 70,
+    },
+    './src/components/ui/': {
+      statements: 80,
+      branches: 70,
+      functions: 80,
+      lines: 80,
+    },
+    './src/lib/utils.ts': {
+      statements: 90,
+      branches: 80,
+      functions: 90,
+      lines: 90,
+    },
+  },
+  coverageReporters: ['json', 'lcov', 'text', 'clover', 'html'],
+  coverageDirectory: '<rootDir>/coverage',
   transform: {
     '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', { presets: ['next/babel'] }],
   },
+  verbose: true,
+  watchPlugins: [
+    'jest-watch-typeahead/filename',
+    'jest-watch-typeahead/testname',
+  ],
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config
