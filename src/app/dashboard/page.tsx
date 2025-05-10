@@ -1,13 +1,31 @@
 import { Metadata } from 'next';
+import dynamic from 'next/dynamic';
 import React from 'react';
-import ActivityFeed from '@/components/dashboard/ActivityFeed';
-import ExchangeStatusSection from '@/components/dashboard/ExchangeStatusSection';
 import QuickActions, { commonActions } from '@/components/dashboard/QuickActions';
-import RecommendationPanel from '@/components/dashboard/RecommendationPanel';
+import ActivityFeedSkeleton from '@/components/dashboard/skeletons/ActivityFeedSkeleton';
+import ExchangeStatusSkeleton from '@/components/dashboard/skeletons/ExchangeStatusSkeleton';
+import RecommendationPanelSkeleton from '@/components/dashboard/skeletons/RecommendationPanelSkeleton';
 import StatCard from '@/components/dashboard/StatCard';
 import { Container } from '@/components/layout/Container';
 import Grid from '@/components/layout/Grid';
 import Section from '@/components/layout/Section';
+
+// Dynamic imports for heavy components with skeleton fallbacks
+
+const ActivityFeed = dynamic(
+  () => import('@/components/dashboard/ActivityFeed'),
+  { loading: () => <ActivityFeedSkeleton /> }
+);
+
+const ExchangeStatusSection = dynamic(
+  () => import('@/components/dashboard/ExchangeStatusSection'),
+  { loading: () => <ExchangeStatusSkeleton /> }
+);
+
+const RecommendationPanel = dynamic(
+  () => import('@/components/dashboard/RecommendationPanel'),
+  { loading: () => <RecommendationPanelSkeleton /> }
+);
 
 export const metadata: Metadata = {
   title: 'Dashboard | SkillSwap',

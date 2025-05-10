@@ -1,6 +1,6 @@
+import * as Sentry from '@sentry/nextjs';
 import { renderHook, act } from '@testing-library/react';
 import useErrorHandler, { useDataFetchingErrorHandler } from '@/lib/hooks/useErrorHandler';
-import * as Sentry from '@sentry/nextjs';
 
 // Mock Sentry
 jest.mock('@sentry/nextjs', () => ({

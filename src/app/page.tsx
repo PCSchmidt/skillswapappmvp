@@ -1,5 +1,6 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -7,16 +8,44 @@ import React, { useState } from 'react';
 import AuthPreview from '@/components/auth/AuthPreview';
 import CallToAction from '@/components/landing/CallToAction';
 import HeroSection from '@/components/landing/HeroSection';
-import HowItWorks from '@/components/landing/HowItWorks';
+import HowItWorksSkeleton from '@/components/landing/skeletons/HowItWorksSkeleton';
 import Container from '@/components/layout/Container';
 import Section from '@/components/layout/Section';
+
+// Import skeleton component
+
+// Dynamic import for HowItWorks component
+const HowItWorks = dynamic(
+  () => import('@/components/landing/HowItWorks'),
+  { loading: () => <HowItWorksSkeleton /> }
+);
 
 // Import our newly created components
 import SearchComponent from '@/components/search/SearchComponent';
 import FeaturedSkills from '@/components/skills/FeaturedSkills';
 import SkillCategories from '@/components/skills/SkillCategories';
 import SkillFilters from '@/components/skills/SkillFilters';
-import TestimonialsCarousel from '@/components/testimonials/TestimonialsCarousel';
+
+// Dynamic import for TestimonialsCarousel which is likely heavy due to animations
+const TestimonialsCarousel = dynamic(
+  () => import('@/components/testimonials/TestimonialsCarousel'),
+  { 
+    loading: () => (
+      <Section className="py-16 bg-primary-50">
+        <Container>
+          <div className="text-center mb-8">
+            <div className="h-8 w-60 bg-gray-200 rounded animate-pulse mx-auto mb-4"></div>
+            <div className="h-4 w-2/3 bg-gray-200 rounded animate-pulse mx-auto"></div>
+          </div>
+          <div className="flex justify-center">
+            <div className="w-full max-w-2xl h-64 bg-white rounded-lg shadow-sm animate-pulse"></div>
+          </div>
+        </Container>
+      </Section>
+    ),
+    ssr: false // Testimonials carousel is likely to use browser-specific APIs
+  }
+);
 
 // Import Phase 5 components
 

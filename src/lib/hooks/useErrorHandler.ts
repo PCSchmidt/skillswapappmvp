@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useCallback } from 'react';
 import * as Sentry from '@sentry/nextjs';
+import { useState, useCallback } from 'react';
 
 export type ErrorSeverity = 'info' | 'warning' | 'error' | 'critical';
 
