@@ -5,21 +5,16 @@
  * to provide a unified interface for data access throughout the application.
  */
 
-// Re-export SWR configuration
-export { 
-  ConfiguredSWRConfig,
-  defaultSWRConfig,
-  getFullSWRConfig,
-  cachePersistor
-} from '../hooks/useSWRConfig';
+// Import and re-export SWR configuration
+import SWRProvider, { SWR_DEFAULT_CONFIG } from '../hooks/useSWRConfig';
+import SWRConfigOptions from '../hooks/useSWRConfigOptions';
+export { SWRProvider, SWR_DEFAULT_CONFIG };
+export type { SWRConfigOptions };
 
-// Re-export all fetcher functions
+// Re-export SWR fetcher
 export {
-  defaultFetcher,
-  supabaseFetcher,
-  authFetcher,
-  timeoutFetcher,
-  offlineFetcher
+  useSWRFetcher,
+  FetchError
 } from '../hooks/useSWRFetcher';
 
 // Re-export general data hooks

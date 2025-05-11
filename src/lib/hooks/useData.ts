@@ -1,5 +1,7 @@
+'use client';
+
 import useSWR, { SWRConfiguration, SWRResponse } from 'swr';
-import { defaultFetcher } from './useSWRFetcher';
+import useSWRFetcher from './useSWRFetcher';
 
 /**
  * Type definitions for useData hook
@@ -15,9 +17,11 @@ export type UseDataOptions = SWRConfiguration;
  * @returns SWR response object with data, error, and other properties
  */
 export function useData<T>(key: string | null | undefined, options?: UseDataOptions): SWRResponse<T, Error> {
+  const { fetcher } = useSWRFetcher();
+  
   return useSWR<T, Error>(
     key,
-    defaultFetcher,
+    fetcher,
     {
       revalidateOnFocus: false, // Don't revalidate when window regains focus
       dedupingInterval: 5000,   // Deduplicate requests within 5 seconds

@@ -1,3 +1,5 @@
+'use client';
+
 import { ChangeEvent, forwardRef, InputHTMLAttributes } from 'react';
 import { classNames } from '../../lib/utils';
 
