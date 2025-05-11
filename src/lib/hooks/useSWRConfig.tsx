@@ -10,8 +10,8 @@
 
 import React, { ReactNode } from 'react';
 import { SWRConfig } from 'swr';
-import { useErrorHandler } from './useErrorHandler';
 import type { SWRConfiguration } from 'swr';
+import { useErrorHandler } from './useErrorHandler';
 
 // Default configuration for SWR
 export const SWR_DEFAULT_CONFIG: SWRConfiguration = {
