@@ -7,11 +7,11 @@
  * It implements a stale-while-revalidate caching strategy for optimized data fetching.
  */
 
+import localforage from 'localforage';
 import React, { ReactNode } from 'react';
 import { SWRConfig } from 'swr';
 import type { SWRConfiguration } from 'swr';
 import { useErrorHandler, ErrorOptions } from './useErrorHandler';
-import localforage from 'localforage';
 
 // Default configuration for SWR
 export const SWR_DEFAULT_CONFIG: SWRConfiguration = {

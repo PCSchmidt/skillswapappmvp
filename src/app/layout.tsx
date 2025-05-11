@@ -8,11 +8,11 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import '../styles/globals.css';
 import { Toaster } from 'react-hot-toast';
+import SWRWrapper from '@/components/wrappers/SWRWrapper';
 import ErrorProvider from '@components/ui/ErrorProvider';
 import Footer from '../components/layout/Footer';
 import Navbar from '../components/navigation/Navbar';
 import { SupabaseProvider } from '../contexts/SupabaseContext';
-import SWRWrapper from '@/components/wrappers/SWRWrapper';
 
 const inter = Inter({ subsets: ['latin'] });
 

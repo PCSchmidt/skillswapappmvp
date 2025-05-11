@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useData, API_ENDPOINTS, useOptimisticUpdate } from '@/lib/data';
-import Button from '@/components/ui/Button';
-import Spinner from '@/components/ui/Spinner';
-import Card from '@/components/ui/Card';
 import Alert from '@/components/ui/Alert';
+import Button from '@/components/ui/Button';
+import Card from '@/components/ui/Card';
+import Spinner from '@/components/ui/Spinner';
+import { useData, API_ENDPOINTS, useOptimisticUpdate } from '@/lib/data';
 
 // This is a sample component that demonstrates how to use the optimistic UI update pattern
 // with the data fetching hooks. This improves the perceived performance and responsiveness

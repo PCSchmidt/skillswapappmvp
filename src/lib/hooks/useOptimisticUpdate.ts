@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useErrorHandler } from './useErrorHandler';
 import { KeyedMutator } from 'swr';
+import { useErrorHandler } from './useErrorHandler';
 
 /**
  * Type definitions for optimistic update
