@@ -12,6 +12,7 @@ import ErrorProvider from '@components/ui/ErrorProvider';
 import Footer from '../components/layout/Footer';
 import Navbar from '../components/navigation/Navbar';
 import { SupabaseProvider } from '../contexts/SupabaseContext';
+import SWRWrapper from '@/components/wrappers/SWRWrapper';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -29,14 +30,16 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <SupabaseProvider>
-          <ErrorProvider>
-            <div className="flex flex-col min-h-screen">
-              <Navbar />
-              <main className="flex-grow">{children}</main>
-              <Footer />
-            </div>
-            <Toaster position="top-right" />
-          </ErrorProvider>
+          <SWRWrapper>
+            <ErrorProvider>
+              <div className="flex flex-col min-h-screen">
+                <Navbar />
+                <main className="flex-grow">{children}</main>
+                <Footer />
+              </div>
+              <Toaster position="top-right" />
+            </ErrorProvider>
+          </SWRWrapper>
         </SupabaseProvider>
       </body>
     </html>

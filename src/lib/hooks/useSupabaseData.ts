@@ -1,3 +1,5 @@
+'use client';
+
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { PostgrestError } from '@supabase/supabase-js';
 import { useState, useEffect } from 'react';

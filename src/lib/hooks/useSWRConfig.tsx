@@ -1,17 +1,17 @@
 'use client';
 
 /**
- * SWR Configuration Component and Hook
+ * SWR Configuration Hook
  * 
- * This module provides application-wide SWR configuration with a provider component
- * and a hook for consuming the configuration. It implements a stale-while-revalidate
- * caching strategy for optimized data fetching.
+ * This hook provides application-wide SWR configuration and defaults.
+ * It implements a stale-while-revalidate caching strategy for optimized data fetching.
  */
 
 import React, { ReactNode } from 'react';
 import { SWRConfig } from 'swr';
 import type { SWRConfiguration } from 'swr';
-import { useErrorHandler } from './useErrorHandler';
+import { useErrorHandler, ErrorOptions } from './useErrorHandler';
+import localforage from 'localforage';
 
 // Default configuration for SWR
 export const SWR_DEFAULT_CONFIG: SWRConfiguration = {
@@ -40,6 +40,9 @@ export const SWR_DEFAULT_CONFIG: SWRConfiguration = {
   suspense: false,
 };
 
+// We'll implement persistent caching in a future update
+// For now, focus on fixing the client component structure
+
 interface SWRProviderProps {
   children: ReactNode;
 }
@@ -54,17 +57,21 @@ export const SWRProvider: React.FC<SWRProviderProps> = ({ children }) => {
   const { handleError } = useErrorHandler();
   
   return (
-    <SWRConfig
+    <SWRConfig 
       value={{
         ...SWR_DEFAULT_CONFIG,
         onError: (error: any, key: string) => {
-          handleError(error, {
+          // Create the error options with proper typing
+          const errorOptions: ErrorOptions = {
             context: { 
               source: 'SWR data fetching',
               key 
             }
-          });
-        },
+          };
+          
+          // Log errors to your error tracking system
+          handleError(error, errorOptions);
+        }
       }}
     >
       {children}
@@ -78,7 +85,7 @@ export const SWRProvider: React.FC<SWRProviderProps> = ({ children }) => {
  * @param customConfig - Optional custom configuration to merge with defaults
  * @returns Final SWR configuration object
  */
-export const useSWRConfig = (customConfig: Partial<SWRConfiguration> = {}): SWRConfiguration => {
+export const useSWRConfig = (customConfig: Partial<SWRConfiguration> = {}) => {
   return {
     ...SWR_DEFAULT_CONFIG,
     ...customConfig,
