@@ -1,198 +1,417 @@
-#!/usr/bin/env node
-
 /**
- * Deployment Verification Script
+ * Deployment Verification Script for SkillSwap MVP
  * 
- * This script verifies that a deployment is functioning correctly by:
- * 1. Checking that the site responds with a 200 status code
- * 2. Verifying that the health API endpoint reports healthy status
- * 3. Checking basic auth endpoints are accessible
- * 4. Validating that static assets load properly
+ * This script performs a series of checks on the deployed application to ensure
+ * all critical functionality is working correctly. It tests API endpoints, authentication,
+ * and other core features.
+ * 
+ * Usage:
+ *   node scripts/verify-deployment.js https://your-deployment-url.vercel.app
  */
 
-const http = require('http');
-const https = require('https');
-const { URL } = require('url');
-const { program } = require('commander');
+const { exec } = require('child_process');
+const fs = require('fs');
+const path = require('path');
+const axios = require('axios');
+const chalk = require('chalk');
 
-// Setup command line options
-program
-  .description('Verify a deployed SkillSwap instance is functioning correctly')
-  .option('-u, --url <url>', 'The deployment URL to verify')
-  .option('-t, --timeout <timeout>', 'Timeout in milliseconds for each check', parseInt, 15000)
-  .option('-v, --verbose', 'Show detailed output')
-  .parse(process.argv);
-
-const options = program.opts();
-
-// Validate required parameters
-if (!options.url) {
-  console.error('Error: Deployment URL is required (--url)');
+// Get the deployment URL from command line arguments
+const deploymentUrl = process.argv[2];
+if (!deploymentUrl) {
+  console.error(chalk.red('Please provide a deployment URL'));
+  console.error(chalk.yellow('Usage: node scripts/verify-deployment.js https://your-deployment-url.vercel.app'));
   process.exit(1);
 }
 
-// Setup URLs to check based on deployment URL
-const baseUrl = options.url.replace(/\/$/, ''); // Remove trailing slash if present
-const urlsToCheck = [
-  { url: `${baseUrl}`, name: 'Home page' },
-  { url: `${baseUrl}/api/health`, name: 'Health API', checkJson: true, expectedStatus: 'healthy' },
-  { url: `${baseUrl}/manifest.json`, name: 'PWA Manifest' },
-  { url: `${baseUrl}/sw.js`, name: 'Service Worker' },
-  { url: `${baseUrl}/api/robots`, name: 'Robots API' },
-  { url: `${baseUrl}/api/sitemap`, name: 'Sitemap API' },
-];
+console.log(chalk.cyan('🔍 Starting deployment verification for:'), chalk.bold(deploymentUrl));
+console.log(chalk.cyan('=').repeat(80));
 
-// Counters for summary
-let passed = 0;
-let failed = 0;
-let skipped = 0;
-
-// Primary verification function
-async function verifyDeployment() {
-  console.log(`\n🚀 Verifying deployment at: ${baseUrl}`);
-  console.log(`🕒 Timeout set to: ${options.timeout}ms`);
-  console.log('-------------------------------------');
-
-  for (const check of urlsToCheck) {
-    try {
-      const result = await checkUrl(check);
-      if (result.success) {
-        console.log(`✅ ${check.name}: ${result.message || 'Passed'}`);
-        passed++;
-      } else {
-        console.error(`❌ ${check.name}: ${result.message || 'Failed'}`);
-        failed++;
-        if (options.verbose && result.error) {
-          console.error(`   Error details: ${result.error}`);
-        }
-      }
-    } catch (error) {
-      console.error(`❌ ${check.name}: Unexpected error during check`);
-      if (options.verbose) {
-        console.error(`   Error details: ${error.message}`);
-      }
-      failed++;
-    }
-  }
-
-  // Print summary
-  console.log('\n-------------------------------------');
-  console.log(`📊 SUMMARY: ${passed} passed, ${failed} failed, ${skipped} skipped`);
+// Create a verification report file
+const timestamp = new Date().toISOString().replace(/[:T]/g, '-').replace(/\..+/, '');
+const reportFile = path.join(__dirname, '..', `verification-report-${timestamp}.md`);
+const reporter = {
+  logs: [],
+  successes: 0,
+  warnings: 0,
+  errors: 0,
   
-  // Exit with appropriate code
-  if (failed > 0) {
-    console.error('❌ Verification FAILED');
-    process.exit(1);
-  } else {
-    console.log('✅ Verification PASSED');
-    process.exit(0);
+  log: function(message) {
+    console.log(message);
+    this.logs.push(message);
+  },
+  
+  success: function(message) {
+    const formattedMessage = chalk.green('✓ ' + message);
+    console.log(formattedMessage);
+    this.logs.push('✓ ' + message);
+    this.successes++;
+  },
+  
+  warning: function(message) {
+    const formattedMessage = chalk.yellow('⚠ ' + message);
+    console.log(formattedMessage);
+    this.logs.push('⚠ ' + message);
+    this.warnings++;
+  },
+  
+  error: function(message, error = null) {
+    const formattedMessage = chalk.red('✗ ' + message);
+    console.log(formattedMessage);
+    if (error) {
+      console.log(chalk.gray('  Details:'), error.message || error);
+      this.logs.push(`✗ ${message}\n  Details: ${error.message || error}`);
+    } else {
+      this.logs.push('✗ ' + message);
+    }
+    this.errors++;
+  },
+  
+  saveReport: function() {
+    const reportContent = `# SkillSwap Deployment Verification Report
+
+## Summary
+- **Deployment URL**: ${deploymentUrl}
+- **Verification Date**: ${new Date().toISOString().slice(0, 10)}
+- **Status**: ${this.errors === 0 ? '✅ PASSED' : '❌ FAILED'}
+- **Tests Passed**: ${this.successes}
+- **Warnings**: ${this.warnings}
+- **Errors**: ${this.errors}
+
+## Test Results
+
+${this.logs.join('\n')}
+
+## Next Steps
+
+${this.errors === 0 ? 
+  '- Proceed with user acceptance testing\n- Monitor application performance and error rates\n- Begin onboarding beta testers according to the plan' : 
+  '- Address failed tests before proceeding\n- Check deployment logs for additional context\n- Verify environment variables are set correctly'}
+
+Report generated by the SkillSwap Deployment Verification Script
+`;
+    
+    fs.writeFileSync(reportFile, reportContent);
+    console.log(chalk.cyan('\nVerification report saved to:'), reportFile);
+  }
+};
+
+// Check if the URL is reachable
+async function checkSiteAvailability() {
+  try {
+    reporter.log(chalk.cyan('\n📡 Checking if site is reachable...'));
+    const response = await axios.get(deploymentUrl, {
+      timeout: 10000,
+      validateStatus: null
+    });
+    
+    if (response.status === 200) {
+      reporter.success(`Site is reachable (responded with status ${response.status})`);
+    } else {
+      reporter.error(`Site responded with status ${response.status}`);
+    }
+    
+    // Check for common error signals in the HTML
+    if (response.data && typeof response.data === 'string') {
+      if (response.data.includes('Internal Server Error') || response.data.includes('500')) {
+        reporter.error('Internal server error detected in the response');
+      }
+      if (response.data.includes('Application Error')) {
+        reporter.error('Application error message detected in the response');
+      }
+    }
+  } catch (error) {
+    reporter.error('Failed to reach the site', error);
   }
 }
 
-// Function to check a single URL
-function checkUrl({ url, name, checkJson, expectedStatus }) {
-  return new Promise((resolve) => {
+// Check if the API is working
+async function checkApiEndpoints() {
+  reporter.log(chalk.cyan('\n🔌 Testing API endpoints...'));
+  
+  const endpoints = [
+    { url: `${deploymentUrl}/api/health`, name: 'Health check' },
+    { url: `${deploymentUrl}/api/skills/featured`, name: 'Featured skills' },
+    { url: `${deploymentUrl}/api/skills/categories`, name: 'Skill categories' }
+  ];
+  
+  for (const endpoint of endpoints) {
     try {
-      const parsedUrl = new URL(url);
-      const requestLib = parsedUrl.protocol === 'https:' ? https : http;
+      const response = await axios.get(endpoint.url, { timeout: 5000, validateStatus: null });
       
-      const req = requestLib.get(url, { timeout: options.timeout }, (res) => {
-        const { statusCode } = res;
-        
-        if (options.verbose) {
-          console.log(`   ${name}: Status ${statusCode}, Content-Type: ${res.headers['content-type']}`);
-        }
-        
-        // Check for redirect responses
-        if (statusCode >= 300 && statusCode < 400) {
-          resolve({ 
-            success: true, 
-            message: `Redirected (${statusCode}) to ${res.headers.location}`
-          });
-          return;
-        }
-        
-        // Check for successful responses
-        if (statusCode !== 200) {
-          resolve({ 
-            success: false, 
-            message: `Unexpected status code: ${statusCode}`
-          });
-          return;
-        }
-        
-        // If we need to check the JSON content
-        if (checkJson) {
-          let data = '';
-          res.on('data', (chunk) => { data += chunk; });
-          res.on('end', () => {
-            try {
-              const jsonResponse = JSON.parse(data);
-              
-              if (options.verbose) {
-                console.log(`   Response: ${JSON.stringify(jsonResponse).substring(0, 100)}...`);
-              }
-              
-              if (expectedStatus && jsonResponse.status !== expectedStatus) {
-                resolve({ 
-                  success: false, 
-                  message: `Status check failed: expected "${expectedStatus}", got "${jsonResponse.status}"`
-                });
-                return;
-              }
-              
-              // If checking the health endpoint, verify database connection
-              if (url.includes('/api/health') && jsonResponse.services && jsonResponse.services.database) {
-                if (jsonResponse.services.database.status !== 'healthy') {
-                  resolve({ 
-                    success: false, 
-                    message: `Database reported unhealthy: ${jsonResponse.services.database.error || 'No details provided'}`
-                  });
-                  return;
-                }
-              }
-              
-              resolve({ success: true });
-            } catch (error) {
-              resolve({ 
-                success: false, 
-                message: 'Failed to parse JSON response',
-                error: error.message
-              });
-            }
-          });
-        } else {
-          resolve({ success: true });
-        }
-      });
-      
-      req.on('error', (error) => {
-        resolve({ 
-          success: false, 
-          message: `Request failed: ${error.message}`,
-          error: error
-        });
-      });
-      
-      req.on('timeout', () => {
-        req.destroy();
-        resolve({ 
-          success: false, 
-          message: `Request timed out after ${options.timeout}ms`
-        });
-      });
+      if (response.status === 200) {
+        reporter.success(`${endpoint.name} endpoint is working`);
+      } else {
+        reporter.error(`${endpoint.name} endpoint responded with status ${response.status}`);
+      }
     } catch (error) {
-      resolve({ 
-        success: false, 
-        message: `Invalid URL or request setup: ${error.message}`,
-        error: error
+      reporter.error(`Failed to connect to ${endpoint.name} endpoint`, error);
+    }
+  }
+}
+
+// Check for public assets
+async function checkStaticAssets() {
+  reporter.log(chalk.cyan('\n📦 Checking static assets...'));
+  
+  const assets = [
+    { url: `${deploymentUrl}/favicon.ico`, name: 'Favicon' },
+    { url: `${deploymentUrl}/sw.js`, name: 'Service worker' }
+  ];
+  
+  for (const asset of assets) {
+    try {
+      const response = await axios.get(asset.url, { timeout: 5000, validateStatus: null });
+      
+      if (response.status === 200) {
+        reporter.success(`${asset.name} is accessible`);
+      } else {
+        reporter.warning(`${asset.name} responded with status ${response.status}`);
+      }
+    } catch (error) {
+      reporter.warning(`Could not access ${asset.name}`, error);
+    }
+  }
+}
+
+// Check metadata and SEO elements
+async function checkMetadata() {
+  reporter.log(chalk.cyan('\n📋 Checking metadata and SEO elements...'));
+  
+  try {
+    const response = await axios.get(deploymentUrl, { timeout: 5000 });
+    const html = response.data;
+    
+    // Very simple HTML parsing - for production use a proper HTML parser
+    const metaTags = [
+      { pattern: /<title>(.+?)<\/title>/, name: 'Title tag' },
+      { pattern: /<meta\s+name="description"\s+content="(.+?)"/i, name: 'Meta description' },
+      { pattern: /<meta\s+property="og:title"\s+content="(.+?)"/i, name: 'Open Graph title' },
+      { pattern: /<meta\s+property="og:description"\s+content="(.+?)"/i, name: 'Open Graph description' },
+      { pattern: /<meta\s+name="viewport"\s+content="(.+?)"/i, name: 'Viewport meta tag' }
+    ];
+    
+    for (const tag of metaTags) {
+      const match = html.match(tag.pattern);
+      if (match) {
+        reporter.success(`${tag.name} is present: "${match[1].substring(0, 50)}${match[1].length > 50 ? '...' : ''}"`);
+      } else {
+        reporter.warning(`${tag.name} is missing`);
+      }
+    }
+  } catch (error) {
+    reporter.error('Failed to check metadata', error);
+  }
+}
+
+// Check for security headers
+async function checkSecurityHeaders() {
+  reporter.log(chalk.cyan('\n🔒 Checking security headers...'));
+  
+  try {
+    const response = await axios.get(deploymentUrl, { timeout: 5000 });
+    const headers = response.headers;
+    
+    const securityHeaders = [
+      { name: 'Strict-Transport-Security', alias: 'HSTS' },
+      { name: 'X-Content-Type-Options', expected: 'nosniff' },
+      { name: 'X-Frame-Options', expected: 'DENY' },
+      { name: 'Content-Security-Policy', alias: 'CSP' },
+      { name: 'X-XSS-Protection' }
+    ];
+    
+    for (const header of securityHeaders) {
+      const headerName = header.name.toLowerCase();
+      const headerValue = headers[headerName];
+      
+      if (headerValue) {
+        if (header.expected && headerValue !== header.expected) {
+          reporter.warning(`${header.alias || header.name} header has unexpected value: ${headerValue}`);
+        } else {
+          reporter.success(`${header.alias || header.name} header is present`);
+        }
+      } else {
+        reporter.warning(`${header.alias || header.name} header is missing`);
+      }
+    }
+  } catch (error) {
+    reporter.error('Failed to check security headers', error);
+  }
+}
+
+// Performance check using Lighthouse in headless mode (if installed)
+function checkPerformanceWithLighthouse() {
+  reporter.log(chalk.cyan('\n⚡ Running Lighthouse performance check...'));
+  
+  const command = `npx lighthouse ${deploymentUrl} --output=json --output-path=./lighthouse.json --chrome-flags="--headless --no-sandbox --disable-gpu" --only-categories=performance,accessibility,best-practices,seo`;
+  
+  try {
+    exec(command, (error, stdout, stderr) => {
+      if (error) {
+        reporter.warning('Lighthouse check failed. Is Lighthouse installed? Try: npm install -g lighthouse');
+        return;
+      }
+      
+      try {
+        const report = JSON.parse(fs.readFileSync('./lighthouse.json', 'utf8'));
+        const categories = report.categories;
+        
+        reporter.success(`Performance score: ${Math.round(categories.performance.score * 100)}/100`);
+        reporter.success(`Accessibility score: ${Math.round(categories.accessibility.score * 100)}/100`);
+        reporter.success(`Best practices score: ${Math.round(categories['best-practices'].score * 100)}/100`);
+        reporter.success(`SEO score: ${Math.round(categories.seo.score * 100)}/100`);
+        
+        if (categories.performance.score < 0.7) {
+          reporter.warning('Performance score is below 70, consider optimizations');
+        }
+        
+        // Clean up the temporary file
+        fs.unlinkSync('./lighthouse.json');
+      } catch (readError) {
+        reporter.warning('Could not parse Lighthouse results');
+      }
+    });
+  } catch (execError) {
+    reporter.warning('Failed to execute Lighthouse', execError);
+  }
+}
+
+// Check for console errors using Puppeteer (if installed)
+function checkForConsoleErrors() {
+  reporter.log(chalk.cyan('\n🐞 Checking for client-side errors...'));
+  
+  const puppeteerScript = `
+  const puppeteer = require('puppeteer');
+
+  (async () => {
+    try {
+      const browser = await puppeteer.launch({ headless: "new" });
+      const page = await browser.newPage();
+      
+      // Collect console errors
+      const consoleErrors = [];
+      page.on('console', msg => {
+        if (msg.type() === 'error') {
+          consoleErrors.push(msg.text());
+        }
+      });
+      
+      // Collect failed network requests
+      const failedRequests = [];
+      page.on('requestfailed', request => {
+        failedRequests.push(\`\${request.url()} - \${request.failure().errorText}\`);
+      });
+      
+      await page.goto('${deploymentUrl}', { waitUntil: 'networkidle2', timeout: 30000 });
+      
+      // Log the results
+      console.log('CONSOLE_ERRORS=' + JSON.stringify(consoleErrors));
+      console.log('FAILED_REQUESTS=' + JSON.stringify(failedRequests));
+      
+      await browser.close();
+    } catch (error) {
+      console.error('SCRIPT_ERROR=' + error.message);
+      process.exit(1);
+    }
+  })();
+  `;
+  
+  fs.writeFileSync('check-console-errors.js', puppeteerScript);
+  
+  exec('node check-console-errors.js', (error, stdout, stderr) => {
+    try {
+      fs.unlinkSync('check-console-errors.js');
+    } catch (e) {
+      // Ignore error if file doesn't exist
+    }
+    
+    if (error) {
+      if (stderr.includes('Cannot find module \'puppeteer\'')) {
+        reporter.warning('Puppeteer not installed, skipping console error check. Install with: npm install puppeteer');
+      } else {
+        reporter.warning('Failed to check for console errors: ' + stderr);
+      }
+      return;
+    }
+    
+    // Parse the output
+    let consoleErrors = [], failedRequests = [];
+    
+    const consoleErrorsMatch = stdout.match(/CONSOLE_ERRORS=(\[.*?\])/);
+    if (consoleErrorsMatch) {
+      try {
+        consoleErrors = JSON.parse(consoleErrorsMatch[1]);
+      } catch (e) {
+        reporter.warning('Failed to parse console errors output');
+      }
+    }
+    
+    const failedRequestsMatch = stdout.match(/FAILED_REQUESTS=(\[.*?\])/);
+    if (failedRequestsMatch) {
+      try {
+        failedRequests = JSON.parse(failedRequestsMatch[1]);
+      } catch (e) {
+        reporter.warning('Failed to parse failed requests output');
+      }
+    }
+    
+    if (consoleErrors.length === 0) {
+      reporter.success('No console errors detected');
+    } else {
+      reporter.error(`Detected ${consoleErrors.length} console errors:`);
+      consoleErrors.forEach(error => {
+        console.log(chalk.red(`  - ${error}`));
+      });
+    }
+    
+    if (failedRequests.length === 0) {
+      reporter.success('No failed network requests detected');
+    } else {
+      reporter.warning(`Detected ${failedRequests.length} failed network requests:`);
+      failedRequests.forEach(request => {
+        console.log(chalk.yellow(`  - ${request}`));
       });
     }
   });
 }
 
-// Execute the verification
-verifyDeployment().catch(error => {
-  console.error('Verification process failed:', error);
-  process.exit(1);
-});
+// Main verification process
+async function verifyDeployment() {
+  try {
+    await checkSiteAvailability();
+    await checkApiEndpoints();
+    await checkStaticAssets();
+    await checkMetadata();
+    await checkSecurityHeaders();
+    
+    // These checks are optional and may be skipped if packages aren't installed
+    checkPerformanceWithLighthouse();
+    checkForConsoleErrors();
+    
+    // Give a bit of time for the optional checks to complete
+    setTimeout(() => {
+      console.log(chalk.cyan('\n📊 Verification summary:'));
+      console.log(chalk.green(`✓ Passed: ${reporter.successes}`));
+      console.log(chalk.yellow(`⚠ Warnings: ${reporter.warnings}`));
+      console.log(chalk.red(`✗ Errors: ${reporter.errors}`));
+      
+      reporter.saveReport();
+      
+      if (reporter.errors > 0) {
+        console.log(chalk.red('\n❌ Verification failed with errors. Please check the detailed report.'));
+        process.exit(1);
+      } else {
+        console.log(chalk.green('\n✅ Verification completed successfully!'));
+        if (reporter.warnings > 0) {
+          console.log(chalk.yellow('  Note: Some non-critical warnings were found. Check the report for details.'));
+        }
+      }
+    }, 5000);
+  } catch (error) {
+    reporter.error('Unexpected error during verification', error);
+    reporter.saveReport();
+    process.exit(1);
+  }
+}
+
+// Start the verification process
+verifyDeployment();
