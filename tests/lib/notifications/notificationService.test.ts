@@ -9,12 +9,15 @@ import { notificationService } from '@/lib/notifications/notificationService';
 // Import types from the notification service
 import { NotificationType, NotificationPriority } from '@/lib/notifications/notificationService';
 
-// Mock the Supabase client
-jest.mock('@supabase/supabase-js', () => ({
-  createClient: jest.fn(() => ({
-    from: jest.fn().mockReturnThis(),
+// Create a properly chainable query builder
+const createQueryBuilder = () => {
+  const queryBuilder = {
     select: jest.fn().mockReturnThis(),
+    insert: jest.fn().mockReturnThis(),
+    update: jest.fn().mockReturnThis(),
+    delete: jest.fn().mockReturnThis(),
     eq: jest.fn().mockReturnThis(),
+    neq: jest.fn().mockReturnThis(),
     order: jest.fn().mockReturnThis(),
     range: jest.fn().mockReturnThis(),
     limit: jest.fn().mockReturnThis(),
@@ -22,22 +25,21 @@ jest.mock('@supabase/supabase-js', () => ({
       data: { id: 'mock-notification-id' },
       error: null,
     }),
-    insert: jest.fn().mockReturnValue({
-      select: jest.fn().mockReturnValue({
-        single: jest.fn().mockResolvedValue({
-          data: { id: 'mock-notification-id' },
-          error: null,
-        })
-      })
-    }),
-    update: jest.fn().mockResolvedValue({
-      data: { id: 'mock-notification-id' },
-      error: null,
-    }),
-    delete: jest.fn().mockResolvedValue({
-      data: {},
-      error: null,
-    }),
+    then: jest.fn(callback => 
+      Promise.resolve({
+        data: [{ id: 'notif-1', title: 'Notification 1', is_read: false }],
+        error: null
+      }).then(callback)
+    )
+  };
+  
+  return queryBuilder;
+};
+
+// Mock the Supabase client
+jest.mock('@supabase/supabase-js', () => ({
+  createClient: jest.fn(() => ({
+    from: jest.fn().mockImplementation(() => createQueryBuilder()),
   })),
 }));
 

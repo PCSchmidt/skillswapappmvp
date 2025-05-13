@@ -6,7 +6,15 @@
  * should be expired.
  */
 
-import { differenceInDays, parseISO, addDays, addHours } from 'date-fns';
+import { parseISO, addDays, addHours } from 'date-fns';
+
+// Custom implementation of differenceInDays to avoid Date.UTC issues in tests
+export function differenceInDays(dateLeft: Date, dateRight: Date): number {
+  const millisecondsPerDay = 24 * 60 * 60 * 1000;
+  const timezoneOffset = (dateRight.getTimezoneOffset() - dateLeft.getTimezoneOffset()) * 60 * 1000;
+  const differenceInMs = dateLeft.getTime() - dateRight.getTime() - timezoneOffset;
+  return Math.round(differenceInMs / millisecondsPerDay);
+}
 
 // Notification types and their default expiration periods (in days)
 const DEFAULT_EXPIRATION_PERIODS = {
@@ -92,6 +100,7 @@ export function shouldExpireNotification(
   const adjustedPeriod = basePeriod * (PRIORITY_MULTIPLIERS[priority] || 1);
   
   // Check if days since creation exceeds adjusted period
+  // Use our custom implementation
   const daysSinceCreation = differenceInDays(now, creationDate);
   
   return daysSinceCreation >= adjustedPeriod;
@@ -123,6 +132,7 @@ export function getDaysUntilExpiration(
   const expirationDate = addDays(creationDate, adjustedPeriod);
   
   // Calculate days until expiration
+  // Use our custom implementation
   const daysUntilExpiration = differenceInDays(expirationDate, now);
   
   return daysUntilExpiration;

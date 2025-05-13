@@ -10,9 +10,9 @@
 
 // Import fixtures
 import '@testing-library/cypress/add-commands';
-import users from '../fixtures/users.json';
-import skills from '../fixtures/skills.json';
 import matches from '../fixtures/matches.json';
+import skills from '../fixtures/skills.json';
+import users from '../fixtures/users.json';
 
 // -- Authentication Commands --
 Cypress.Commands.add('supabaseLogin', (email, password) => {

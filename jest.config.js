@@ -12,7 +12,24 @@ const customJestConfig = {
   testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/.next/'],
   moduleDirectories: ['node_modules', '<rootDir>/'],
   moduleNameMapper: {
+    // Path aliases - matching tsconfig.json paths exactly
     '^@/(.*)$': '<rootDir>/src/$1',
+    '^@components/(.*)$': '<rootDir>/src/components/$1',
+    '^@lib/(.*)$': '<rootDir>/src/lib/$1',
+    '^@types/(.*)$': '<rootDir>/src/types/$1',
+    '^@ai/(.*)$': '<rootDir>/src/ai/$1',
+    // Additional mappings for test consistency
+    '^@/components/(.*)$': '<rootDir>/src/components/$1',
+    '^@/lib/(.*)$': '<rootDir>/src/lib/$1',
+    '^@/types/(.*)$': '<rootDir>/src/types/$1',
+    '^@/contexts/(.*)$': '<rootDir>/src/contexts/$1',
+    '^@/hooks/(.*)$': '<rootDir>/src/lib/hooks/$1',
+    // Handle CSS imports (with CSS modules)
+    '^.+\\.module\\.(css|sass|scss)$': 'identity-obj-proxy',
+    // Handle CSS imports (without CSS modules)
+    '^.+\\.(css|sass|scss)$': '<rootDir>/__mocks__/styleMock.js',
+    // Handle image imports
+    '^.+\\.(jpg|jpeg|png|gif|webp|avif|svg)$': '<rootDir>/__mocks__/fileMock.js',
   },
   collectCoverageFrom: [
     'src/**/*.{js,jsx,ts,tsx}',
