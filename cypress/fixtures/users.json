@@ -1,19 +1,290 @@
-{
-  "testUser": {
-    "email": "test@example.com",
-    "password": "password123",
-    "fullName": "Test User",
-    "location": "Boston, MA"
+[
+  {
+    "id": "user-1",
+    "email": "test.user1@example.com",
+    "fullName": "Alex Johnson",
+    "username": "alexj",
+    "avatarUrl": "/images/avatars/avatar-1.jpg",
+    "location": "New York, NY",
+    "bio": "Software developer with a passion for teaching and learning new technologies.",
+    "joined": "2023-01-15T10:20:30.000Z",
+    "lastActive": "2023-05-14T08:45:20.000Z",
+    "rating": 4.8,
+    "completedExchanges": 12,
+    "preferences": {
+      "emailNotifications": true,
+      "pushNotifications": true,
+      "matchAlerts": true,
+      "messageAlerts": true,
+      "weeklyDigest": true
+    },
+    "skills": {
+      "offered": [
+        {
+          "id": "skill-1",
+          "name": "JavaScript Programming",
+          "category": "Technology",
+          "proficiency": "Advanced",
+          "yearsExperience": 5,
+          "description": "Modern JavaScript including ES6+, React, Node.js and related frameworks."
+        },
+        {
+          "id": "skill-2",
+          "name": "Digital Marketing",
+          "category": "Business",
+          "proficiency": "Intermediate",
+          "yearsExperience": 3,
+          "description": "Social media marketing, content creation, and basic SEO techniques."
+        },
+        {
+          "id": "skill-3",
+          "name": "Music Production",
+          "category": "Creative",
+          "proficiency": "Beginner",
+          "yearsExperience": 1,
+          "description": "Basic music composition and production using digital tools."
+        }
+      ],
+      "wanted": [
+        {
+          "id": "skill-6",
+          "name": "Drawing",
+          "category": "Creative",
+          "proficiency": "Beginner",
+          "description": "Want to learn sketching and illustration techniques."
+        },
+        {
+          "id": "skill-7",
+          "name": "Italian Cooking",
+          "category": "Culinary",
+          "proficiency": "Beginner",
+          "description": "Interested in learning authentic Italian cooking methods and recipes."
+        }
+      ]
+    }
   },
-  "secondaryUser": {
-    "email": "user2@example.com",
-    "password": "password123",
-    "fullName": "Secondary User",
-    "location": "New York, NY"
-  },
-  "newUser": {
-    "fullName": "New Test User",
+  {
+    "id": "user-2",
+    "email": "test.user2@example.com",
+    "fullName": "Sam Garcia",
+    "username": "samg",
+    "avatarUrl": "/images/avatars/avatar-2.jpg",
     "location": "Chicago, IL",
-    "password": "SecurePass123"
+    "bio": "Professional photographer and videographer with a background in creative arts.",
+    "joined": "2023-02-10T14:30:45.000Z",
+    "lastActive": "2023-05-13T16:25:10.000Z",
+    "rating": 4.9,
+    "completedExchanges": 8,
+    "preferences": {
+      "emailNotifications": true,
+      "pushNotifications": false,
+      "matchAlerts": true,
+      "messageAlerts": true,
+      "weeklyDigest": false
+    },
+    "skills": {
+      "offered": [
+        {
+          "id": "skill-4",
+          "name": "Photography",
+          "category": "Creative",
+          "proficiency": "Expert",
+          "yearsExperience": 8,
+          "description": "Professional portrait and landscape photography with advanced editing."
+        },
+        {
+          "id": "skill-5",
+          "name": "Video Editing",
+          "category": "Creative",
+          "proficiency": "Advanced",
+          "yearsExperience": 6,
+          "description": "Professional video editing using Adobe Premiere and After Effects."
+        }
+      ],
+      "wanted": [
+        {
+          "id": "skill-1",
+          "name": "JavaScript Programming",
+          "category": "Technology",
+          "proficiency": "Beginner",
+          "description": "Want to learn web development basics for personal projects."
+        },
+        {
+          "id": "skill-10",
+          "name": "Public Speaking",
+          "category": "Communication",
+          "proficiency": "Intermediate",
+          "description": "Looking to improve presentation skills for photography workshops."
+        }
+      ]
+    }
+  },
+  {
+    "id": "user-3",
+    "email": "test.user3@example.com",
+    "fullName": "Jordan Lee",
+    "username": "jordanl",
+    "avatarUrl": "/images/avatars/avatar-3.jpg",
+    "location": "Seattle, WA",
+    "bio": "Digital marketing specialist with focus on content strategy and community building.",
+    "joined": "2023-03-05T09:15:40.000Z",
+    "lastActive": "2023-05-14T11:10:30.000Z",
+    "rating": 4.7,
+    "completedExchanges": 6,
+    "preferences": {
+      "emailNotifications": false,
+      "pushNotifications": true,
+      "matchAlerts": true,
+      "messageAlerts": true,
+      "weeklyDigest": true
+    },
+    "skills": {
+      "offered": [
+        {
+          "id": "skill-8",
+          "name": "Digital Marketing",
+          "category": "Business",
+          "proficiency": "Expert",
+          "yearsExperience": 7,
+          "description": "Comprehensive digital marketing including SEO, SEM, social media, and analytics."
+        },
+        {
+          "id": "skill-9",
+          "name": "Content Writing",
+          "category": "Communication",
+          "proficiency": "Advanced",
+          "yearsExperience": 5,
+          "description": "Blog posts, articles, and marketing copy across various industries."
+        }
+      ],
+      "wanted": [
+        {
+          "id": "skill-4",
+          "name": "Photography",
+          "category": "Creative",
+          "proficiency": "Intermediate",
+          "description": "Want to improve product photography skills for marketing materials."
+        },
+        {
+          "id": "skill-11",
+          "name": "Data Analysis",
+          "category": "Technology",
+          "proficiency": "Beginner",
+          "description": "Looking to learn basic data analysis for marketing insights."
+        }
+      ]
+    }
+  },
+  {
+    "id": "user-4",
+    "email": "test.user4@example.com",
+    "fullName": "Taylor Smith",
+    "username": "taylors",
+    "avatarUrl": "/images/avatars/avatar-4.jpg",
+    "location": "Austin, TX",
+    "bio": "Yoga instructor and wellness coach specializing in stress reduction techniques.",
+    "joined": "2023-01-25T11:35:20.000Z",
+    "lastActive": "2023-05-12T15:40:50.000Z",
+    "rating": 4.9,
+    "completedExchanges": 10,
+    "preferences": {
+      "emailNotifications": true,
+      "pushNotifications": true,
+      "matchAlerts": false,
+      "messageAlerts": true,
+      "weeklyDigest": true
+    },
+    "skills": {
+      "offered": [
+        {
+          "id": "skill-12",
+          "name": "Yoga Instruction",
+          "category": "Fitness",
+          "proficiency": "Expert",
+          "yearsExperience": 9,
+          "description": "Hatha, Vinyasa, and Restorative yoga instruction for all levels."
+        },
+        {
+          "id": "skill-13",
+          "name": "Meditation",
+          "category": "Wellness",
+          "proficiency": "Advanced",
+          "yearsExperience": 7,
+          "description": "Guided meditation techniques for stress reduction and mindfulness."
+        }
+      ],
+      "wanted": [
+        {
+          "id": "skill-9",
+          "name": "Content Writing",
+          "category": "Communication",
+          "proficiency": "Beginner",
+          "description": "Want to learn how to create effective blog content for my wellness website."
+        },
+        {
+          "id": "skill-14",
+          "name": "Website Design",
+          "category": "Technology",
+          "proficiency": "Beginner",
+          "description": "Looking to create and maintain a professional website for my yoga practice."
+        }
+      ]
+    }
+  },
+  {
+    "id": "user-5",
+    "email": "test.user5@example.com",
+    "fullName": "Morgan Williams",
+    "username": "morganw",
+    "avatarUrl": "/images/avatars/avatar-5.jpg",
+    "location": "Boston, MA",
+    "bio": "Language teacher specializing in Spanish and French for business professionals.",
+    "joined": "2023-02-20T08:50:15.000Z",
+    "lastActive": "2023-05-11T14:20:40.000Z",
+    "rating": 4.6,
+    "completedExchanges": 5,
+    "preferences": {
+      "emailNotifications": true,
+      "pushNotifications": false,
+      "matchAlerts": true,
+      "messageAlerts": false,
+      "weeklyDigest": false
+    },
+    "skills": {
+      "offered": [
+        {
+          "id": "skill-15",
+          "name": "Spanish Language",
+          "category": "Languages",
+          "proficiency": "Expert",
+          "yearsExperience": 10,
+          "description": "Spanish language instruction with focus on conversational fluency."
+        },
+        {
+          "id": "skill-16",
+          "name": "French Language",
+          "category": "Languages",
+          "proficiency": "Advanced",
+          "yearsExperience": 8,
+          "description": "French language instruction from beginner to advanced levels."
+        }
+      ],
+      "wanted": [
+        {
+          "id": "skill-8",
+          "name": "Digital Marketing",
+          "category": "Business",
+          "proficiency": "Beginner",
+          "description": "Want to learn how to market my language services online effectively."
+        },
+        {
+          "id": "skill-17",
+          "name": "Graphic Design",
+          "category": "Creative",
+          "proficiency": "Beginner",
+          "description": "Interested in creating visually appealing materials for my language courses."
+        }
+      ]
+    }
   }
-}
+]

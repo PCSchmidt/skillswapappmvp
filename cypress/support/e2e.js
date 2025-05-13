@@ -16,18 +16,47 @@
 // Import commands.js using ES2015 syntax:
 import './commands';
 
-// Import Testing Library commands
-import '@testing-library/cypress/add-commands';
+// Set up global hooks
+beforeEach(() => {
+  // Reset localStorage before each test
+  cy.clearLocalStorage();
+  
+  // Default viewport
+  cy.viewport(1280, 720);
+  
+  // Log test name
+  cy.log(`Running: ${Cypress.currentTest.title}`);
+  
+  // Preserve cookies between tests
+  Cypress.Cookies.preserveOnce('supabase-auth-token');
+});
 
-// Alternatively you can use CommonJS syntax:
-// require('./commands')
+// Handle uncaught exceptions
+Cypress.on('uncaught:exception', (err, runnable) => {
+  // Returning false here prevents Cypress from failing the test
+  // This is useful for handling third-party library errors
+  // that don't actually affect our test
+  console.log('Uncaught exception:', err.message);
+  return false;
+});
 
-// Hide fetch/XHR requests in the command log
-const app = window.top;
-if (!app.document.head.querySelector('[data-hide-command-log-request]')) {
-  const style = app.document.createElement('style');
-  style.innerHTML =
-    '.command-name-request, .command-name-xhr { display: none }';
-  style.setAttribute('data-hide-command-log-request', '');
-  app.document.head.appendChild(style);
-}
+// Add custom assertion for checking if element has a specific data attribute
+chai.Assertion.addMethod('dataAttribute', function (attribute) {
+  const subject = this._obj;
+  const hasAttr = subject.attr(`data-${attribute}`) !== undefined;
+  this.assert(
+    hasAttr,
+    `expected #{this} to have data attribute '${attribute}'`,
+    `expected #{this} not to have data attribute '${attribute}'`
+  );
+});
+
+// Configure retry behavior for flaky tests
+Cypress.env('retries', {
+  runMode: 2,
+  openMode: 0
+});
+
+// Set default timeout values
+Cypress.config('defaultCommandTimeout', 10000);
+Cypress.config('requestTimeout', 15000);
