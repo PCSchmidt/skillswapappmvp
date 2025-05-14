@@ -54,3 +54,6 @@ memory/vector-store/*
 .DS_Store
 *.pem
 .vercel
+
+# Sentry Config File
+.env.sentry-build-plugin
