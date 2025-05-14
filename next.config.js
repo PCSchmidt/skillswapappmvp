@@ -25,11 +25,7 @@ const nextConfig = {
     // Add path resolution for webpack
     config.resolve.alias = {
       ...config.resolve.alias,
-      '@': path.resolve(__dirname, 'src/'),
-      '@components': path.resolve(__dirname, 'src/components/'),
-      '@lib': path.resolve(__dirname, 'src/lib/'),
-      '@types': path.resolve(__dirname, 'src/types/'),
-      '@ai': path.resolve(__dirname, 'src/ai/')
+      '@': path.resolve(__dirname, 'src/')
     };
     return config;
   }

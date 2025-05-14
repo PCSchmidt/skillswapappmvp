@@ -49,7 +49,8 @@
     "lint:fix": "eslint --fix ./src --config .eslintrc.cjs",
     "analyze": "cross-env ANALYZE=true next build",
     "analyze:server": "cross-env ANALYZE=true BUNDLE_ANALYZE=server next build",
-    "analyze:browser": "cross-env ANALYZE=true BUNDLE_ANALYZE=browser next build"
+    "analyze:browser": "cross-env ANALYZE=true BUNDLE_ANALYZE=browser next build",
+    "update-imports": "node scripts/update-imports.js"
   },
   "dependencies": {
     "@auth/supabase-adapter": "^0.1.5",

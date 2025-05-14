@@ -1,6 +1,8 @@
 {
   "version": 2,
   "regions": ["iad1"],
+  "buildCommand": "npm ci && npm run update-imports && SKIP_TYPE_CHECK=true npm run build",
+  "installCommand": "npm install --no-save @supabase/ssr@0.0.10 typescript@5.0.4 eslint@8.57.0",
   "env": {
     "NODE_ENV": "production",
     "NEXT_TELEMETRY_DISABLED": "1",

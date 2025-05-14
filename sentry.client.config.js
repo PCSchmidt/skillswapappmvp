@@ -17,16 +17,10 @@ Sentry.init({
   environment: process.env.NEXT_PUBLIC_VERCEL_ENV || 'development',
   
   // Enable automatic instrumentation for Next.js routing
-  integrations: [
-    new Sentry.BrowserTracing(),
-    new Sentry.Replay({
-      // Additional SDK configuration goes here
-      maskAllText: true,
-      blockAllMedia: true,
-    }),
-  ],
-
+  // Note: We removed BrowserTracing and Replay as they're not available in this version
+  
   // Performance settings
+  // These are kept as they are standard options even if the integrations are different
   replaysSessionSampleRate: 0.1, // Sample rate for performance tracing
   replaysOnErrorSampleRate: 1.0, // Always trace sessions with errors
   

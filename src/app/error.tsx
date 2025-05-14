@@ -2,8 +2,8 @@
 
 import * as Sentry from '@sentry/nextjs';
 import React, { useEffect } from 'react';
-import Button from '@components/ui/Button';
-import Card from '@components/ui/Card';
+import Button from '@/components/ui/Button';
+import Card from '@/components/ui/Card';
 
 interface ErrorPageProps {
   error: Error & { digest?: string };
