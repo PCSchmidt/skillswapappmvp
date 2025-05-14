@@ -1,4 +1,5 @@
 import { createServerClient } from '@supabase/ssr';
+import type { Database } from '@/types/supabase';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
@@ -75,7 +76,7 @@ export async function middleware(req: NextRequest) {
   // Only create Supabase client if environment variables are set
   if (supabaseUrl && supabaseAnonKey) {
     // Create supabase server client
-    const supabase = createServerClient(
+    const supabase = createServerClient<Database>(
       supabaseUrl,
       supabaseAnonKey,
       {

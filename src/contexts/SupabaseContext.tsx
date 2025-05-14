@@ -7,11 +7,9 @@
 
 'use client';
 
-import { createBrowserClient } from '@supabase/ssr';
 import { Session, User, AuthChangeEvent } from '@supabase/supabase-js';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { supabaseClient } from '@/lib/supabase/client';
 
 type SupabaseContextType = {
   supabase: typeof supabase;
