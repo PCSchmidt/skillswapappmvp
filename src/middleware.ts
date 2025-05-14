@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
-import type { Database } from '@/types/supabase';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import type { Database } from '@/types/supabase';
 
 /**
  * Middleware for handling authentication, route protection, and maintenance mode
