@@ -1,3 +1,5 @@
+'use client';
+
 import { Metadata } from 'next';
 import dynamic from 'next/dynamic';
 import React from 'react';
@@ -26,11 +28,6 @@ const RecommendationPanel = dynamic(
   () => import('@/components/dashboard/RecommendationPanel'),
   { loading: () => <RecommendationPanelSkeleton /> }
 );
-
-export const metadata: Metadata = {
-  title: 'Dashboard | SkillSwap',
-  description: 'Your personal SkillSwap dashboard with activity tracking, exchange status, and personalized recommendations',
-};
 
 export default function DashboardPage() {
   // Demo data for statistics

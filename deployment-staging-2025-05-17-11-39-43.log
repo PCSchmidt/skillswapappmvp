@@ -1,0 +1,42 @@
+[2025-05-17T11:39:43.020Z] INFO: Checking for uncommitted changes...
+[2025-05-17T11:39:43.020Z] COMMAND: git status --porcelain
+[2025-05-17T11:39:43.199Z] ERROR: Command failed: git status --porcelain
+[2025-05-17T11:39:43.200Z] ERROR: Command failed: git status --porcelain
+fatal: not a git repository (or any of the parent directories): .git
+
+[2025-05-17T11:39:43.200Z] ERROR: Command output: 
+[2025-05-17T11:39:43.201Z] SUCCESS: Git working directory is clean
+[2025-05-17T11:39:43.203Z] INFO: 
+Updating environment variables for staging...
+[2025-05-17T11:39:43.204Z] COMMAND: npm run update-env:staging
+[2025-05-17T11:39:44.099Z] ERROR: Command failed: npm run update-env:staging
+[2025-05-17T11:39:44.100Z] ERROR: Command failed: npm run update-env:staging
+[2025-05-17T11:39:54.640Z] INFO: 
+Validating dependencies...
+[2025-05-17T11:39:54.640Z] COMMAND: npm run validate-deps
+[2025-05-17T11:39:55.209Z] ERROR: Command failed: npm run validate-deps
+[2025-05-17T11:39:55.209Z] ERROR: Command failed: npm run validate-deps
+[2025-05-17T11:39:57.592Z] INFO: 
+Verifying build...
+[2025-05-17T11:39:57.592Z] COMMAND: npm run prebuild:verify
+[2025-05-17T11:39:58.206Z] ERROR: Command failed: npm run prebuild:verify
+[2025-05-17T11:39:58.207Z] ERROR: Command failed: npm run prebuild:verify
+[2025-05-17T11:39:59.888Z] INFO: 
+Running tests...
+[2025-05-17T11:39:59.889Z] COMMAND: npm test
+[2025-05-17T11:40:00.561Z] ERROR: Command failed: npm test
+[2025-05-17T11:40:00.561Z] ERROR: Command failed: npm test
+[2025-05-17T11:40:02.113Z] INFO: 
+Deploying to staging...
+[2025-05-17T11:40:02.114Z] COMMAND: npx vercel --prod
+[2025-05-17T11:42:55.048Z] ERROR: Command failed: npx vercel --prod
+[2025-05-17T11:42:55.049Z] ERROR: Command failed: npx vercel --prod
+[2025-05-17T11:42:55.049Z] ERROR: Deployment to Vercel failed
+[2025-05-17T11:44:50.116Z] INFO: 
+Verifying deployment...
+[2025-05-17T11:44:50.116Z] COMMAND: npm run verify-deployment -- https://skillswapappmvp-ixm5mgf21-chris-schmidts-projects.vercel.app/
+[2025-05-17T11:44:50.650Z] ERROR: Command failed: npm run verify-deployment -- https://skillswapappmvp-ixm5mgf21-chris-schmidts-projects.vercel.app/
+[2025-05-17T11:44:50.650Z] ERROR: Command failed: npm run verify-deployment -- https://skillswapappmvp-ixm5mgf21-chris-schmidts-projects.vercel.app/
+[2025-05-17T11:44:50.651Z] SUCCESS: 
+Deployment process completed
+[2025-05-17T11:44:50.652Z] INFO: Deployment log saved to C:\Users\pchri\Documents\Cline\skillswap_mvp\deployment-staging-2025-05-17-11-39-43.log

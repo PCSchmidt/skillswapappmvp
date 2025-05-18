@@ -73,7 +73,7 @@ function executeCommand(command, silent = false) {
   try {
     log(command, 'command');
     
-    const options = { stdio: silent ? 'pipe' : 'inherit' };
+    const options = { stdio: silent ? 'pipe' : 'inherit', cwd: __dirname };
     const output = execSync(command, options);
     
     if (silent) {
@@ -131,6 +131,11 @@ async function deploy() {
     // Step 1: Check for pending changes
     await checkGitStatus();
     
+    // Ensure dependencies are installed
+    log('\nInstalling dependencies...', 'info');
+    console.log(chalk.cyan('-'.repeat(60)));
+    executeCommand('npm ci');
+
     // Step 2: Update environment variables
     log(`\nUpdating environment variables for ${environment}...`, 'info');
     console.log(chalk.cyan('-'.repeat(60)));
@@ -182,6 +187,11 @@ async function deploy() {
     // Step 6: Deploy to Vercel
     log(`\nDeploying to ${environment}...`, 'info');
     console.log(chalk.cyan('-'.repeat(60)));
+    
+    // Clean up node_modules and package-lock.json before Vercel deployment
+    log('Cleaning up node_modules and package-lock.json...', 'info');
+    executeCommand('rm -rf node_modules');
+    executeCommand('rm -f package-lock.json');
     
     let deployUrl;
     if (executeCommand('npx vercel --prod')) {

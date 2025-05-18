@@ -1,3 +1,5 @@
+'use client';
+
 import React, { HTMLAttributes } from 'react';
 import { classNames } from '../../lib/utils';
 

@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Login Page
  */
@@ -5,11 +7,6 @@
 import Link from 'next/link';
 import React from 'react';
 import LoginForm from '@/components/auth/LoginForm';
-
-export const metadata = {
-  title: 'Sign In | SkillSwap',
-  description: 'Sign in to your SkillSwap account to connect with skilled people in your community',
-};
 
 export default function LoginPage() {
   return (

@@ -10,8 +10,8 @@
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
 import ButtonWrapper from '@/components/wrappers/ButtonWrapper';
+import { supabase } from '@/lib/supabase';
 
 export default function ResetPassword() {
   const router = useRouter();

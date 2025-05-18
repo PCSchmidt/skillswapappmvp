@@ -106,6 +106,7 @@
     "swr": "^2.3.3",
     "tailwindcss": "^3.3.0",
     "typescript": "5.0.4",
-    "webpack-bundle-analyzer": "^4.10.2"
+    "webpack-bundle-analyzer": "^4.10.2",
+    "@babel/core": "^7.23.3"
   }
 }

@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Signup Page
  */
@@ -5,11 +7,6 @@
 import Link from 'next/link';
 import React from 'react';
 import SignupForm from '@/components/auth/SignupForm';
-
-export const metadata = {
-  title: 'Create Account | SkillSwap',
-  description: 'Join SkillSwap to connect with skilled people in your community and trade skills',
-};
 
 export default function SignupPage() {
   return (
