@@ -1,5 +1,7 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import { useState } from 'react';
 import { Container } from '@/components/layout/Container';
 import Button from '@/components/ui/Button';

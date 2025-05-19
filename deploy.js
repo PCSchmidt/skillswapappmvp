@@ -134,7 +134,7 @@ async function deploy() {
     // Ensure dependencies are installed
     log('\nInstalling dependencies...', 'info');
     console.log(chalk.cyan('-'.repeat(60)));
-    executeCommand('npm ci');
+    executeCommand('yarn install --frozen-lockfile');
 
     // Step 2: Update environment variables
     log(`\nUpdating environment variables for ${environment}...`, 'info');

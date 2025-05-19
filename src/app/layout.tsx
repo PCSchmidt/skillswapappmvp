@@ -10,18 +10,13 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import '../styles/globals.css';
 import { Toaster } from 'react-hot-toast';
-import SWRWrapper from '@/components/wrappers/SWRWrapper';
-import ErrorProvider from '@/components/ui/ErrorProvider';
 import Footer from '@/components/layout/Footer';
 import Navbar from '@/components/navigation/Navbar';
+import ErrorProvider from '@/components/ui/ErrorProvider';
+import SWRWrapper from '@/components/wrappers/SWRWrapper';
 import { SupabaseProvider } from '@/contexts/SupabaseContext';
 
 const inter = Inter({ subsets: ['latin'] });
-
-export const metadata: Metadata = {
-  title: 'SkillSwap - Exchange Skills with Others',
-  description: 'A platform for exchanging skills and knowledge with others in your community',
-};
 
 export default function RootLayout({
   children,
