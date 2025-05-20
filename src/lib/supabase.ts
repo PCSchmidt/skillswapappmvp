@@ -5,12 +5,22 @@
  * to provide a consistent import pattern across the codebase.
  */
 
-// Re-export all exports from the supabase directory
-export * from './supabase/index';
+// Import directly from the files without using re-exports
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@supabase/supabase-js';
 
-// Import and re-export both client implementations
-import { supabaseCachedClient } from './supabase/cachedClient';
-import { supabaseClient } from './supabase/client';
+// Initialize the clients directly here instead of importing
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+
+// Verify environment variables are set
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.warn('Supabase URL or Anon Key is not defined in environment variables');
+}
+
+// Create clients directly
+const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+const supabaseCachedClient = createClientComponentClient();
 
 // Export the default client (non-cached version)
 export const supabase = supabaseClient;

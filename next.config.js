@@ -23,9 +23,22 @@ const nextConfig = {
     // Add path resolution for webpack
     config.resolve.alias = {
       ...config.resolve.alias,
-      '@': path.resolve(__dirname, 'src/')
+      '@': path.resolve(__dirname, 'src/'),
+      '@/lib': path.resolve(__dirname, 'src/lib/')
     };
+    
+    // Explicitly add src directory to module directories
+    config.resolve.modules = [
+      path.resolve(__dirname, 'src'),
+      'node_modules',
+      ...config.resolve.modules || []
+    ];
+    
     return config;
+  },
+  // Enable experimental features for improved module resolution
+  experimental: {
+    esmExternals: true
   }
 }
 
