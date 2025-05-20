@@ -6,11 +6,11 @@
  */
 
 // Re-export all exports from the supabase directory
-export * from './supabase/index';
+export * from '@/lib/supabase/index';
 
 // Import and re-export both client implementations
-import { supabaseCachedClient } from './supabase/cachedClient';
-import { supabaseClient } from './supabase/client';
+import { supabaseCachedClient } from '@/lib/supabase/cachedClient';
+import { supabaseClient } from '@/lib/supabase/client';
 
 // Export the default client (non-cached version)
 export const supabase = supabaseClient;

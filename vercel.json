@@ -1,12 +1,11 @@
 {
   "version": 2,
   "regions": ["iad1"],
-  "buildCommand": "yarn install --frozen-lockfile && yarn run update-imports && SKIP_TYPE_CHECK=true yarn run build",
+  "buildCommand": "yarn run build",
   "installCommand": "yarn install",
   "env": {
     "NODE_ENV": "production",
     "NEXT_TELEMETRY_DISABLED": "1",
-    "SKIP_TYPE_CHECK": "true",
     "NODE_OPTIONS": "--max-old-space-size=4096"
   },
   "github": {
