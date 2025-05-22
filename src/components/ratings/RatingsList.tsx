@@ -4,11 +4,11 @@
  * This component displays a list of ratings for a user or skill.
  */
 
-import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import StarRating from './StarRating';
+import React from 'react';
 import { Database } from '@/types/supabase';
+import StarRating from './StarRating';
 
 type RatingWithDetails = Database['public']['Tables']['ratings']['Row'] & {
   rater?: {

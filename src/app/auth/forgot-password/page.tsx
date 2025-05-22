@@ -6,10 +6,10 @@
 
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useSupabase } from '@/contexts/SupabaseContext';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import React, { useState } from 'react';
+import { useSupabase } from '@/contexts/SupabaseContext';
 
 export default function ForgotPassword() {
   const router = useRouter();

@@ -4,8 +4,8 @@
  * Tests for the login form component that allows users to sign in
  */
 
-import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import React from 'react';
 import '@testing-library/jest-dom';
 import LoginForm from '@/components/auth/LoginForm';
 

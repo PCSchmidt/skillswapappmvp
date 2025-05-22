@@ -5,8 +5,8 @@
  * toggled from a notification bell icon in the navigation.
  */
 
-import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSupabase } from '@/contexts/SupabaseContext';
 import NotificationList from './NotificationList';
 

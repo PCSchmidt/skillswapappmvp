@@ -1,31 +1,19 @@
-// Jest setup file
+// jest.setup.js
 import '@testing-library/jest-dom';
 
-// Mock global fetch
-global.fetch = jest.fn();
-
-// Mock next/navigation
-jest.mock('next/navigation', () => ({
-  useRouter: () => ({
-    push: jest.fn(),
-    back: jest.fn(),
-    forward: jest.fn(),
-    refresh: jest.fn(),
-    replace: jest.fn(),
-    prefetch: jest.fn(),
-  }),
-  useSearchParams: jest.fn(() => new URLSearchParams()),
-  usePathname: jest.fn(() => ''),
-}));
-
-// Reset mocks before each test
-beforeEach(() => {
-  jest.clearAllMocks();
-});
-
-// Clean up afterEach
-afterEach(() => {
-  jest.restoreAllMocks();
+// Mock the window.matchMedia function which is used by some components
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: jest.fn().mockImplementation(query => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: jest.fn(), // Deprecated
+    removeListener: jest.fn(), // Deprecated
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  })),
 });
 
 // Mock IntersectionObserver
@@ -46,17 +34,48 @@ class MockIntersectionObserver {
 
 global.IntersectionObserver = MockIntersectionObserver;
 
-// Mock window.matchMedia
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: jest.fn().mockImplementation(query => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: jest.fn(),
-    removeListener: jest.fn(),
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
-    dispatchEvent: jest.fn(),
-  })),
-});
+// Mock ResizeObserver
+class MockResizeObserver {
+  constructor(callback) {
+    this.callback = callback;
+  }
+  observe() {
+    return null;
+  }
+  unobserve() {
+    return null;
+  }
+  disconnect() {
+    return null;
+  }
+}
+
+global.ResizeObserver = MockResizeObserver;
+
+// Mock fetch
+global.fetch = jest.fn(() =>
+  Promise.resolve({
+    json: () => Promise.resolve({}),
+    text: () => Promise.resolve(''),
+    ok: true,
+  })
+);
+
+// Suppress React 18 console errors
+const originalConsoleError = console.error;
+console.error = (...args) => {
+  if (
+    typeof args[0] === 'string' &&
+    args[0].includes('Warning: ReactDOM.render is no longer supported')
+  ) {
+    return;
+  }
+  if (
+    typeof args[0] === 'string' &&
+    args[0].includes('An update to') && 
+    args[0].includes('inside a test was not wrapped in act')
+  ) {
+    return;
+  }
+  originalConsoleError(...args);
+};

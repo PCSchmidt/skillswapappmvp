@@ -4,8 +4,8 @@
  * Tests for the component that displays a list of messages in a conversation
  */
 
-import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
+import React from 'react';
 import '@testing-library/jest-dom';
 import MessageList from '@/components/messaging/MessageList';
 

@@ -7,9 +7,9 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useSupabase } from '@/contexts/SupabaseContext';
-import MessageItem from './MessageItem';
-import MessageComposer from './MessageComposer';
 import { Database } from '@/types/supabase';
+import MessageComposer from './MessageComposer';
+import MessageItem from './MessageItem';
 
 type MessageWithUser = Database['public']['Tables']['messages']['Row'] & {
   sender?: {
