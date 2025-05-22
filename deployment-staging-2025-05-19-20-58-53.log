@@ -1,0 +1,38 @@
+[2025-05-19T20:58:53.281Z] INFO: Checking for uncommitted changes...
+[2025-05-19T20:58:53.282Z] COMMAND: git status --porcelain
+[2025-05-19T20:58:53.389Z] WARNING: You have uncommitted changes:
+[2025-05-19T20:58:56.383Z] WARNING: Proceeding with uncommitted changes
+[2025-05-19T20:58:56.383Z] INFO: 
+Installing dependencies...
+[2025-05-19T20:58:56.384Z] COMMAND: yarn install --frozen-lockfile
+[2025-05-19T20:58:57.324Z] INFO: 
+Updating environment variables for staging...
+[2025-05-19T20:58:57.325Z] COMMAND: npm run update-env:staging
+[2025-05-19T20:59:18.289Z] INFO: 
+Validating dependencies...
+[2025-05-19T20:59:18.290Z] COMMAND: npm run validate-deps
+[2025-05-19T21:01:11.999Z] INFO: 
+Verifying build...
+[2025-05-19T21:01:12.000Z] COMMAND: npm run prebuild:verify
+[2025-05-19T21:02:27.161Z] INFO: 
+Running tests...
+[2025-05-19T21:02:27.163Z] COMMAND: npm test
+[2025-05-19T21:03:10.373Z] ERROR: Command failed: npm test
+[2025-05-19T21:03:10.373Z] ERROR: Command failed: npm test
+[2025-05-19T21:03:16.087Z] INFO: 
+Deploying to staging...
+[2025-05-19T21:03:16.087Z] INFO: Cleaning up node_modules and package-lock.json...
+[2025-05-19T21:03:16.088Z] COMMAND: rm -rf node_modules
+[2025-05-19T21:04:13.850Z] COMMAND: rm -f package-lock.json
+[2025-05-19T21:04:13.916Z] COMMAND: npx vercel --prod
+[2025-05-19T21:05:36.263Z] ERROR: Command failed: npx vercel --prod
+[2025-05-19T21:05:36.264Z] ERROR: Command failed: npx vercel --prod
+[2025-05-19T21:05:36.264Z] ERROR: Deployment to Vercel failed
+[2025-05-19T21:06:07.858Z] INFO: 
+Verifying deployment...
+[2025-05-19T21:06:07.859Z] COMMAND: npm run verify-deployment -- https://skillswapappmvp-2v8jvhtee-chris-schmidts-projects.vercel.app/
+[2025-05-19T21:06:08.872Z] ERROR: Command failed: npm run verify-deployment -- https://skillswapappmvp-2v8jvhtee-chris-schmidts-projects.vercel.app/
+[2025-05-19T21:06:08.872Z] ERROR: Command failed: npm run verify-deployment -- https://skillswapappmvp-2v8jvhtee-chris-schmidts-projects.vercel.app/
+[2025-05-19T21:06:08.872Z] SUCCESS: 
+Deployment process completed
+[2025-05-19T21:06:08.872Z] INFO: Deployment log saved to C:\Users\pchri\Documents\Cline\skillswap_mvp\deployment-staging-2025-05-19-20-58-53.log

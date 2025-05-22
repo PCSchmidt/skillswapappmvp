@@ -1,0 +1,39 @@
+[2025-05-19T17:46:35.224Z] INFO: Checking for uncommitted changes...
+[2025-05-19T17:46:35.224Z] COMMAND: git status --porcelain
+[2025-05-19T17:46:35.307Z] SUCCESS: Git working directory is clean
+[2025-05-19T17:46:35.309Z] INFO: 
+Installing dependencies...
+[2025-05-19T17:46:35.310Z] COMMAND: yarn install --frozen-lockfile
+[2025-05-19T17:46:36.047Z] INFO: 
+Updating environment variables for staging...
+[2025-05-19T17:46:36.048Z] COMMAND: npm run update-env:staging
+[2025-05-19T17:46:36.980Z] ERROR: Command failed: npm run update-env:staging
+[2025-05-19T17:46:36.981Z] ERROR: Command failed: npm run update-env:staging
+[2025-05-19T17:46:40.326Z] INFO: 
+Validating dependencies...
+[2025-05-19T17:46:40.326Z] COMMAND: npm run validate-deps
+[2025-05-19T17:47:12.913Z] INFO: 
+Verifying build...
+[2025-05-19T17:47:12.915Z] COMMAND: npm run prebuild:verify
+[2025-05-19T17:48:52.129Z] INFO: 
+Running tests...
+[2025-05-19T17:48:52.130Z] COMMAND: npm test
+[2025-05-19T17:49:45.384Z] ERROR: Command failed: npm test
+[2025-05-19T17:49:45.384Z] ERROR: Command failed: npm test
+[2025-05-19T17:50:03.491Z] INFO: 
+Deploying to staging...
+[2025-05-19T17:50:03.491Z] INFO: Cleaning up node_modules and package-lock.json...
+[2025-05-19T17:50:03.491Z] COMMAND: rm -rf node_modules
+[2025-05-19T17:50:58.180Z] COMMAND: rm -f package-lock.json
+[2025-05-19T17:50:58.282Z] COMMAND: npx vercel --prod
+[2025-05-19T17:52:21.559Z] ERROR: Command failed: npx vercel --prod
+[2025-05-19T17:52:21.559Z] ERROR: Command failed: npx vercel --prod
+[2025-05-19T17:52:21.559Z] ERROR: Deployment to Vercel failed
+[2025-05-19T17:54:12.322Z] INFO: 
+Verifying deployment...
+[2025-05-19T17:54:12.322Z] COMMAND: npm run verify-deployment -- https://skillswapappmvp-git-dev-chris-schmidts-projects.vercel.app/
+[2025-05-19T17:54:12.920Z] ERROR: Command failed: npm run verify-deployment -- https://skillswapappmvp-git-dev-chris-schmidts-projects.vercel.app/
+[2025-05-19T17:54:12.920Z] ERROR: Command failed: npm run verify-deployment -- https://skillswapappmvp-git-dev-chris-schmidts-projects.vercel.app/
+[2025-05-19T17:54:12.920Z] SUCCESS: 
+Deployment process completed
+[2025-05-19T17:54:12.920Z] INFO: Deployment log saved to C:\Users\pchri\Documents\Cline\skillswap_mvp\deployment-staging-2025-05-19-17-46-35.log

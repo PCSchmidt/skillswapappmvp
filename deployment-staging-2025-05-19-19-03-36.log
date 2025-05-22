@@ -1,0 +1,24 @@
+[2025-05-19T19:03:36.242Z] INFO: Checking for uncommitted changes...
+[2025-05-19T19:03:36.242Z] COMMAND: git status --porcelain
+[2025-05-19T19:03:36.334Z] WARNING: You have uncommitted changes:
+[2025-05-19T19:03:38.115Z] WARNING: Proceeding with uncommitted changes
+[2025-05-19T19:03:38.116Z] INFO: 
+Installing dependencies...
+[2025-05-19T19:03:38.116Z] COMMAND: yarn install --frozen-lockfile
+[2025-05-19T19:03:38.830Z] INFO: 
+Updating environment variables for staging...
+[2025-05-19T19:03:38.831Z] COMMAND: npm run update-env:staging
+[2025-05-19T19:03:39.572Z] ERROR: Command failed: npm run update-env:staging
+[2025-05-19T19:03:39.573Z] ERROR: Command failed: npm run update-env:staging
+[2025-05-19T19:03:43.273Z] INFO: 
+Validating dependencies...
+[2025-05-19T19:03:43.274Z] COMMAND: npm run validate-deps
+[2025-05-19T19:04:20.172Z] INFO: 
+Verifying build...
+[2025-05-19T19:04:20.174Z] COMMAND: npm run prebuild:verify
+[2025-05-19T19:05:36.370Z] INFO: 
+Running tests...
+[2025-05-19T19:05:36.375Z] COMMAND: npm test
+[2025-05-19T19:06:14.843Z] ERROR: Command failed: npm test
+[2025-05-19T19:06:14.843Z] ERROR: Command failed: npm test
+[2025-05-19T19:27:12.383Z] ERROR: Deployment aborted after tests
