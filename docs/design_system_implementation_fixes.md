@@ -1,86 +1,189 @@
 # Design System Implementation Fixes
 
-## Overview
+This document outlines the fixes made to the Storybook configuration and provides guidance for further implementation of the design system.
 
-When implementing the design system, several TypeScript errors were encountered in the component files. This document outlines the key issues and the approach used to resolve them.
+## Storybook Configuration Fixes
 
-## Key Issues Identified
+### 1. Framework Configuration
 
-1. **JSX Comment Syntax Errors**
-   - Error messages: "')' expected" and "Unexpected token. Did you mean `{'}'}` or `&rbrace;`?"
-   - Files affected: ActivityFeed.tsx, ExchangeStatusSection.tsx, RecommendationPanel.tsx, ActivityFeedSkeleton.tsx
+The Storybook configuration was updated from using the experimental `@storybook/experimental-nextjs-vite` to the stable `@storybook/nextjs` framework. This resolves compatibility issues with the current Next.js setup.
 
-2. **Legacy Button Component Usage**
-   - Error message: "Cannot find name 'Button'"
-   - Files affected: SkillSelect.tsx, TradeProposalForm.tsx
+```typescript
+// .storybook/main.ts
+import type { StorybookConfig } from "@storybook/nextjs";
 
-3. **Type Errors**
-   - Error message: "Argument of type is not assignable to parameter of type 'never'"
-   - Files affected: TradeProposalForm.tsx
-
-## Resolution Approach
-
-### 1. JSX Comment Syntax Errors
-
-**Problem:**
-JSX does not support standard JavaScript comments (`// comment`) directly within JSX elements. When these comments were present within JSX code, TypeScript could not parse the code correctly.
-
-**Solution:**
-Two approaches were used to fix these issues:
-
-a. **Remove comments entirely**: For most files, we removed the comments entirely since they were primarily documenting color usage which was self-evident from the class names.
-
-```jsx
-// Before
-<div className="text-center py-8 text-neutral-500"> {/* Use neutral-500 */}
-
-// After
-<div className="text-center py-8 text-neutral-500">
+const config: StorybookConfig = {
+  // ...
+  "framework": {
+    "name": "@storybook/nextjs",
+    "options": {}
+  },
+  // ...
+};
 ```
 
-b. **Rewrite entire files**: For files with many comment issues, we rewrote the entire file content to ensure all syntax was correct and consistent.
+### 2. Addon Configuration
 
-### 2. Legacy Button Component Usage
+Updated the addons configuration to use only the necessary addons:
 
-**Problem:**
-The codebase was transitioning from a direct `Button` component to a new `ButtonAdapter` component that provided additional functionality and better adhered to the design system standards.
+```typescript
+"addons": [
+  "@storybook/addon-links",
+  "@storybook/addon-essentials",
+  "@storybook/addon-interactions"
+],
+```
 
-**Solution:**
-- Updated import statements from `import Button from '@/components/ui/Button'` to `import ButtonAdapter from '@/components/ui/ButtonAdapter'`
-- Replaced all instances of `<Button>` with `<ButtonAdapter>`
-- Ensured all properties were correctly passed to the new component
+### 3. Context Providers
 
-In files with numerous Button instances (like TradeProposalForm.tsx), we rewrote the entire file to ensure consistent implementation.
+Created a decorator to provide the necessary contexts for components that rely on SupabaseContext:
 
-### 3. Type Errors
+```typescript
+// .storybook/decorators.tsx
+export const withContexts = (Story: React.ComponentType) => {
+  return (
+    <SupabaseProvider>
+      <Story />
+    </SupabaseProvider>
+  );
+};
+```
 
-**Problem:**
-Type errors in TradeProposalForm.tsx were related to accessing properties on values typed as 'never'. This typically happens when TypeScript cannot infer the correct type from the context.
+### 4. Tailwind CSS Integration
 
-**Solution:**
-- Fixed type declarations in component props
-- Correctly typed state variables and function parameters
-- Added explicit type annotations where TypeScript could not infer types correctly
+Updated the preview configuration to properly import Tailwind styles:
 
-## Lessons Learned
+```typescript
+// .storybook/preview.ts
+import '../src/app/globals.css'; // Import your Tailwind CSS
+```
 
-1. **JSX Comments Best Practices**:
-   - Place comments outside JSX elements when possible
-   - Use `{/* */}` syntax for comments within JSX
-   - Avoid placing comments between JSX attributes
+### 5. Dependencies
 
-2. **Component Migration Strategy**:
-   - When migrating from one component to another, use search-and-replace systematically
-   - Update imports first, then component instances
-   - Test thoroughly after each file update
+Installed missing dependencies:
 
-3. **TypeScript Type Safety**:
-   - Explicitly type function parameters and state variables
-   - Use interfaces for complex objects
-   - Avoid using 'any' type and prefer specific type definitions
+```bash
+npm install @headlessui/react --save
+```
 
-## Future Recommendations
+### 6. Supabase Environment Variables
 
-1. Consider adding ESLint rules to catch JSX comment syntax errors before they cause compilation issues
-2. Create a migration script for future component replacements to automate the process
-3. Add more comprehensive TypeScript type definitions for component props to catch type errors earlier
+Added mock environment variables for Supabase to prevent the "supabaseUrl is required" error:
+
+```typescript
+// .storybook/mockSupabase.ts
+export const mockEnv = {
+  NEXT_PUBLIC_SUPABASE_URL: 'https://storybook-mock.supabase.co',
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: 'mock-anon-key-for-storybook-environment',
+};
+
+// Expose to window.process.env
+if (typeof window !== 'undefined') {
+  window.process = {
+    ...window.process,
+    env: {
+      ...window.process?.env,
+      ...mockEnv
+    }
+  };
+}
+```
+
+Then imported in the preview file:
+
+```typescript
+// .storybook/preview.ts
+import './mockSupabase'; // Import mock Supabase configuration
+```
+
+## Design System Implementation Guidelines
+
+### Component Organization
+
+Components should be organized into the following categories:
+
+1. **UI Components**: Basic building blocks (e.g., Button, Input, Card)
+2. **Layout Components**: Structural components (e.g., Container, Grid, Section)
+3. **Feature Components**: Domain-specific components (e.g., SkillCard, ProfileHeader)
+4. **Composite Components**: Combinations of UI components for specific patterns
+
+### Documentation Standards
+
+Each component should include:
+
+1. **Component Description**: What the component is and when to use it
+2. **Props API**: All available props with types and descriptions
+3. **Variants**: Visual representation of all variants
+4. **Usage Examples**: Code examples showing common usage patterns
+5. **Accessibility Considerations**: ARIA attributes, keyboard navigation, etc.
+6. **Design Guidelines**: Recommendations for proper usage
+
+### Story Structure
+
+Follow this pattern for component stories:
+
+```typescript
+import type { Meta, StoryObj } from '@storybook/react';
+import ComponentName from './ComponentName';
+
+const meta: Meta<typeof ComponentName> = {
+  title: 'Category/ComponentName',
+  component: ComponentName,
+  parameters: {
+    layout: 'centered',
+    docs: {
+      description: {
+        component: 'Component description...'
+      },
+    },
+  },
+  tags: ['autodocs'],
+  argTypes: {
+    // Prop configurations
+  },
+};
+
+export default meta;
+type Story = StoryObj<typeof ComponentName>;
+
+// Default story
+export const Default: Story = {
+  args: {
+    // Default props
+  },
+};
+
+// Variant demonstrations
+export const Variants: Story = {
+  render: () => (
+    <div className="flex gap-4">
+      {/* Render different variants */}
+    </div>
+  ),
+};
+
+// Usage examples
+export const Examples: Story = {
+  render: () => (
+    <div className="space-y-6">
+      {/* Usage examples */}
+    </div>
+  ),
+};
+```
+
+## Next Steps
+
+1. **Component Audit**: Review all UI components to ensure they follow the design system guidelines
+2. **Story Creation**: Create stories for any components missing documentation
+3. **Theme Integration**: Ensure components correctly respond to theme changes
+4. **Accessibility Testing**: Verify all components meet accessibility standards
+5. **Component Playground**: Create a playground for testing component combinations
+
+## Running Storybook
+
+```bash
+npm run storybook
+```
+
+This will start Storybook at http://localhost:6006/
