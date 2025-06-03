@@ -7,9 +7,70 @@
 
 'use client';
 
-import { Session, User, AuthChangeEvent } from '@supabase/supabase-js';
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
+
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { Session, User, AuthChangeEvent } from '@supabase/supabase-js';
+
+// Function to create a mock Supabase client for Storybook
+const createMockSupabaseClient = () => {
+  const mockQueryBuilder = {
+    select: (_columns: string) => mockQueryBuilder,
+    eq: (_column: string, _value: unknown) => mockQueryBuilder,
+    order: (_column: string, _options: { ascending: boolean }) => mockQueryBuilder,
+    limit: (_count: number) => mockQueryBuilder,
+    gte: (_column: string, _value: string) => mockQueryBuilder,
+    in: (_column: string, _values: unknown[]) => mockQueryBuilder,
+    single: () => Promise.resolve({
+      data: null,
+      error: null,
+    }),
+    update: (_data: unknown) => ({
+      eq: (_column: string, _value: unknown) => Promise.resolve({
+        data: null,
+        error: null,
+      }),
+    }),
+    delete: () => ({
+      eq: (_column: string, _value: unknown) => Promise.resolve({ data: null, error: null }),
+    }),
+    // Add a thenable interface to allow awaiting the query builder directly
+    then: (onFulfilled?: (value: { data: any, error: any }) => any, onRejected?: (reason: any) => any) => {
+      // Simulate an async operation and return mock data
+      return Promise.resolve({ data: [], error: null }).then(onFulfilled, onRejected);
+    },
+  };
+
+  return {
+    auth: {
+      getSession: () => Promise.resolve({ data: { session: null }, error: null }),
+      getUser: () => Promise.resolve({ data: { user: null }, error: null }),
+      signInWithPassword: () => Promise.resolve({ data: {}, error: null }),
+      signUp: () => Promise.resolve({ data: {}, error: null }),
+      signOut: () => Promise.resolve({ error: null }),
+      onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+      resetPasswordForEmail: () => Promise.resolve({ error: null }),
+    },
+    from: (_table: string) => mockQueryBuilder,
+    storage: {
+      from: (_bucket: string) => ({
+        upload: (_path: string, _file: File) => Promise.resolve({ data: {}, error: null }),
+      }),
+    },
+    channel: (_name: string) => ({
+      on: (_event: 'postgres_changes' | 'system', _payload: { event: string, schema: string, table: string, filter: string }, _callback: (...args: unknown[]) => void) => ({
+        subscribe: () => ({
+          unsubscribe: () => {},
+        }),
+      }),
+      removeChannel: () => Promise.resolve({ data: null, error: null }),
+    }),
+    rpc: (_functionName: string, _args: unknown) => Promise.resolve({ data: null, error: null }),
+  };
+};
+
+// Determine which Supabase client to use
+const supabase = process.env.STORYBOOK ? createMockSupabaseClient() : createClientComponentClient();
 
 type SupabaseContextType = {
   supabase: typeof supabase;
@@ -203,7 +264,7 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
         return { success: false, error: error.message };
       }
 
-      return { success: true, error: null };
+      return { success : true, error: null };
     } catch (error: any) {
       console.error('Error sending password reset:', error);
       return { success: false, error: 'An unexpected error occurred' };
