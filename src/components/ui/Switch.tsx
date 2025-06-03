@@ -11,7 +11,7 @@ import { classNames } from '@/lib/utils';
 
 export interface SwitchProps {
   checked: boolean;
-  onChange: () => void;
+  onChange: (checked: boolean) => void;
   disabled?: boolean;
   label?: string;
   size?: 'sm' | 'md' | 'lg';
@@ -46,6 +46,11 @@ const Switch: React.FC<SwitchProps> = ({
     },
   };
 
+  const handleClick = () => {
+    // Call the onChange prop with the new checked state
+    onChange(!checked);
+  };
+
   return (
     <div className={classNames('flex items-center', className)}>
       {label && (
@@ -59,7 +64,7 @@ const Switch: React.FC<SwitchProps> = ({
         aria-checked={checked}
         aria-label={ariaLabel || label || 'Toggle'}
         disabled={disabled}
-        onClick={onChange}
+        onClick={handleClick} // Use the new handleClick function here
         className={classNames(
           'relative inline-flex shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
           checked ? 'bg-primary-600' : 'bg-gray-200 dark:bg-gray-700',

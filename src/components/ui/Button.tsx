@@ -4,6 +4,33 @@
  * Button Component
  * 
  * A versatile button component with multiple variants, sizes, and states.
+ * Uses the design system's color tokens and typography.
+ * 
+ * @example
+ * // Primary Button (default)
+ * <Button>Click Me</Button>
+ * 
+ * // Secondary Button
+ * <Button variant="secondary">Cancel</Button>
+ * 
+ * // Outline Button
+ * <Button variant="outline">Learn More</Button>
+ * 
+ * // Ghost Button
+ * <Button variant="ghost">Dismiss</Button>
+ * 
+ * // Danger Button
+ * <Button variant="danger">Delete</Button>
+ * 
+ * // With Icon
+ * <Button icon={<SomeIcon />} iconPosition="left">Continue</Button>
+ * 
+ * // Loading State
+ * <Button isLoading loadingText="Saving...">Save</Button>
+ * 
+ * // Different Sizes
+ * <Button size="sm">Small</Button>
+ * <Button size="lg">Large</Button>
  */
 
 import React from 'react';
@@ -33,12 +60,13 @@ const Button: React.FC<ButtonProps> = ({
   type = 'button',
   ...props
 }) => {
+  // Use design system color tokens
   const variantClasses = {
     primary: 'bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500',
-    secondary: 'bg-gray-100 text-gray-800 hover:bg-gray-200 focus:ring-gray-500 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600',
+    secondary: 'bg-secondary-600 text-white hover:bg-secondary-700 focus:ring-secondary-500 dark:bg-secondary-700 dark:hover:bg-secondary-800',
     outline: 'bg-transparent border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-gray-500 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800',
     ghost: 'bg-transparent text-gray-700 hover:bg-gray-50 focus:ring-gray-500 dark:text-gray-200 dark:hover:bg-gray-800',
-    danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
+    danger: 'bg-error text-white hover:bg-red-700 focus:ring-red-500',
   };
 
   const sizeClasses = {
@@ -62,6 +90,8 @@ const Button: React.FC<ButtonProps> = ({
         isDisabled ? 'opacity-60 cursor-not-allowed' : '',
         className
       )}
+      aria-disabled={isDisabled}
+      aria-busy={isLoading}
       disabled={isDisabled}
       {...props}
     >
@@ -72,6 +102,7 @@ const Button: React.FC<ButtonProps> = ({
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
+            aria-hidden="true"
           >
             <circle
               className="opacity-25"

@@ -45,7 +45,7 @@ const Tooltip: React.FC<TooltipProps> = ({
   };
 
   const tooltipClasses = classNames(
-    'absolute z-50 px-3 py-1.5 text-sm font-medium text-white bg-neutral-800 rounded-md shadow-sm',
+    'absolute z-50 px-3 py-1.5 text-sm font-medium text-white bg-gray-800 rounded-md shadow-sm',
     positionClasses[position],
     className
   );

@@ -16,6 +16,14 @@ import { classNames } from '@/lib/utils';
 type ExtendedButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'link' | 'success';
 type ExtendedButtonSize = 'Small' | 'Medium' | 'Large' | 'ExtraSmall';
 
+// Size mapping from extended sizes to Button component sizes
+const sizeMap: Record<ExtendedButtonSize, ButtonProps['size']> = {
+  'Small': 'sm',
+  'Medium': 'md',
+  'Large': 'lg',
+  'ExtraSmall': 'xs'
+};
+
 // Keep the interface simpler to avoid type conflicts
 interface ButtonAdapterProps {
   as?: 'a' | 'button';
@@ -30,10 +38,10 @@ interface ButtonAdapterProps {
   icon?: React.ReactNode;
   iconPosition?: 'left' | 'right';
   fullWidth?: boolean;
-  onClick?: (event: React.MouseEvent) => void;
+  onClick?: (event: React.MouseEvent<HTMLElement>) => void;
   type?: 'button' | 'submit' | 'reset';
-  // Any other additional props we might need
-  [key: string]: any;
+  // Additional props for future extensibility
+  [key: string]: unknown;
 }
 
 const ButtonAdapter: React.FC<ButtonAdapterProps> = ({
@@ -53,8 +61,8 @@ const ButtonAdapter: React.FC<ButtonAdapterProps> = ({
   fullWidth,
   ...otherProps
 }) => {
-  // Map ExtraSmall to Small with additional classes
-  const mappedSize = size === 'ExtraSmall' ? 'Small' : size;
+  // Map sizes from adapter format to Button component format
+  const mappedSize = sizeMap[size] || 'md';
   
   // Map success variant to primary with success colors
   let mappedVariant: ButtonProps['variant'] = variant as ButtonProps['variant'];
@@ -62,19 +70,26 @@ const ButtonAdapter: React.FC<ButtonAdapterProps> = ({
   
   if (variant === 'success') {
     mappedVariant = 'primary';
-    extraClasses = 'bg-success-600 text-white hover:bg-success-700 focus:ring-success-500';
+    extraClasses = 'bg-success hover:bg-success-600 focus:ring-success-500';
+  } else if (variant === 'link') {
+    mappedVariant = 'ghost';
+    extraClasses = 'underline text-primary-600 hover:text-primary-700';
   }
 
   const isDisabled = disabled || isLoading;
   
   // For anchor buttons
   if (as === 'a' && href) {
-    // Define classes similar to Button component's styling
-    let sizeClasses = '';
-    if (mappedSize === 'Small') sizeClasses = 'px-3 py-2 text-sm';
-    else if (mappedSize === 'Medium') sizeClasses = 'px-4 py-2 text-base';
-    else if (mappedSize === 'Large') sizeClasses = 'px-6 py-3 text-lg';
-    else if (size === 'ExtraSmall') sizeClasses = 'px-2 py-1 text-xs';
+    // For anchor elements, create anchor-specific styling
+    const anchorSizeClasses = {
+      'xs': 'px-2 py-1 text-xs',
+      'sm': 'px-3 py-2 text-sm',
+      'md': 'px-4 py-2 text-base',
+      'lg': 'px-5 py-2.5 text-base',
+      'xl': 'px-6 py-3 text-lg',
+    };
+    
+    const sizeClasses = anchorSizeClasses[mappedSize];
     
     const variantClasses = variant === 'link' 
       ? 'bg-transparent text-primary-600 hover:text-primary-700 focus:ring-primary-500 underline' 
@@ -96,7 +111,8 @@ const ButtonAdapter: React.FC<ButtonAdapterProps> = ({
     const anchorProps: React.AnchorHTMLAttributes<HTMLAnchorElement> = {
       href,
       className: baseClasses,
-      onClick: onClick as any, // Cast to any to avoid type issues
+      onClick: onClick as React.MouseEventHandler<HTMLAnchorElement>,
+      ...otherProps as React.AnchorHTMLAttributes<HTMLAnchorElement>,
     };
 
     return (
@@ -108,6 +124,7 @@ const ButtonAdapter: React.FC<ButtonAdapterProps> = ({
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
+              aria-hidden="true"
             >
               <circle
                 className="opacity-25"
@@ -148,9 +165,10 @@ const ButtonAdapter: React.FC<ButtonAdapterProps> = ({
     icon,
     iconPosition,
     fullWidth,
-    onClick,
+    onClick: onClick as React.MouseEventHandler<HTMLButtonElement>,
     type,
-    children
+    children,
+    ...otherProps as Omit<ButtonProps, keyof ButtonProps>,
   };
 
   return <Button {...buttonProps} />;

@@ -1,7 +1,36 @@
 'use client';
 
+/**
+ * Input Component
+ * 
+ * A versatile input component with multiple variants, sizes, and states.
+ * Supports icons, helper text, error states, and various visual styles.
+ * 
+ * @example
+ * // Basic usage
+ * <Input label="Username" placeholder="Enter your username" />
+ * 
+ * // With error state
+ * <Input label="Email" placeholder="Enter your email" error="Invalid email format" />
+ * 
+ * // With helper text
+ * <Input label="Password" type="password" helperText="Must be at least 8 characters" />
+ * 
+ * // With icons
+ * <Input 
+ *   label="Search" 
+ *   placeholder="Search..." 
+ *   startIcon={<SearchIcon />} 
+ *   endIcon={<ClearIcon />} 
+ * />
+ * 
+ * // Different variants
+ * <Input variant="filled" label="Filled input" />
+ * <Input variant="outlined" label="Outlined input" />
+ */
+
 import { ChangeEvent, forwardRef, InputHTMLAttributes } from 'react';
-import { classNames } from '../../lib/utils';
+import { classNames } from '@/lib/utils';
 
 export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
   label?: string;
@@ -40,11 +69,11 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 
     const variantClasses = {
       default:
-        'bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 focus:border-primary-500 focus:ring-primary-500',
+        'bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 focus:border-primary-500 focus:ring-primary-500',
       filled:
-        'bg-neutral-100 dark:bg-neutral-900 border border-transparent hover:bg-neutral-200 dark:hover:bg-neutral-800 focus:bg-white dark:focus:bg-neutral-800 focus:border-primary-500 focus:ring-primary-500',
+        'bg-gray-100 dark:bg-gray-900 border border-transparent hover:bg-gray-200 dark:hover:bg-gray-800 focus:bg-white dark:focus:bg-gray-800 focus:border-primary-500 focus:ring-primary-500',
       outlined:
-        'bg-transparent border border-neutral-300 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-600 focus:border-primary-500 focus:ring-primary-500',
+        'bg-transparent border border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-600 focus:border-primary-500 focus:ring-primary-500',
     };
 
     const sizeClasses = {
@@ -54,22 +83,22 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     };
 
     const baseClasses = 'w-full rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-opacity-50 transition-colors';
-    const disabledClasses = disabled ? 'opacity-60 cursor-not-allowed bg-neutral-100 dark:bg-neutral-900' : '';
-    const errorClasses = error ? 'border-error-500 focus:border-error-500 focus:ring-error-500' : '';
+    const disabledClasses = disabled ? 'opacity-60 cursor-not-allowed bg-gray-100 dark:bg-gray-900' : '';
+    const errorClasses = error ? 'border-error focus:border-error focus:ring-error' : '';
     const widthClasses = fullWidth ? 'w-full' : 'w-auto';
 
     return (
       <div className={classNames('flex flex-col', widthClasses, className || '')}>
         {label && (
-          <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             {label}
-            {required && <span className="text-error-500 ml-1">*</span>}
+            {required && <span className="text-error ml-1">*</span>}
           </label>
         )}
         <div className="relative">
           {startIcon && (
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <span className="text-neutral-500">{startIcon}</span>
+              <span className="text-gray-500">{startIcon}</span>
             </div>
           )}
           <input
@@ -90,12 +119,12 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           />
           {endIcon && (
             <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-              <span className="text-neutral-500">{endIcon}</span>
+              <span className="text-gray-500">{endIcon}</span>
             </div>
           )}
         </div>
         {(helperText || error) && (
-          <p className={classNames('mt-1 text-sm', error ? 'text-error-500' : 'text-neutral-500 dark:text-neutral-400')}>
+          <p className={classNames('mt-1 text-sm', error ? 'text-error' : 'text-gray-500 dark:text-gray-400')}>
             {error || helperText}
           </p>
         )}
