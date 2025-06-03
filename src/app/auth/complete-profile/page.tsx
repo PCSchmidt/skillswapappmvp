@@ -7,11 +7,11 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase/client';
-import { useSupabase } from '@/contexts/SupabaseContext';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import { useSupabase } from '@/contexts/SupabaseContext';
+import { supabase } from '@/lib/supabase';
 
 export default function CompleteProfile() {
   const router = useRouter();

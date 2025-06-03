@@ -1,0 +1,600 @@
+[
+  {
+    "id": "match-1",
+    "status": "pending",
+    "initiatorId": "user-2",
+    "recipientId": "user-1",
+    "initiatorSkillId": "skill-4",
+    "recipientSkillId": "skill-1",
+    "matchScore": 92,
+    "initiatedAt": "2023-05-10T14:25:30.000Z",
+    "lastUpdatedAt": "2023-05-10T14:25:30.000Z",
+    "initiator": {
+      "id": "user-2",
+      "fullName": "Sam Garcia",
+      "username": "samg",
+      "avatarUrl": "/images/avatars/avatar-2.jpg",
+      "location": "Chicago, IL",
+      "bio": "Professional photographer and videographer with a background in creative arts.",
+      "rating": 4.9
+    },
+    "recipient": {
+      "id": "user-1",
+      "fullName": "Alex Johnson",
+      "username": "alexj",
+      "avatarUrl": "/images/avatars/avatar-1.jpg",
+      "location": "New York, NY",
+      "bio": "Software developer with a passion for teaching and learning new technologies.",
+      "rating": 4.8
+    },
+    "initiatorSkill": {
+      "id": "skill-4",
+      "name": "Photography",
+      "category": "Creative",
+      "proficiency": "Expert",
+      "type": "offered",
+      "description": "Professional portrait and landscape photography with advanced editing."
+    },
+    "recipientSkill": {
+      "id": "skill-1",
+      "name": "JavaScript Programming",
+      "category": "Technology",
+      "proficiency": "Advanced",
+      "type": "offered",
+      "description": "Modern JavaScript including ES6+, React, Node.js and related frameworks."
+    },
+    "messages": []
+  },
+  {
+    "id": "match-2",
+    "status": "accepted",
+    "initiatorId": "user-1",
+    "recipientId": "user-3",
+    "initiatorSkillId": "skill-1",
+    "recipientSkillId": "skill-8",
+    "matchScore": 88,
+    "initiatedAt": "2023-05-05T09:15:20.000Z",
+    "acceptedAt": "2023-05-06T11:30:45.000Z",
+    "lastUpdatedAt": "2023-05-06T11:30:45.000Z",
+    "initiator": {
+      "id": "user-1",
+      "fullName": "Alex Johnson",
+      "username": "alexj",
+      "avatarUrl": "/images/avatars/avatar-1.jpg",
+      "location": "New York, NY",
+      "bio": "Software developer with a passion for teaching and learning new technologies.",
+      "rating": 4.8
+    },
+    "recipient": {
+      "id": "user-3",
+      "fullName": "Jordan Lee",
+      "username": "jordanl",
+      "avatarUrl": "/images/avatars/avatar-3.jpg",
+      "location": "Seattle, WA",
+      "bio": "Digital marketing specialist with focus on content strategy and community building.",
+      "rating": 4.7
+    },
+    "initiatorSkill": {
+      "id": "skill-1",
+      "name": "JavaScript Programming",
+      "category": "Technology",
+      "proficiency": "Advanced",
+      "type": "offered",
+      "description": "Modern JavaScript including ES6+, React, Node.js and related frameworks."
+    },
+    "recipientSkill": {
+      "id": "skill-8",
+      "name": "Digital Marketing",
+      "category": "Business",
+      "proficiency": "Expert",
+      "type": "offered",
+      "description": "Comprehensive digital marketing including SEO, SEM, social media, and analytics."
+    },
+    "sessions": [
+      {
+        "id": "session-1",
+        "matchId": "match-2",
+        "scheduledFor": "2023-05-15T18:00:00.000Z",
+        "location": "Video Call",
+        "notes": "First session focusing on JavaScript fundamentals",
+        "status": "scheduled",
+        "createdAt": "2023-05-07T10:20:15.000Z",
+        "updatedAt": "2023-05-07T10:20:15.000Z"
+      }
+    ],
+    "messages": [
+      {
+        "id": "message-1",
+        "matchId": "match-2",
+        "senderId": "user-1",
+        "text": "Hi Jordan! I'm looking forward to our skill exchange.",
+        "createdAt": "2023-05-06T12:15:30.000Z",
+        "readAt": "2023-05-06T12:20:45.000Z"
+      },
+      {
+        "id": "message-2",
+        "matchId": "match-2",
+        "senderId": "user-3",
+        "text": "Hi Alex! Me too. When would be a good time for our first session?",
+        "createdAt": "2023-05-06T12:25:10.000Z",
+        "readAt": "2023-05-06T12:30:20.000Z"
+      },
+      {
+        "id": "message-3",
+        "matchId": "match-2",
+        "senderId": "user-1",
+        "text": "How about next Monday at 6pm?",
+        "createdAt": "2023-05-06T12:35:05.000Z",
+        "readAt": "2023-05-06T12:40:15.000Z"
+      },
+      {
+        "id": "message-4",
+        "matchId": "match-2",
+        "senderId": "user-3",
+        "text": "That works for me! I'll set up the video call link.",
+        "createdAt": "2023-05-06T12:45:30.000Z",
+        "readAt": "2023-05-06T13:00:10.000Z"
+      }
+    ]
+  },
+  {
+    "id": "match-3",
+    "status": "pending",
+    "initiatorId": "user-4",
+    "recipientId": "user-1",
+    "initiatorSkillId": "skill-12",
+    "recipientSkillId": "skill-1",
+    "matchScore": 85,
+    "initiatedAt": "2023-05-11T15:40:10.000Z",
+    "lastUpdatedAt": "2023-05-11T15:40:10.000Z",
+    "initiator": {
+      "id": "user-4",
+      "fullName": "Taylor Smith",
+      "username": "taylors",
+      "avatarUrl": "/images/avatars/avatar-4.jpg",
+      "location": "Austin, TX",
+      "bio": "Yoga instructor and wellness coach specializing in stress reduction techniques.",
+      "rating": 4.9
+    },
+    "recipient": {
+      "id": "user-1",
+      "fullName": "Alex Johnson",
+      "username": "alexj",
+      "avatarUrl": "/images/avatars/avatar-1.jpg",
+      "location": "New York, NY",
+      "bio": "Software developer with a passion for teaching and learning new technologies.",
+      "rating": 4.8
+    },
+    "initiatorSkill": {
+      "id": "skill-12",
+      "name": "Yoga Instruction",
+      "category": "Fitness",
+      "proficiency": "Expert",
+      "type": "offered",
+      "description": "Hatha, Vinyasa, and Restorative yoga instruction for all levels."
+    },
+    "recipientSkill": {
+      "id": "skill-1",
+      "name": "JavaScript Programming",
+      "category": "Technology",
+      "proficiency": "Advanced",
+      "type": "offered",
+      "description": "Modern JavaScript including ES6+, React, Node.js and related frameworks."
+    },
+    "messages": []
+  },
+  {
+    "id": "match-4",
+    "status": "accepted",
+    "initiatorId": "user-1",
+    "recipientId": "user-5",
+    "initiatorSkillId": "skill-1",
+    "recipientSkillId": "skill-15",
+    "matchScore": 90,
+    "initiatedAt": "2023-05-01T10:30:25.000Z",
+    "acceptedAt": "2023-05-02T09:45:30.000Z",
+    "lastUpdatedAt": "2023-05-10T16:20:45.000Z",
+    "initiator": {
+      "id": "user-1",
+      "fullName": "Alex Johnson",
+      "username": "alexj",
+      "avatarUrl": "/images/avatars/avatar-1.jpg",
+      "location": "New York, NY",
+      "bio": "Software developer with a passion for teaching and learning new technologies.",
+      "rating": 4.8
+    },
+    "recipient": {
+      "id": "user-5",
+      "fullName": "Morgan Williams",
+      "username": "morganw",
+      "avatarUrl": "/images/avatars/avatar-5.jpg",
+      "location": "Boston, MA",
+      "bio": "Language teacher specializing in Spanish and French for business professionals.",
+      "rating": 4.6
+    },
+    "initiatorSkill": {
+      "id": "skill-1",
+      "name": "JavaScript Programming",
+      "category": "Technology",
+      "proficiency": "Advanced",
+      "type": "offered",
+      "description": "Modern JavaScript including ES6+, React, Node.js and related frameworks."
+    },
+    "recipientSkill": {
+      "id": "skill-15",
+      "name": "Spanish Language",
+      "category": "Languages",
+      "proficiency": "Expert",
+      "type": "offered",
+      "description": "Spanish language instruction with focus on conversational fluency."
+    },
+    "sessions": [
+      {
+        "id": "session-2",
+        "matchId": "match-4",
+        "scheduledFor": "2023-05-05T17:00:00.000Z",
+        "location": "Video Call",
+        "notes": "Introduction to basic Spanish phrases",
+        "status": "completed",
+        "createdAt": "2023-05-03T11:25:35.000Z",
+        "completedAt": "2023-05-05T18:15:20.000Z",
+        "updatedAt": "2023-05-05T18:15:20.000Z"
+      },
+      {
+        "id": "session-3",
+        "matchId": "match-4",
+        "scheduledFor": "2023-05-12T17:00:00.000Z",
+        "location": "Video Call",
+        "notes": "Continuing with Spanish conversation practice",
+        "status": "scheduled",
+        "createdAt": "2023-05-06T09:30:40.000Z",
+        "updatedAt": "2023-05-06T09:30:40.000Z"
+      }
+    ],
+    "messages": [
+      {
+        "id": "message-5",
+        "matchId": "match-4",
+        "senderId": "user-1",
+        "text": "Hi Morgan! Thanks for accepting my skill swap request.",
+        "createdAt": "2023-05-02T10:15:20.000Z",
+        "readAt": "2023-05-02T10:30:45.000Z"
+      },
+      {
+        "id": "message-6",
+        "matchId": "match-4",
+        "senderId": "user-5",
+        "text": "Hi Alex! I'm excited to help you learn Spanish while improving my JavaScript skills.",
+        "createdAt": "2023-05-02T10:35:10.000Z",
+        "readAt": "2023-05-02T10:40:25.000Z"
+      },
+      {
+        "id": "message-7",
+        "matchId": "match-4",
+        "senderId": "user-5",
+        "text": "I really enjoyed our first session! You're learning quickly.",
+        "createdAt": "2023-05-05T18:20:35.000Z",
+        "readAt": "2023-05-05T18:45:15.000Z"
+      },
+      {
+        "id": "message-8",
+        "matchId": "match-4",
+        "senderId": "user-1",
+        "text": "Thanks! Your teaching style is very effective. Looking forward to our next session.",
+        "createdAt": "2023-05-05T18:50:30.000Z",
+        "readAt": "2023-05-05T19:05:40.000Z"
+      }
+    ]
+  },
+  {
+    "id": "match-5",
+    "status": "declined",
+    "initiatorId": "user-3",
+    "recipientId": "user-1",
+    "initiatorSkillId": "skill-9",
+    "recipientSkillId": "skill-3",
+    "matchScore": 75,
+    "initiatedAt": "2023-04-28T13:20:40.000Z",
+    "declinedAt": "2023-04-29T09:45:15.000Z",
+    "declineReason": "Currently overbooked with other skill exchanges",
+    "lastUpdatedAt": "2023-04-29T09:45:15.000Z",
+    "initiator": {
+      "id": "user-3",
+      "fullName": "Jordan Lee",
+      "username": "jordanl",
+      "avatarUrl": "/images/avatars/avatar-3.jpg",
+      "location": "Seattle, WA",
+      "bio": "Digital marketing specialist with focus on content strategy and community building.",
+      "rating": 4.7
+    },
+    "recipient": {
+      "id": "user-1",
+      "fullName": "Alex Johnson",
+      "username": "alexj",
+      "avatarUrl": "/images/avatars/avatar-1.jpg",
+      "location": "New York, NY",
+      "bio": "Software developer with a passion for teaching and learning new technologies.",
+      "rating": 4.8
+    },
+    "initiatorSkill": {
+      "id": "skill-9",
+      "name": "Content Writing",
+      "category": "Communication",
+      "proficiency": "Advanced",
+      "type": "offered",
+      "description": "Blog posts, articles, and marketing copy across various industries."
+    },
+    "recipientSkill": {
+      "id": "skill-3",
+      "name": "Music Production",
+      "category": "Creative",
+      "proficiency": "Beginner",
+      "type": "offered",
+      "description": "Basic music composition and production using digital tools."
+    },
+    "messages": []
+  },
+  {
+    "id": "match-6",
+    "status": "completed",
+    "initiatorId": "user-1",
+    "recipientId": "user-2",
+    "initiatorSkillId": "skill-1",
+    "recipientSkillId": "skill-4",
+    "matchScore": 94,
+    "initiatedAt": "2023-03-10T11:15:30.000Z",
+    "acceptedAt": "2023-03-11T14:25:20.000Z",
+    "completedAt": "2023-04-15T16:30:45.000Z",
+    "lastUpdatedAt": "2023-04-15T16:30:45.000Z",
+    "reviewStatus": "both_reviewed",
+    "initiator": {
+      "id": "user-1",
+      "fullName": "Alex Johnson",
+      "username": "alexj",
+      "avatarUrl": "/images/avatars/avatar-1.jpg",
+      "location": "New York, NY",
+      "bio": "Software developer with a passion for teaching and learning new technologies.",
+      "rating": 4.8
+    },
+    "recipient": {
+      "id": "user-2",
+      "fullName": "Sam Garcia",
+      "username": "samg",
+      "avatarUrl": "/images/avatars/avatar-2.jpg",
+      "location": "Chicago, IL",
+      "bio": "Professional photographer and videographer with a background in creative arts.",
+      "rating": 4.9
+    },
+    "initiatorSkill": {
+      "id": "skill-1",
+      "name": "JavaScript Programming",
+      "category": "Technology",
+      "proficiency": "Advanced",
+      "type": "offered",
+      "description": "Modern JavaScript including ES6+, React, Node.js and related frameworks."
+    },
+    "recipientSkill": {
+      "id": "skill-4",
+      "name": "Photography",
+      "category": "Creative",
+      "proficiency": "Expert",
+      "type": "offered",
+      "description": "Professional portrait and landscape photography with advanced editing."
+    },
+    "reviews": [
+      {
+        "id": "review-1",
+        "matchId": "match-6",
+        "reviewerId": "user-1",
+        "revieweeId": "user-2",
+        "rating": 5,
+        "comment": "Sam was an excellent photography teacher. Very patient and knowledgeable.",
+        "createdAt": "2023-04-15T16:35:20.000Z"
+      },
+      {
+        "id": "review-2",
+        "matchId": "match-6",
+        "reviewerId": "user-2",
+        "revieweeId": "user-1",
+        "rating": 5,
+        "comment": "Alex taught me JavaScript fundamentals in a clear and effective way. Highly recommend!",
+        "createdAt": "2023-04-15T17:10:45.000Z"
+      }
+    ],
+    "sessions": [
+      {
+        "id": "session-4",
+        "matchId": "match-6",
+        "scheduledFor": "2023-03-15T18:00:00.000Z",
+        "location": "Video Call",
+        "notes": "JavaScript basics and environment setup",
+        "status": "completed",
+        "createdAt": "2023-03-12T10:15:30.000Z",
+        "completedAt": "2023-03-15T19:30:20.000Z",
+        "updatedAt": "2023-03-15T19:30:20.000Z"
+      },
+      {
+        "id": "session-5",
+        "matchId": "match-6",
+        "scheduledFor": "2023-03-22T17:30:00.000Z",
+        "location": "Video Call",
+        "notes": "Photography basics and camera settings",
+        "status": "completed",
+        "createdAt": "2023-03-16T11:20:40.000Z",
+        "completedAt": "2023-03-22T19:00:10.000Z",
+        "updatedAt": "2023-03-22T19:00:10.000Z"
+      },
+      {
+        "id": "session-6",
+        "matchId": "match-6",
+        "scheduledFor": "2023-03-29T18:00:00.000Z",
+        "location": "Video Call",
+        "notes": "Advanced JavaScript concepts",
+        "status": "completed",
+        "createdAt": "2023-03-23T09:45:15.000Z",
+        "completedAt": "2023-03-29T19:15:30.000Z",
+        "updatedAt": "2023-03-29T19:15:30.000Z"
+      },
+      {
+        "id": "session-7",
+        "matchId": "match-6",
+        "scheduledFor": "2023-04-05T17:30:00.000Z",
+        "location": "Video Call",
+        "notes": "Advanced photography techniques",
+        "status": "completed",
+        "createdAt": "2023-03-30T14:10:25.000Z",
+        "completedAt": "2023-04-05T19:10:40.000Z",
+        "updatedAt": "2023-04-05T19:10:40.000Z"
+      },
+      {
+        "id": "session-8",
+        "matchId": "match-6",
+        "scheduledFor": "2023-04-12T18:00:00.000Z",
+        "location": "Video Call",
+        "notes": "Final session - recap and next steps",
+        "status": "completed",
+        "createdAt": "2023-04-06T10:30:50.000Z",
+        "completedAt": "2023-04-12T19:45:15.000Z",
+        "updatedAt": "2023-04-12T19:45:15.000Z"
+      }
+    ],
+    "messages": [
+      {
+        "id": "message-9",
+        "matchId": "match-6",
+        "senderId": "user-1",
+        "text": "Hi Sam! Looking forward to our skill exchange. I've been wanting to improve my photography skills.",
+        "createdAt": "2023-03-11T15:10:25.000Z",
+        "readAt": "2023-03-11T15:20:35.000Z"
+      },
+      {
+        "id": "message-10",
+        "matchId": "match-6",
+        "senderId": "user-2",
+        "text": "Hi Alex! I'm excited too. I've been trying to learn JavaScript for a while now.",
+        "createdAt": "2023-03-11T15:25:40.000Z",
+        "readAt": "2023-03-11T15:30:15.000Z"
+      },
+      {
+        "id": "message-11",
+        "matchId": "match-6",
+        "senderId": "user-2",
+        "text": "It's been a great exchange! Thanks for all the JavaScript knowledge.",
+        "createdAt": "2023-04-12T20:05:30.000Z",
+        "readAt": "2023-04-12T20:15:45.000Z"
+      },
+      {
+        "id": "message-12",
+        "matchId": "match-6",
+        "senderId": "user-1",
+        "text": "Likewise! I've learned so much about photography. Let's mark this match as complete?",
+        "createdAt": "2023-04-12T20:20:10.000Z",
+        "readAt": "2023-04-12T20:25:35.000Z"
+      },
+      {
+        "id": "message-13",
+        "matchId": "match-6",
+        "senderId": "user-2",
+        "text": "Sounds good! I'll leave you a review.",
+        "createdAt": "2023-04-12T20:30:50.000Z",
+        "readAt": "2023-04-12T20:35:15.000Z"
+      }
+    ]
+  },
+  {
+    "id": "match-7",
+    "status": "cancelled",
+    "initiatorId": "user-1",
+    "recipientId": "user-4",
+    "initiatorSkillId": "skill-1",
+    "recipientSkillId": "skill-13",
+    "matchScore": 82,
+    "initiatedAt": "2023-04-05T09:30:15.000Z",
+    "acceptedAt": "2023-04-06T11:45:30.000Z",
+    "cancelledAt": "2023-04-20T14:25:40.000Z",
+    "cancelReason": "Scheduling conflicts",
+    "cancelledBy": "user-1",
+    "lastUpdatedAt": "2023-04-20T14:25:40.000Z",
+    "initiator": {
+      "id": "user-1",
+      "fullName": "Alex Johnson",
+      "username": "alexj",
+      "avatarUrl": "/images/avatars/avatar-1.jpg",
+      "location": "New York, NY",
+      "bio": "Software developer with a passion for teaching and learning new technologies.",
+      "rating": 4.8
+    },
+    "recipient": {
+      "id": "user-4",
+      "fullName": "Taylor Smith",
+      "username": "taylors",
+      "avatarUrl": "/images/avatars/avatar-4.jpg",
+      "location": "Austin, TX",
+      "bio": "Yoga instructor and wellness coach specializing in stress reduction techniques.",
+      "rating": 4.9
+    },
+    "initiatorSkill": {
+      "id": "skill-1",
+      "name": "JavaScript Programming",
+      "category": "Technology",
+      "proficiency": "Advanced",
+      "type": "offered",
+      "description": "Modern JavaScript including ES6+, React, Node.js and related frameworks."
+    },
+    "recipientSkill": {
+      "id": "skill-13",
+      "name": "Meditation",
+      "category": "Wellness",
+      "proficiency": "Advanced",
+      "type": "offered",
+      "description": "Guided meditation techniques for stress reduction and mindfulness."
+    },
+    "sessions": [
+      {
+        "id": "session-9",
+        "matchId": "match-7",
+        "scheduledFor": "2023-04-10T19:00:00.000Z",
+        "location": "Video Call",
+        "notes": "Introduction to meditation techniques",
+        "status": "completed",
+        "createdAt": "2023-04-07T10:15:30.000Z",
+        "completedAt": "2023-04-10T20:15:45.000Z",
+        "updatedAt": "2023-04-10T20:15:45.000Z"
+      }
+    ],
+    "messages": [
+      {
+        "id": "message-14",
+        "matchId": "match-7",
+        "senderId": "user-1",
+        "text": "Hi Taylor! Looking forward to learning meditation techniques.",
+        "createdAt": "2023-04-06T12:20:35.000Z",
+        "readAt": "2023-04-06T12:35:50.000Z"
+      },
+      {
+        "id": "message-15",
+        "matchId": "match-7",
+        "senderId": "user-4",
+        "text": "Hi Alex! Excited to help with meditation while learning JavaScript.",
+        "createdAt": "2023-04-06T12:40:15.000Z",
+        "readAt": "2023-04-06T12:45:30.000Z"
+      },
+      {
+        "id": "message-16",
+        "matchId": "match-7",
+        "senderId": "user-1",
+        "text": "I'm really sorry, but I need to cancel our skill exchange due to unexpected scheduling conflicts.",
+        "createdAt": "2023-04-20T14:15:20.000Z",
+        "readAt": "2023-04-20T14:30:45.000Z"
+      },
+      {
+        "id": "message-17",
+        "matchId": "match-7",
+        "senderId": "user-4",
+        "text": "No problem, I understand. Perhaps we can try again in the future when your schedule allows.",
+        "createdAt": "2023-04-20T14:35:10.000Z",
+        "readAt": "2023-04-20T14:40:25.000Z"
+      }
+    ]
+  }
+]

@@ -4,8 +4,8 @@
  * Tests for the email preferences page component
  */
 
-import React from 'react';
 import { render, screen } from '@testing-library/react';
+import React from 'react';
 import '@testing-library/jest-dom';
 import EmailPreferencesPage from '@/app/settings/email-preferences/page';
 import { useSupabase } from '@/contexts/SupabaseContext';
