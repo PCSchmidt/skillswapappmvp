@@ -1,5 +1,5 @@
 import React, { HTMLAttributes } from 'react';
-import { classNames } from '../../lib/utils';
+import { cn } from '@/lib/utils'; // Use cn for consistency
 
 export interface GridProps extends HTMLAttributes<HTMLDivElement> {
   /**
@@ -93,17 +93,17 @@ export const Grid: React.FC<GridProps> = ({
     
     // Setup grid with responsive columns using Tailwind classes
     return renderGrid(
-      classNames(
+      cn(
         'grid',
         `grid-cols-${colConfig.default}`,
-        colConfig.sm ? `sm:grid-cols-${colConfig.sm}` : '',
-        colConfig.md ? `md:grid-cols-${colConfig.md}` : '',
-        colConfig.lg ? `lg:grid-cols-${colConfig.lg}` : '',
-        colConfig.xl ? `xl:grid-cols-${colConfig.xl}` : '',
-        colConfig['2xl'] ? `2xl:grid-cols-${colConfig['2xl']}` : '',
+        colConfig.sm && `sm:grid-cols-${colConfig.sm}`,
+        colConfig.md && `md:grid-cols-${colConfig.md}`,
+        colConfig.lg && `lg:grid-cols-${colConfig.lg}`,
+        colConfig.xl && `xl:grid-cols-${colConfig.xl}`,
+        colConfig['2xl'] && `2xl:grid-cols-${colConfig['2xl']}`,
         getGapClasses(gap, rowGap, colGap),
-        debug ? 'border-2 border-dashed border-blue-400' : '',
-        className || ''
+        debug && 'border-2 border-dashed border-blue-400',
+        className
       ),
       as,
       children,
@@ -112,7 +112,7 @@ export const Grid: React.FC<GridProps> = ({
   }
 
   // When using fixed columns or auto-flow, we need inline styles
-  const gridStyles = {
+  const gridStyles: React.CSSProperties = {
     display: 'grid',
     gridTemplateColumns,
     gap: rowGap && colGap ? undefined : gapSizes[gap],
@@ -123,7 +123,7 @@ export const Grid: React.FC<GridProps> = ({
   const debugClass = debug ? 'border-2 border-dashed border-blue-400' : '';
 
   return renderGrid(
-    classNames(debugClass, className || ''),
+    cn(debugClass, className),
     as,
     children,
     props,
@@ -165,7 +165,7 @@ function getGapClasses(
   };
 
   if (rowGap && colGap) {
-    return `${rowGapClasses[rowGap]} ${colGapClasses[colGap]}`;
+    return cn(rowGapClasses[rowGap], colGapClasses[colGap]);
   }
 
   return gapClasses[gap];
@@ -176,7 +176,7 @@ function renderGrid(
   className: string, 
   as: 'div' | 'section' | 'ul' | 'ol',
   children: React.ReactNode,
-  props: any,
+  props: HTMLAttributes<HTMLDivElement>, // Use HTMLAttributes for better typing
   style?: React.CSSProperties
 ) {
   switch (as) {

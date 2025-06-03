@@ -1,5 +1,5 @@
 import React, { HTMLAttributes } from 'react';
-import { classNames } from '../../lib/utils';
+import { cn } from '@/lib/utils'; // Use cn for consistency
 
 interface SectionProps extends HTMLAttributes<HTMLElement> {
   /**
@@ -74,16 +74,16 @@ const Section: React.FC<SectionProps> = ({
 
   return (
     <Component
-      className={classNames(
+      className={cn(
         variantClasses[variant],
         spacingClasses[spacingY],
         dividerTopClass,
         dividerBottomClass,
-        className || ''
+        className
       )}
       {...props}
     >
-      <div className={containerClasses[container]}>{children}</div>
+      <div className={cn(containerClasses[container])}>{children}</div>
     </Component>
   );
 };

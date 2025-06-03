@@ -1,5 +1,5 @@
 import React, { HTMLAttributes, LiHTMLAttributes } from 'react';
-import { classNames } from '../../lib/utils';
+import { cn } from '@/lib/utils'; // Use cn for consistency
 
 type OrderValue = number | 'first' | 'last' | 'none';
 type ResponsiveOrder = Partial<Record<'default' | 'sm' | 'md' | 'lg' | 'xl' | '2xl', OrderValue>>;
@@ -121,10 +121,10 @@ export const Column: React.FC<ColumnProps> = ({
   }
 
   // Combine all classes
-  const combinedClassName = classNames(
+  const combinedClassName = cn(
     columnClasses,
     debugClass,
-    className || ''
+    className
   );
 
   // Render the appropriate element
