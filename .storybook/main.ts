@@ -1,4 +1,4 @@
-import type { StorybookConfig } from "@storybook/experimental-nextjs-vite";
+import type { StorybookConfig } from "@storybook/nextjs";
 
 const config: StorybookConfig = {
   "stories": [
@@ -6,26 +6,19 @@ const config: StorybookConfig = {
     "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"
   ],
   "addons": [
+    "@storybook/addon-links",
     "@storybook/addon-essentials",
-    "@storybook/addon-onboarding",
-    "@chromatic-com/storybook",
-    "@storybook/experimental-addon-test"
+    "@storybook/addon-interactions"
   ],
   "framework": {
-    "name": "@storybook/experimental-nextjs-vite",
+    "name": "@storybook/nextjs",
     "options": {}
   },
   "staticDirs": [
-    "..\\public"
+    "../public"
   ],
-  async viteFinal(config) {
-    // Exclude the problematic Next.js internal dependency from optimization
-    config.optimizeDeps = config.optimizeDeps || {};
-    config.optimizeDeps.exclude = [
-      ...(config.optimizeDeps.exclude || []),
-      'next/dist/client/components/redirect-status-code.js',
-    ];
-    return config;
-  },
+  "docs": {
+    "autodocs": "tag"
+  }
 };
 export default config;
