@@ -7,22 +7,8 @@
 
 import React, { useState } from 'react';
 import { useSupabase } from '@/contexts/SupabaseContext';
+import type { Notification } from '@/types/supabase';
 import NotificationItem from './NotificationItem';
-
-// Define Notification type manually since it's not in the Database types yet
-type Notification = {
-  id: string;
-  user_id: string;
-  type: string;
-  title: string;
-  content: string | null;
-  link: string | null;
-  is_read: boolean;
-  created_at: string;
-  expires_at: string | null;
-  metadata: any;
-  priority: string | null;
-};
 
 interface NotificationListProps {
   notifications: Notification[];
@@ -61,7 +47,7 @@ export default function NotificationList({
       });
       
       if (error) throw error;
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error marking notification as read:', err);
       setError('Failed to mark notification as read');
     } finally {
@@ -91,7 +77,7 @@ export default function NotificationList({
         .eq('id', id);
       
       if (error) throw error;
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error deleting notification:', err);
       setError('Failed to delete notification');
     } finally {
@@ -133,7 +119,7 @@ export default function NotificationList({
   return (
     <div className="notifications-list">
       {error && (
-        <div className="bg-error-50 border border-error-200 text-error-700 px-4 py-3 rounded-md mb-2">
+        <div className="mb-6 p-4 bg-error-50 text-error-700 rounded-md">
           {error}
         </div>
       )}

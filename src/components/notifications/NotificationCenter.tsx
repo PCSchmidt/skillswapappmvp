@@ -18,24 +18,8 @@ import Grid from '@/components/layout/Grid';
 import Section from '@/components/layout/Section';
 import Card from '@/components/ui/Card';
 import { useSupabase } from '@/contexts/SupabaseContext';
+import type { Notification } from '@/types/supabase';
 import NotificationList from './NotificationList';
-
-// Define the Notification type
-type Notification = {
-  id: string;
-  user_id: string;
-  type: string;
-  title: string;
-  content: string | null;
-  link: string | null;
-  is_read: boolean;
-  created_at: string;
-  expires_at: string | null;
-  metadata: any;
-  priority: string | null;
-  group_id?: string | null;
-  context?: string | null;
-};
 
 // Define filter types
 type FilterOptions = {
@@ -86,7 +70,7 @@ export default function NotificationCenter() {
         schema: 'public',
         table: 'notifications',
         filter: `user_id=eq.${user.id}`
-      }, (payload) => {
+      }, (payload: any) => { // Use any for payload for now to avoid deep type issues
         console.log('Notification change received:', payload);
         
         // Handle different change types
@@ -115,7 +99,7 @@ export default function NotificationCenter() {
       .subscribe();
     
     return () => {
-      supabase.removeChannel(subscription);
+      subscription.unsubscribe();
     };
   }, [user, supabase, notifications]);
   
@@ -177,7 +161,7 @@ export default function NotificationCenter() {
       
       // Update grouped notifications
       updateGroupedNotifications(typedData);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error fetching notifications:', err);
       setError('Failed to load notifications');
     } finally {
@@ -200,7 +184,7 @@ export default function NotificationCenter() {
     const grouped: Record<string, Notification[]> = {};
     
     notifs.forEach(notification => {
-      const groupKey = notification.context || notification.type || 'other';
+      const groupKey = (notification.metadata?.context as string) || notification.type || 'other';
       if (!grouped[groupKey]) {
         grouped[groupKey] = [];
       }
@@ -224,7 +208,7 @@ export default function NotificationCenter() {
     if (!user) return;
     
     try {
-      const { error } = await supabase.rpc('mark_all_notifications_read');
+      const { error } = await supabase.rpc('mark_all_notifications_read', {});
       
       if (error) throw error;
       
@@ -236,7 +220,7 @@ export default function NotificationCenter() {
       updateGroupedNotifications(
         notifications.map(n => ({ ...n, is_read: true }))
       );
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error marking all notifications as read:', err);
       setError('Failed to mark all as read');
     }
@@ -257,7 +241,7 @@ export default function NotificationCenter() {
       // Update local state
       setNotifications([]);
       setGroupedNotifications({});
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error clearing notifications:', err);
       setError('Failed to clear notifications');
     }
@@ -332,7 +316,7 @@ export default function NotificationCenter() {
               </Column>
               <Column span={{ default: 6, md: 3 }}>
                 <div className="text-center p-4">
-                  <div className="text-2xl font-bold text-green-600">
+                  <div className="text-2xl font-bold text-success">
                     {notifications.filter(n => n.priority === 'high' || n.priority === 'urgent').length}
                   </div>
                   <div className="text-sm text-gray-500">High Priority</div>
@@ -340,7 +324,7 @@ export default function NotificationCenter() {
               </Column>
               <Column span={{ default: 6, md: 3 }}>
                 <div className="text-center p-4">
-                  <div className="text-2xl font-bold text-blue-600">
+                  <div className="text-2xl font-bold text-info">
                     {notifications.filter(n => 
                       new Date(n.created_at).toDateString() === new Date().toDateString()
                     ).length}
@@ -457,10 +441,10 @@ export default function NotificationCenter() {
           
           {/* Error display */}
           {error && (
-            <div className="bg-error-50 border-l-4 border-error-400 p-4">
+            <div className="mb-6 p-4 bg-error-50 text-error-700 rounded-md">
               <div className="flex">
                 <div className="flex-shrink-0">
-                  <svg className="h-5 w-5 text-error-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <svg className="h-5 w-5 text-error" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                   </svg>
                 </div>
@@ -476,7 +460,7 @@ export default function NotificationCenter() {
             {Object.keys(groupedNotifications).length === 0 && !loading ? (
               <Card>
                 <div className="p-12 text-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="h-12 w-12 mx-auto text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                   </svg>
                   <h3 className="text-lg font-medium text-gray-900 mb-1">No notifications</h3>

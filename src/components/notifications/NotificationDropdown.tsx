@@ -7,35 +7,20 @@
 
 import Link from 'next/link';
 import React, { useState, useEffect, useRef } from 'react';
-import { useSupabase } from '@/contexts/SupabaseContext';
-import NotificationList from './NotificationList';
 
-// Define Notification type manually since it's not in the Database types yet
-type Notification = {
-  id: string;
-  user_id: string;
-  type: string;
-  title: string;
-  content: string | null;
-  link: string | null;
-  is_read: boolean;
-  created_at: string;
-  expires_at: string | null;
-  metadata: any;
-  priority: string | null;
-};
+import { useSupabase } from '@/contexts/SupabaseContext';
+import type { Notification } from '@/types/supabase';
+import NotificationList from './NotificationList';
 
 interface NotificationDropdownProps {
   isOpen: boolean;
   onClose: () => void;
-  count?: number;
   maxNotifications?: number;
 }
 
 export default function NotificationDropdown({
   isOpen,
   onClose,
-  count = 0,
   maxNotifications = 10
 }: NotificationDropdownProps) {
   const { supabase, user } = useSupabase();
@@ -102,7 +87,7 @@ export default function NotificationDropdown({
       .subscribe();
     
     return () => {
-      supabase.removeChannel(subscription);
+      subscription.unsubscribe();
     };
   }, [user, supabase, maxNotifications]);
   
@@ -124,7 +109,7 @@ export default function NotificationDropdown({
       if (error) throw error;
       
       setNotifications(data as Notification[]);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error fetching notifications:', err);
       setError('Failed to load notifications');
     } finally {
@@ -137,7 +122,7 @@ export default function NotificationDropdown({
     if (!user) return;
     
     try {
-      const { error } = await supabase.rpc('mark_all_notifications_read');
+      const { error } = await supabase.rpc('mark_all_notifications_read', {});
       
       if (error) throw error;
       
@@ -145,7 +130,7 @@ export default function NotificationDropdown({
       setNotifications(prev => 
         prev.map(n => ({ ...n, is_read: true }))
       );
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error marking all notifications as read:', err);
       setError('Failed to mark all as read');
     }
@@ -165,7 +150,7 @@ export default function NotificationDropdown({
       
       // Update local state
       setNotifications([]);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error clearing notifications:', err);
       setError('Failed to clear notifications');
     }
@@ -196,10 +181,10 @@ export default function NotificationDropdown({
         </div>
         
         {error && (
-          <div className="bg-error-50 border-l-4 border-error-400 p-4 m-2">
+          <div className="mb-6 p-4 bg-error-50 text-error-700 rounded-md">
             <div className="flex">
               <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-error-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <svg className="h-5 w-5 text-error" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                 </svg>
               </div>

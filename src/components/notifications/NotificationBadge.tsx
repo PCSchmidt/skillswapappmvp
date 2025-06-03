@@ -1,5 +1,5 @@
 import React from 'react';
-import { classNames } from '../../lib/utils';
+import { cn } from '@/lib/utils'; // Use cn for consistency
 
 export interface NotificationBadgeProps {
   /**
@@ -81,12 +81,12 @@ export const NotificationBadge: React.FC<NotificationBadgeProps> = ({
   
   // Variant classes
   const variantClasses = {
-    primary: 'bg-primary text-white',
-    secondary: 'bg-secondary text-white',
-    danger: 'bg-red-500 text-white',
-    warning: 'bg-amber-500 text-white',
-    success: 'bg-green-500 text-white',
-    info: 'bg-blue-400 text-white',
+    primary: 'bg-primary-600 text-white',
+    secondary: 'bg-secondary-600 text-white',
+    danger: 'bg-error text-white',
+    warning: 'bg-warning text-white',
+    success: 'bg-success text-white',
+    info: 'bg-info text-white',
   };
   
   // Dot specific classes
@@ -102,11 +102,11 @@ export const NotificationBadge: React.FC<NotificationBadgeProps> = ({
 
   return (
     <span
-      className={classNames(
+      className={cn(
         'inline-flex items-center justify-center rounded-full font-medium leading-none',
         sizeClasses[size],
+        dotClasses[size], // dotClasses[size] can be undefined, cn handles this
         variantClasses[variant],
-        dotClasses[size] || '',
         pulseAnimation,
         className
       )}
