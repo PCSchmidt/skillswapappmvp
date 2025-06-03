@@ -24,6 +24,23 @@ export interface SupabaseError {
 }
 
 /**
+ * Basic User type for Supabase auth
+ */
+export interface User {
+  id: string;
+  email: string;
+  // Add other common user properties from Supabase auth if needed
+}
+
+/**
+ * Supabase Auth response type
+ */
+export interface AuthResponse {
+  session: SupabaseSession | null;
+  user: User | null;
+}
+
+/**
  * User settings table model
  */
 export interface UserSettings {
@@ -84,8 +101,24 @@ export interface Skill {
     location?: string;
     location_city?: string | null;
     location_state?: string | null;
-    [key: string]: any;
   } | null;
+}
+
+/**
+ * Notification table model
+ */
+export interface Notification {
+  id: string;
+  user_id: string;
+  type: string; // e.g., 'trade_proposal', 'trade_accepted', 'message'
+  title: string;
+  content: string | null;
+  link: string | null; // URL to navigate to when notification is clicked
+  is_read: boolean;
+  created_at: string;
+  expires_at: string | null;
+  metadata: Record<string, unknown> | null; // JSONB field for additional data
+  priority: 'low' | 'medium' | 'high' | 'urgent' | null;
 }
 
 /**
@@ -110,8 +143,8 @@ export interface SupabaseQueryBuilder<T> {
  * Type for Supabase select query
  */
 export interface SupabaseSelectQuery<T> {
-  eq: (column: string, value: any) => SupabaseFilterQuery<T>;
-  in: (column: string, values: any[]) => SupabaseFilterQuery<T>;
+  eq: (column: keyof T, value: T[keyof T]) => SupabaseFilterQuery<T>;
+  in: (column: keyof T, values: Array<T[keyof T]>) => SupabaseFilterQuery<T>;
   order: (column: string, options?: { ascending?: boolean }) => SupabaseSelectQuery<T>;
   limit: (count: number) => SupabaseSelectQuery<T>;
 }
@@ -121,8 +154,8 @@ export interface SupabaseSelectQuery<T> {
  */
 export interface SupabaseFilterQuery<T> {
   single: () => Promise<SupabaseResponse<T>>;
-  eq: (column: string, value: any) => SupabaseFilterQuery<T>;
-  in: (column: string, values: any[]) => SupabaseFilterQuery<T>;
+  eq: (column: keyof T, value: T[keyof T]) => SupabaseFilterQuery<T>;
+  in: (column: keyof T, values: Array<T[keyof T]>) => SupabaseFilterQuery<T>;
 }
 
 /**
@@ -136,7 +169,7 @@ export interface SupabaseInsertQuery<T> {
  * Type for Supabase update query
  */
 export interface SupabaseUpdateQuery<T> {
-  eq: (column: string, value: any) => SupabaseFilterQueryWithModifier<T>;
+  eq: (column: keyof T, value: T[keyof T]) => SupabaseFilterQueryWithModifier<T>;
   match: (query: Partial<T>) => SupabaseFilterQueryWithModifier<T>;
 }
 
@@ -144,7 +177,7 @@ export interface SupabaseUpdateQuery<T> {
  * Type for Supabase delete query
  */
 export interface SupabaseDeleteQuery<T> {
-  eq: (column: string, value: any) => SupabaseFilterQueryWithModifier<T>;
+  eq: (column: keyof T, value: T[keyof T]) => SupabaseFilterQueryWithModifier<T>;
   match: (query: Partial<T>) => SupabaseFilterQueryWithModifier<T>;
 }
 
@@ -153,7 +186,7 @@ export interface SupabaseDeleteQuery<T> {
  */
 export interface SupabaseFilterQueryWithModifier<T> {
   then: (callback: (response: SupabaseResponse<T>) => void) => {
-    catch: (callback: (error: any) => void) => void;
+    catch: (callback: (error: unknown) => void) => void;
   };
 }
 
@@ -177,9 +210,9 @@ export interface SupabaseSession {
 export interface SupabaseClient {
   from: <T>(table: string) => SupabaseQueryBuilder<T>;
   auth: {
-    signIn: (credentials: { email: string; password: string }) => Promise<SupabaseResponse<any>>;
-    signUp: (credentials: { email: string; password: string }) => Promise<SupabaseResponse<any>>;
-    signOut: () => Promise<SupabaseResponse<any>>;
+    signIn: (credentials: { email: string; password: string }) => Promise<SupabaseResponse<AuthResponse>>;
+    signUp: (credentials: { email: string; password: string }) => Promise<SupabaseResponse<AuthResponse>>;
+    signOut: () => Promise<SupabaseResponse<null>>;
     session: () => SupabaseSession | null;
   };
 }
@@ -207,17 +240,22 @@ export interface Database {
         Insert: Omit<Skill, 'id' | 'created_at' | 'updated_at'>;
         Update: Partial<Omit<Skill, 'id' | 'user_id' | 'created_at' | 'updated_at'>>;
       };
+      notifications: {
+        Row: Notification;
+        Insert: Omit<Notification, 'id' | 'created_at'>;
+        Update: Partial<Omit<Notification, 'id' | 'user_id' | 'created_at'>>;
+      };
       // Add other tables as needed
     };
     Views: {
       [key: string]: {
-        Row: Record<string, any>;
+        Row: Record<string, unknown>;
       };
     };
     Functions: {
       [key: string]: {
-        Args: Record<string, any>;
-        Returns: any;
+        Args: Record<string, unknown>;
+        Returns: unknown;
       };
     };
   };
