@@ -21,7 +21,8 @@ export type EmailTemplateType =
   | 'new_message'
   | 'new_rating'
   | 'welcome'
-  | 'password_reset';
+  | 'password_reset'
+  | 'verification';
 
 // Template data interface - common properties for all email templates
 interface BaseTemplateData {

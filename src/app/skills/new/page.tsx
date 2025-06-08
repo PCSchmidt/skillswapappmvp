@@ -6,10 +6,10 @@
 
 'use client';
 
-import React from 'react';
 import { useRouter } from 'next/navigation';
-import { useSupabase } from '@/contexts/SupabaseContext';
+import React from 'react';
 import SkillForm from '@/components/skills/SkillForm';
+import { useSupabase } from '@/contexts/SupabaseContext';
 
 export default function NewSkillPage() {
   const router = useRouter();

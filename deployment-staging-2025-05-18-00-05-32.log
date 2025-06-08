@@ -1,0 +1,37 @@
+[2025-05-18T00:05:32.491Z] INFO: Checking for uncommitted changes...
+[2025-05-18T00:05:32.492Z] COMMAND: git status --porcelain
+[2025-05-18T00:05:32.591Z] WARNING: You have uncommitted changes:
+[2025-05-18T00:05:35.769Z] WARNING: Proceeding with uncommitted changes
+[2025-05-18T00:05:35.769Z] INFO: 
+Installing dependencies...
+[2025-05-18T00:05:35.770Z] COMMAND: npm ci
+[2025-05-18T00:08:26.394Z] INFO: 
+Updating environment variables for staging...
+[2025-05-18T00:08:26.395Z] COMMAND: npm run update-env:staging
+[2025-05-18T00:08:27.413Z] INFO: 
+Validating dependencies...
+[2025-05-18T00:08:27.413Z] COMMAND: npm run validate-deps
+[2025-05-18T00:09:05.531Z] INFO: 
+Verifying build...
+[2025-05-18T00:09:05.533Z] COMMAND: npm run prebuild:verify
+[2025-05-18T00:10:48.393Z] ERROR: Command failed: npm run prebuild:verify
+[2025-05-18T00:10:48.393Z] ERROR: Command failed: npm run prebuild:verify
+[2025-05-18T00:11:11.894Z] INFO: 
+Running tests...
+[2025-05-18T00:11:11.894Z] COMMAND: npm test
+[2025-05-18T00:11:42.145Z] ERROR: Command failed: npm test
+[2025-05-18T00:11:42.146Z] ERROR: Command failed: npm test
+[2025-05-18T00:11:45.781Z] INFO: 
+Deploying to staging...
+[2025-05-18T00:11:45.781Z] COMMAND: npx vercel --prod
+[2025-05-18T00:13:07.806Z] ERROR: Command failed: npx vercel --prod
+[2025-05-18T00:13:07.806Z] ERROR: Command failed: npx vercel --prod
+[2025-05-18T00:13:07.806Z] ERROR: Deployment to Vercel failed
+[2025-05-18T00:13:32.011Z] INFO: 
+Verifying deployment...
+[2025-05-18T00:13:32.011Z] COMMAND: npm run verify-deployment -- https://skillswapappmvp-git-dev-chris-schmidts-projects.vercel.app/
+[2025-05-18T00:13:39.633Z] ERROR: Command failed: npm run verify-deployment -- https://skillswapappmvp-git-dev-chris-schmidts-projects.vercel.app/
+[2025-05-18T00:13:39.634Z] ERROR: Command failed: npm run verify-deployment -- https://skillswapappmvp-git-dev-chris-schmidts-projects.vercel.app/
+[2025-05-18T00:13:39.637Z] SUCCESS: 
+Deployment process completed
+[2025-05-18T00:13:39.638Z] INFO: Deployment log saved to C:\Users\pchri\Documents\Cline\skillswap_mvp\deployment-staging-2025-05-18-00-05-32.log

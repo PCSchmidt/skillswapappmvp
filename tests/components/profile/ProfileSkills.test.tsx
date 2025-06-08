@@ -4,8 +4,8 @@
  * Tests for the component that displays a user's skills on their profile
  */
 
-import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
+import React from 'react';
 import '@testing-library/jest-dom';
 import ProfileSkills from '@/components/profile/ProfileSkills';
 

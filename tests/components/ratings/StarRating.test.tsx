@@ -4,8 +4,8 @@
  * Tests for the star rating component
  */
 
-import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
+import React from 'react';
 import '@testing-library/jest-dom';
 import StarRating from '@/components/ratings/StarRating';
 

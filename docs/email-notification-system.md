@@ -73,6 +73,10 @@ We've implemented the following email templates:
 - `tradeProposalTemplate.ts`: For new trade proposals 
 - `newMessageTemplate.ts`: For new messages
 - `newRatingTemplate.ts`: For new ratings
+- `tradeStatusAcceptedTemplate.ts`: For accepted trade proposals
+- `tradeStatusDeclinedTemplate.ts`: For declined trade proposals
+- `tradeStatusCancelledTemplate.ts`: For cancelled trades (newly implemented)
+- `tradeStatusCompletedTemplate.ts`: For completed trades (newly implemented)
 
 All templates are responsive and follow best practices for email design.
 
@@ -182,7 +186,7 @@ await notificationService.sendNotification({
 
 Potential future improvements to the email system:
 
-1. **Additional Templates**: More specialized templates for different notification types
+1. **Additional Templates**: More specialized templates for other notification types
 2. **Digest Emails**: Implement the daily/weekly digest email functionality
 3. **Analytics**: Track email open and click rates
 4. **A/B Testing**: Test different email templates for effectiveness
