@@ -41,17 +41,31 @@ export interface Skill {
   user_id: string;
   title: string;
   description: string;
-  category: string;
+  category: string; // Used in filters
+  is_offering: boolean; // Used in filters & SkillService
+  experience_level: 'beginner' | 'intermediate' | 'expert' | 'all'; // Used in filters & SkillService
+  is_remote_friendly: boolean; // Used in filters & SkillService
+  is_active: boolean; // Used in filters & SkillService
+  created_at: string; // Used for ordering & SkillService
+  updated_at?: string; // Kept from original, made optional
+
+  // Original fields, made optional or adjusted for compatibility:
   subcategory?: string;
-  level: SkillLevel;
-  type: SkillType;
-  location_type: string;
-  compensation_type: string;
-  contact_preference: ContactPreference;
-  rate?: number;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
+  level?: SkillLevel; // Original field, kept for compatibility. Consider mapping to experience_level.
+  type?: SkillType; // Original field, kept for compatibility. Consider mapping to is_offering.
+  location_type?: string; // Original field, might relate to is_remote_friendly
+  compensation_type?: string; // Original field
+  contact_preference?: ContactPreference; // Original field
+  rate?: number; // Original field
+}
+
+// Filters for browsing skills (as used in SkillService)
+export interface SkillBrowseFilters {
+  search?: string;
+  category?: string;
+  offering?: 'all' | 'offering' | 'seeking'; // 'all' means no filter on is_offering
+  experience?: 'all' | 'beginner' | 'intermediate' | 'expert'; // 'all' means no filter on experience_level
+  remote?: boolean; // True if filtering for remote-friendly skills
 }
 
 // Skill exchange interface

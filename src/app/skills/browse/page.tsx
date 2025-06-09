@@ -1,7 +1,8 @@
 /**
  * Browse Skills Page
- * 
+ *
  * This page allows users to browse, search, and filter skills from other users.
+ * It now uses SkillService for data fetching.
  */
 
 'use client';
@@ -11,6 +12,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import SkillCard from '@/components/skills/SkillCard';
 import { useSupabase } from '@/contexts/SupabaseContext';
+import { skillService, BrowsableSkill } from '@/services/SkillService'; // Added
 
 // Define filter state structure
 interface FilterState {
@@ -24,8 +26,8 @@ interface FilterState {
 export default function BrowseSkillsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { supabase, user } = useSupabase();
-  
+  const { user } = useSupabase(); // Supabase client instance is no longer directly needed here for query
+
   // Get initial filter values from URL params or defaults
   const initialFilters: FilterState = {
     search: searchParams.get('search') || '',
@@ -34,16 +36,16 @@ export default function BrowseSkillsPage() {
     experience: searchParams.get('experience') || 'all',
     remote: searchParams.get('remote') === 'true',
   };
-  
-  const [skills, setSkills] = useState<any[]>([]);
+
+  const [skills, setSkills] = useState<BrowsableSkill[]>([]); // Updated type
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<FilterState>(initialFilters);
-  
+
   // List of predefined skill categories (same as in SkillForm)
   const categories = [
     'Technology',
-    'Arts & Crafts', 
+    'Arts & Crafts',
     'Culinary',
     'Education',
     'Fitness & Wellness',
@@ -53,99 +55,67 @@ export default function BrowseSkillsPage() {
     'Professional Services',
     'Other'
   ];
-  
-  // Fetch skills with applied filters
+
+  // Fetch skills with applied filters using SkillService
   useEffect(() => {
     const fetchSkills = async () => {
       setLoading(true);
-      
-      try {
-        // Start with a base query
-        let query = supabase
-          .from('skills')
-          .select(`
-            *,
-            users:user_id (
-              id,
-              full_name,
-              profile_image_url,
-              location_city,
-              location_state
-            )
-          `)
-          .eq('is_active', true)
-          .order('created_at', { ascending: false });
-        
-        // Apply filters
-        if (filters.search) {
-          query = query.ilike('title', `%${filters.search}%`);
-        }
-        
-        if (filters.category) {
-          query = query.eq('category', filters.category);
-        }
-        
-        if (filters.offering !== 'all') {
-          query = query.eq('is_offering', filters.offering === 'offering');
-        }
-        
-        if (filters.experience !== 'all') {
-          query = query.eq('experience_level', filters.experience);
-        }
-        
-        if (filters.remote) {
-          query = query.eq('is_remote_friendly', true);
-        }
-        
-        // Limit results to a reasonable number
-        query = query.limit(100);
-        
-        const { data, error } = await query;
-        
-        if (error) {
-          throw error;
-        }
-        
-        setSkills(data || []);
-      } catch (err: any) {
-        console.error('Error fetching skills:', err);
+      setError(null); // Clear previous errors
+
+      // The 'filters' object is already maintained by useState<FilterState>
+      // Convert filter state to SkillBrowseFilters type
+      const browseFilters: import('@/types/index').SkillBrowseFilters = {
+        search: filters.search || undefined,
+        category: filters.category || undefined,
+        offering: filters.offering as 'all' | 'offering' | 'seeking' || 'all',
+        experience: filters.experience as 'all' | 'beginner' | 'intermediate' | 'expert' || 'all',
+        remote: filters.remote,
+      };
+
+      const { data: fetchedSkills, error: fetchError } = await skillService.browseSkills(browseFilters);
+
+      if (fetchError) {
+        console.error('Error fetching skills via SkillService:', fetchError);
         setError('Failed to load skills. Please try again.');
-      } finally {
-        setLoading(false);
+        setSkills([]); // Clear skills on error
+      } else {
+        // Ensure fetchedSkills is not null before setting state, default to empty array
+        setSkills(fetchedSkills || []);
       }
+      setLoading(false);
     };
-    
+
     fetchSkills();
-  }, [supabase, filters]);
-  
+  }, [filters]); // Dependency array updated, supabase client no longer a direct dependency here
+
   // Update URL with filters for shareable links
   useEffect(() => {
     const params = new URLSearchParams();
-    
+
     if (filters.search) params.set('search', filters.search);
     if (filters.category) params.set('category', filters.category);
     if (filters.offering !== 'all') params.set('offering', filters.offering);
     if (filters.experience !== 'all') params.set('experience', filters.experience);
     if (filters.remote) params.set('remote', 'true');
-    
+
     const url = `/skills/browse${params.toString() ? '?' + params.toString() : ''}`;
-    
+
     // Update URL without refreshing page
     window.history.pushState({}, '', url);
   }, [filters]);
-  
+
   // Handle filter changes
   const handleFilterChange = (name: keyof FilterState, value: any) => {
     setFilters(prev => ({ ...prev, [name]: value }));
   };
-  
+
   // Handle search input
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     // The search is already being handled by the filter state
     // Just prevent form submission default behavior
   };
-  
+
   // Handle clearing all filters
   const clearFilters = () => {
     setFilters({
@@ -156,7 +126,7 @@ export default function BrowseSkillsPage() {
       remote: false,
     });
   };
-  
+
   return (
     <div className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -166,7 +136,7 @@ export default function BrowseSkillsPage() {
             Discover skills from our community members
           </p>
         </div>
-        
+
         {/* Filters section */}
         <div className="mb-8">
           <div className="bg-white shadow-md rounded-lg overflow-hidden">
@@ -180,7 +150,7 @@ export default function BrowseSkillsPage() {
                   Clear all filters
                 </button>
               </div>
-              
+
               {/* Search form */}
               <form onSubmit={handleSearch} className="mt-4 mb-6">
                 <div className="flex gap-2">
@@ -212,7 +182,7 @@ export default function BrowseSkillsPage() {
                   </button>
                 </div>
               </form>
-              
+
               {/* Filter options */}
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
                 {/* Category filter */}
@@ -232,7 +202,7 @@ export default function BrowseSkillsPage() {
                     ))}
                   </select>
                 </div>
-                
+
                 {/* Offering/Seeking filter */}
                 <div>
                   <label htmlFor="offering-filter" className="block text-sm font-medium text-gray-700 mb-1">
@@ -249,7 +219,7 @@ export default function BrowseSkillsPage() {
                     <option value="seeking">Skills Sought</option>
                   </select>
                 </div>
-                
+
                 {/* Experience level filter */}
                 <div>
                   <label htmlFor="experience-filter" className="block text-sm font-medium text-gray-700 mb-1">
@@ -267,7 +237,7 @@ export default function BrowseSkillsPage() {
                     <option value="expert">Expert</option>
                   </select>
                 </div>
-                
+
                 {/* Remote friendly filter */}
                 <div className="flex items-center">
                   <input
@@ -285,7 +255,7 @@ export default function BrowseSkillsPage() {
             </div>
           </div>
         </div>
-        
+
         {/* Results section */}
         <div>
           {/* Results count and add skill button */}
@@ -293,7 +263,7 @@ export default function BrowseSkillsPage() {
             <p className="text-sm text-gray-500">
               {loading ? 'Loading skills...' : `${skills.length} skill${skills.length !== 1 ? 's' : ''} found`}
             </p>
-            
+
             {user && (
               <Link
                 href="/skills/new"
@@ -303,7 +273,7 @@ export default function BrowseSkillsPage() {
               </Link>
             )}
           </div>
-          
+
           {/* Loading state */}
           {loading && (
             <div className="text-center py-12">
@@ -311,7 +281,7 @@ export default function BrowseSkillsPage() {
               <p className="text-gray-500">Loading skills...</p>
             </div>
           )}
-          
+
           {/* Error state */}
           {error && !loading && (
             <div className="text-center py-12">
@@ -329,7 +299,7 @@ export default function BrowseSkillsPage() {
               </button>
             </div>
           )}
-          
+
           {/* Empty state */}
           {!loading && !error && skills.length === 0 && (
             <div className="text-center py-12 bg-white rounded-lg shadow-sm">
@@ -349,7 +319,7 @@ export default function BrowseSkillsPage() {
                 >
                   Clear Filters
                 </button>
-                
+
                 {user && (
                   <Link
                     href="/skills/new"
@@ -361,7 +331,7 @@ export default function BrowseSkillsPage() {
               </div>
             </div>
           )}
-          
+
           {/* Skills grid */}
           {!loading && !error && skills.length > 0 && (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
