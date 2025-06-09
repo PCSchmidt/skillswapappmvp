@@ -5,41 +5,13 @@
  */
 
 import { notificationService } from '@/lib/notifications/notificationService';
+import { mockSelectRange, mockSelectEq, mockSelectSingle } from '@supabase/supabase-js'; // Import from shared mock
 
 // Import types from the notification service
 import { NotificationType, NotificationPriority } from '@/lib/notifications/notificationService';
 
-// Mock the Supabase client
-jest.mock('@supabase/supabase-js', () => ({
-  createClient: jest.fn(() => ({
-    from: jest.fn().mockReturnThis(),
-    select: jest.fn().mockReturnThis(),
-    eq: jest.fn().mockReturnThis(),
-    order: jest.fn().mockReturnThis(),
-    range: jest.fn().mockReturnThis(),
-    limit: jest.fn().mockReturnThis(),
-    single: jest.fn().mockResolvedValue({
-      data: { id: 'mock-notification-id' },
-      error: null,
-    }),
-    insert: jest.fn().mockReturnValue({
-      select: jest.fn().mockReturnValue({
-        single: jest.fn().mockResolvedValue({
-          data: { id: 'mock-notification-id' },
-          error: null,
-        })
-      })
-    }),
-    update: jest.fn().mockResolvedValue({
-      data: { id: 'mock-notification-id' },
-      error: null,
-    }),
-    delete: jest.fn().mockResolvedValue({
-      data: {},
-      error: null,
-    }),
-  })),
-}));
+// Mock the Supabase client - now uses the __mocks__ version automatically
+jest.mock('@supabase/supabase-js');
 
 // Mock the email service
 jest.mock('@/lib/email/emailService', () => ({
@@ -106,7 +78,11 @@ describe('NotificationService', () => {
       expect(emailService.sendNotificationEmail).toHaveBeenCalledWith(
         'user-123',
         'trade_proposal',
-        notification.emailData
+        {
+          ...notification.emailData,
+          title: notification.title,
+          content: notification.content,
+        }
       );
     });
     
@@ -124,10 +100,17 @@ describe('NotificationService', () => {
       
       const result = await notificationService.sendNotification(notification);
       
-      // Should still create in-app notification but not send email
+      // Should still create in-app notification and send a generic email
       expect(result.success).toBe(true);
       expect(notificationService['supabase'].from().insert).toHaveBeenCalled();
-      expect(emailService.sendNotificationEmail).not.toHaveBeenCalled();
+      expect(emailService.sendNotificationEmail).toHaveBeenCalledWith(
+        notification.userId,
+        notification.type,
+        {
+          title: notification.title,
+          content: notification.content,
+        }
+      );
     });
     
     it('should handle errors when creating notification', async () => {
@@ -172,9 +155,11 @@ describe('NotificationService', () => {
     
     it('should handle errors when marking as read', async () => {
       // Override the mock to simulate an error
-      notificationService['supabase'].from().update = jest.fn().mockResolvedValue({
-        data: null,
-        error: new Error('Database error'),
+      notificationService['supabase'].from().update = jest.fn().mockReturnValue({
+        eq: jest.fn().mockResolvedValue({
+          data: null,
+          error: new Error('Database error'),
+        })
       });
       
       const result = await notificationService.markAsRead('notification-123');
@@ -196,9 +181,11 @@ describe('NotificationService', () => {
     
     it('should handle errors when deleting', async () => {
       // Override the mock to simulate an error
-      notificationService['supabase'].from().delete = jest.fn().mockResolvedValue({
-        data: null,
-        error: new Error('Database error'),
+      notificationService['supabase'].from().delete = jest.fn().mockReturnValue({
+        eq: jest.fn().mockResolvedValue({
+          data: null,
+          error: new Error('Database error'),
+        })
       });
       
       const result = await notificationService.deleteNotification('notification-123');
@@ -216,7 +203,8 @@ describe('NotificationService', () => {
         { id: 'notif-2', title: 'Notification 2', is_read: true }
       ];
       
-      notificationService['supabase'].from().select().eq().order().limit().range = jest.fn().mockResolvedValue({
+      // Use the imported mockSelectRange from the shared mock
+      mockSelectRange.mockResolvedValueOnce({
         data: mockNotifications,
         error: null
       });
@@ -226,28 +214,26 @@ describe('NotificationService', () => {
       expect(result.data).toEqual(mockNotifications);
       expect(notificationService['supabase'].from).toHaveBeenCalledWith('notifications');
       expect(notificationService['supabase'].from().select).toHaveBeenCalledWith('*');
-      expect(notificationService['supabase'].from().select().eq).toHaveBeenCalledWith('user_id', 'user-123');
+      // Check that 'eq' was called with 'user_id'
+      expect(mockSelectEq).toHaveBeenCalledWith('user_id', 'user-123');
     });
     
     it('should filter for unread notifications when specified', async () => {
-      // Setup the mock returns
-      notificationService['supabase'].from().select().eq().eq = jest.fn().mockReturnThis();
-      notificationService['supabase'].from().select().eq().eq.order = jest.fn().mockReturnThis();
-      notificationService['supabase'].from().select().eq().eq.order().limit = jest.fn().mockReturnThis();
-      notificationService['supabase'].from().select().eq().eq.order().limit().range = jest.fn().mockResolvedValue({
-        data: [{ id: 'notif-1', title: 'Unread Notification', is_read: false }],
-        error: null
-      });
+      const expectedUnread = [{ id: 'notif-1', title: 'Unread Notification', is_read: false }];
+      // Use the imported mockSelectRange from the shared mock
+      mockSelectRange.mockResolvedValueOnce({ data: expectedUnread, error: null });
       
       const result = await notificationService.getNotifications('user-123', { unreadOnly: true });
       
       expect(result.data.length).toBe(1);
-      expect(notificationService['supabase'].from().select().eq().eq).toHaveBeenCalledWith('is_read', false);
+      expect(result.data).toEqual(expectedUnread); // Also check content
+      // Check that the 'eq' mock was called with 'is_read', false
+      expect(mockSelectEq).toHaveBeenCalledWith('is_read', false);
     });
     
     it('should handle errors when fetching notifications', async () => {
-      // Override the mock to simulate an error
-      notificationService['supabase'].from().select().eq().order().limit().range = jest.fn().mockResolvedValue({
+      // Use the imported mockSelectRange from the shared mock
+      mockSelectRange.mockResolvedValueOnce({
         data: null,
         error: new Error('Database error')
       });
