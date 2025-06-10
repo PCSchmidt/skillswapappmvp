@@ -3,7 +3,7 @@ import {
   locationScore,
   skillMatchScore,
   findMatches,
-  calculateGeoDistance,
+  // calculateGeoDistance, // No longer directly used by these tests or exported by matchingAlgorithm.ts
   UserProfile,
   Skill,
   MatchCandidate
@@ -153,8 +153,10 @@ describe('MatchingAlgorithm', () => {
       expect(matches.length).toBe(3);
       expect(matches[0].user.id).toBe('user3');
       expect(matches[0].score).toBeCloseTo(1.0);
-      // Candidate 1 (user1) and Candidate 2 (user2) have tied scores.
-      // Their order might vary, so check their scores individually.
+      // Candidate 1 (user1 at 1,1) and Candidate 2 (user2 at 10,10) will now use actual geoDistance.
+      // Real dist for (0,0) to (1,1) is ~157km. locScore(157) = 0.1. SkillScore = 0.5. Total = 0.3 + 0.04 = 0.34
+      // Real dist for (0,0) to (10,10) is ~1568km. locScore(1568) = 0.1. SkillScore = 0.5. Total = 0.3 + 0.04 = 0.34
+      // So, the scores remain the same as the mocked distances were already giving the lowest location score.
       expect(matches[1].score).toBeCloseTo(0.34);
       expect(matches[2].score).toBeCloseTo(0.34);
       const otherUserIds = [matches[1].user.id, matches[2].user.id];
@@ -177,18 +179,5 @@ describe('MatchingAlgorithm', () => {
     });
   });
 
-  describe('calculateGeoDistance (using mocked values from matchingAlgorithm.ts)', () => {
-    it('should return 0 for same points', () => {
-      expect(calculateGeoDistance(0,0,0,0)).toBe(0);
-    });
-    it('should return 100 for specific test points', () => {
-      expect(calculateGeoDistance(1,1,2,2)).toBe(100);
-    });
-     it('should return 15 for other specific test points', () => {
-      expect(calculateGeoDistance(10,10,10.1,10.1)).toBe(15);
-    });
-     it('should return 50 for default case', () => {
-      expect(calculateGeoDistance(5,5,10,10)).toBe(50); // Any other combo not specified
-    });
-  });
+  // Removed describe block for calculateGeoDistance as it's tested in geoUtils.test.ts
 });

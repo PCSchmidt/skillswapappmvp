@@ -1,17 +1,5 @@
 // src/lib/matching/matchingAlgorithm.ts
-
-// Assume this function would be in a separate geo utility file if it were complex
-// For now, a simple mock for testing purposes if not provided.
-export function calculateGeoDistance(
-  lat1: number, lon1: number,
-  lat2: number, lon2: number
-): number {
-  // Simplified Haversine distance or mock for testing
-  if (lat1 === 0 && lon1 === 0 && lat2 === 0 && lon2 === 0) return 0; // Edge case for tests
-  if (lat1 === 1 && lon1 === 1 && lat2 === 2 && lon2 === 2) return 100; // Mocked distance
-  if (lat1 === 10 && lon1 === 10 && lat2 === 10.1 && lon2 === 10.1) return 15; // km
-  return 50; // Default mock distance
-}
+import { calculateGeoDistance } from '../utils';
 
 export interface UserProfile {
   id: string;
@@ -49,14 +37,8 @@ export function locationScore(distanceKm: number | null | undefined): number {
   if (distanceKm <= 5) return 1.0;       // Very close
   if (distanceKm <= 15) return 0.8;     // Nearby
   if (distanceKm <= MAX_DISTANCE_KM) {
-    // Linear decay from 0.8 (at 15km) down to a minimum score for MAX_DISTANCE_KM
-    // This formula ensures score at 15km is 0.8, and at 50km is slightly above 0.1
-    // Let's adjust to make it simpler: score decreases from 1 (at 5km) to 0.1 (at 50km)
-    // For distance > 5km: 1.0 - ( (distanceKm-5) / (MAX_DISTANCE_KM-5) ) * 0.9
-    // This would make 5km = 1.0, 50km = 0.1
-    // The original formula was: return 1.0 - (distanceKm / MAX_DISTANCE_KM) * 0.6;
-    // Let's use a slightly adjusted linear decay from 0.8 (for >5km up to 15km)
-    // and then another decay. Or simpler:
+    // Formula for > 5km (and also > 15km up to MAX_DISTANCE_KM after prior checks):
+    // Score decreases from 1.0 (at 5km) to 0.1 (at 50km)
     return Math.max(0.1, 1.0 - ( (distanceKm - 5) / (MAX_DISTANCE_KM - 5) ) * 0.9 );
   }
   return 0.1; // Far away or no clear preference

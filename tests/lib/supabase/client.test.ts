@@ -73,8 +73,6 @@ describe('Supabase Client Functions', () => {
     const mockUserSkillsData = [{ id: 'skill1', name: 'SkillA', user_id: userId, is_offering: true, is_active: true }];
 
     it('should query skills for a user, filtering by is_active by default', async () => {
-      // The query is `await supabase.from().select().eq().eq();`
-      // The final result is determined by mockChainThen (the .then() of the object returned by the last .eq())
       mockChainThen.mockImplementationOnce((onfulfilled: any) =>
         Promise.resolve(onfulfilled({ data: mockUserSkillsData, error: null }))
       );
@@ -85,7 +83,7 @@ describe('Supabase Client Functions', () => {
       expect(mockSelect).toHaveBeenCalledWith('*');
       expect(mockEq).toHaveBeenCalledWith('user_id', userId);
       expect(mockEq).toHaveBeenCalledWith('is_active', true);
-      expect(mockOrder).not.toHaveBeenCalled(); // getUserSkills does not call order
+      expect(mockOrder).not.toHaveBeenCalled();
       expect(result).toEqual({ data: mockUserSkillsData, error: null });
     });
 
@@ -148,7 +146,6 @@ describe('Supabase Client Functions', () => {
     const expectedSelectString = '*, users!inner(id, full_name, profile_image_url, location_city, location_state)';
 
     it('should build a basic query with default limit/offset and is_active filter', async () => {
-      // searchSkills ends with .range(...), so mockRange determines the final result
       mockRange.mockResolvedValueOnce({ data: mockSkillResults, error: null });
 
       const params = {};
@@ -159,7 +156,7 @@ describe('Supabase Client Functions', () => {
       expect(mockEq).toHaveBeenCalledWith('is_active', true);
       expect(mockRange).toHaveBeenCalledWith(0, 9);
       expect(mockOrder).not.toHaveBeenCalled();
-      expect(mockLimit).not.toHaveBeenCalled(); // searchSkills does not call .limit() separately
+      expect(mockLimit).not.toHaveBeenCalled();
     });
 
     it('should apply category filter', async () => {
@@ -169,7 +166,7 @@ describe('Supabase Client Functions', () => {
 
       expect(mockEq).toHaveBeenCalledWith('is_active', true);
       expect(mockEq).toHaveBeenCalledWith('category', 'Tech');
-      expect(mockRange).toHaveBeenCalledWith(0, 9); // Default limit 10, offset 0
+      expect(mockRange).toHaveBeenCalledWith(0, 9);
       expect(mockLimit).not.toHaveBeenCalled();
     });
 
@@ -231,7 +228,7 @@ describe('Supabase Client Functions', () => {
       expect(mockOr).toHaveBeenCalledWith('title.ilike.%Skill%,description.ilike.%Skill%');
       expect(mockEq).toHaveBeenCalledWith('is_offering', true);
       expect(mockEq).toHaveBeenCalledWith('is_remote_friendly', true);
-      expect(mockRange).toHaveBeenCalledWith(0, 2); // limit 3, offset 0
+      expect(mockRange).toHaveBeenCalledWith(0, 2);
       expect(mockLimit).not.toHaveBeenCalled();
     });
 
@@ -244,7 +241,7 @@ describe('Supabase Client Functions', () => {
         expect(mockFrom).toHaveBeenCalledWith('skills');
         expect(mockSelect).toHaveBeenCalledWith(expectedSelectString);
         expect(mockEq).toHaveBeenCalledWith('is_active', true);
-        expect(mockRange).toHaveBeenCalledWith(0, 9); // Default limit 10, offset 0
+        expect(mockRange).toHaveBeenCalledWith(0, 9);
         expect(mockLimit).not.toHaveBeenCalled();
         expect(result).toEqual({ data: null, error: dbError });
       });
