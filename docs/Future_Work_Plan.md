@@ -55,3 +55,37 @@ This is the sequence of tasks proposed for Jules to work on:
         *   If the `notificationService.test.ts` fix is provided, integrate it.
         *   If missing components/docs are found, review them and adjust the plan (e.g., if `database.ts` is found, it becomes a candidate for testing).
     *   **Goal:** Adapt to new information and ensure efforts are aligned with the actual state and priorities of the project.
+
+## III. List of Missing Files for Restoration
+
+The following files were identified as missing during the review process but are referenced in the issue description or `README.md`. Please add them to the current working branch if available.
+
+### A. Core Logic / Test Files:
+
+1.  **File:** `database.ts` (Source code for database abstraction)
+    *   **Expected Location:** `src/lib/supabase/database.ts`
+2.  **File:** `database.test.ts` (Test file for `database.ts`)
+    *   **Expected Location:** `tests/lib/supabase/database.test.ts`
+3.  **File:** `matchingAlgorithm.ts` (Source code for matching logic, including `locationScore`)
+    *   **Expected Location:** `src/lib/matching/matchingAlgorithm.ts`
+4.  **File:** `matchingAlgorithm.test.ts` (Test file for `matchingAlgorithm.ts`)
+    *   **Expected Location:** `tests/lib/matching/matchingAlgorithm.test.ts`
+5.  **File:** `supabaseMock.ts` (The original shared mock file mentioned in the issue)
+    *   **Expected Location:** `mocks/supabaseMock.ts` (a directory named `mocks` at the project root)
+
+### B. Documentation Files (Expected in `docs/` directory):
+
+6.  **File:** `eslint_dependency_fix.md`
+    *   **Expected Location:** `docs/eslint_dependency_fix.md`
+7.  **File:** `deployment_verification_steps.md`
+    *   **Expected Location:** `docs/deployment_verification_steps.md`
+8.  **File:** `cypress_testing_guide.md`
+    *   **Expected Location:** `docs/cypress_testing_guide.md`
+9.  **File:** `testing_setup.md` (Potentially very important for testing strategies)
+    *   **Expected Location:** `docs/testing_setup.md`
+10. **File:** `test_output_management.md`
+    *   **Expected Location:** `docs/test_output_management.md`
+11. **File:** `environment_variables_setup.md`
+    *   **Expected Location:** `docs/environment_variables_setup.md`
+12. **File:** `deployment_troubleshooting.md`
+    *   **Expected Location:** `docs/deployment_troubleshooting.md`

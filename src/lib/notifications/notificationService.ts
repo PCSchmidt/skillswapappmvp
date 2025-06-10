@@ -230,16 +230,19 @@ export class NotificationService {
       let query = this.supabase
         .from('notifications')
         .select('*')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false })
-        .limit(limit)
-        .range(offset, offset + limit - 1);
+        .eq('user_id', userId);
       
       // Filter for unread notifications if specified
       if (unreadOnly) {
         query = query.eq('is_read', false);
       }
       
+      // Add ordering, limit, and range after all filters
+      query = query
+        .order('created_at', { ascending: false })
+        .limit(limit)
+        .range(offset, offset + limit - 1);
+
       const { data, error } = await query;
       
       if (error) {
