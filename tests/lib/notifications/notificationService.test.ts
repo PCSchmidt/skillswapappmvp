@@ -4,8 +4,7 @@
  * Tests for the notification service that handles sending in-app notifications
  */
 
-import { notificationService } from '@/lib/notifications/notificationService';
-// Import ALL necessary mock functions and the reset utility from our shared Supabase mock
+import { notificationService, NotificationType } from '@/lib/notifications/notificationService';
 import {
   resetAllSharedMocks,
   mockFrom,
@@ -17,12 +16,11 @@ import {
   mockOrder,
   mockSingle,
   mockRange,
-  mockLimit, // Added mockLimit
-  // mockSelectSingle is available if needed, but getNotifications uses mockSingle or mockRange/mockOrder
+  mockLimit,
+  mockChainThen, // For controlling resolution of chains ending in filters/order/limit/range
 } from '@supabase/supabase-js';
 
-// Import types from the notification service
-import { NotificationType, NotificationPriority } from '@/lib/notifications/notificationService';
+import { EmailTemplateType } from '@/lib/email/emailService'; // For casting in sendNotification test
 
 // Mock the Supabase client - uses the __mocks__/@supabase/supabase-js.ts file automatically
 jest.mock('@supabase/supabase-js');
@@ -36,162 +34,93 @@ jest.mock('@/lib/email/emailService', () => ({
 
 describe('NotificationService', () => {
   beforeEach(() => {
-    // resetAllSharedMocks() will now also reset mockLimit
     resetAllSharedMocks();
-
-    // Configure specific chaining needed by notificationService tests
-    const chainableAfterSelectOrFilter = {
-      eq: mockEq,
-      // neq: mockNeq, // Add other filter mocks if used by notificationService
-      order: mockOrder,
-      single: mockSingle,
-      limit: mockLimit,
-      range: mockRange,
-      // then: jest.fn((onfulfilled) => Promise.resolve(onfulfilled({ data: [], error: null }))), // Removed .then from intermediate chain object
-    };
-    mockSelect.mockReturnValue(chainableAfterSelectOrFilter);
-    mockEq.mockReturnValue(chainableAfterSelectOrFilter); // eq returns the object that includes .order, .limit, .single etc.
-
-    mockInsert.mockReturnValue({
-      select: mockSelect,
-      // Making insert itself thenable for when it's directly awaited
-      then: jest.fn((onfulfilled) => Promise.resolve(onfulfilled({data: {id: 'mock-insert-id'}, error: null})))
-    });
-
-    mockUpdate.mockReturnValue({ eq: mockEq });
-    mockDelete.mockReturnValue({ eq: mockEq });
-
-    mockOrder.mockReturnValue({
-      limit: mockLimit,
-    });
-    mockLimit.mockReturnValue({
-      range: mockRange,
-    });
+    // emailService mock needs to be cleared if its call counts are asserted per test
+    require('@/lib/email/emailService').emailService.sendNotificationEmail.mockClear();
   });
   
   describe('sendNotification', () => {
     it('should successfully create an in-app notification', async () => {
-      const notification = {
-        userId: 'user-123',
-        type: 'trade_proposal' as NotificationType,
-        title: 'New Trade Proposal',
-        content: 'You have received a new trade proposal',
-        link: '/trades/123',
-        sendEmail: false,
+      const notificationInput = {
+        userId: 'user-123', type: 'trade_proposal' as NotificationType,
+        title: 'New Trade', content: 'Trade for you', link: '/trade/1', sendEmail: false,
       };
-      
-      // Configure mock for insert().select().single() chain
-      mockSingle.mockResolvedValueOnce({ data: { id: 'mock-notification-id' }, error: null });
+      const expectedDbRecord = {
+        user_id: 'user-123', type: 'trade_proposal', title: 'New Trade',
+        content: 'Trade for you', link: '/trade/1', priority: 'normal', expires_at: undefined
+      };
+      const mockNotificationOutput = { id: 'notif-1', ...expectedDbRecord };
 
-      const result = await notificationService.sendNotification(notification);
+      mockSingle.mockResolvedValueOnce({ data: mockNotificationOutput, error: null });
+
+      const result = await notificationService.sendNotification(notificationInput);
       
       expect(result.success).toBe(true);
+      expect(result.data).toEqual(mockNotificationOutput);
       expect(mockFrom).toHaveBeenCalledWith('notifications');
-      expect(mockInsert).toHaveBeenCalledWith(expect.objectContaining({
-        user_id: 'user-123',
-        type: 'trade_proposal',
-        title: 'New Trade Proposal',
-        content: 'You have received a new trade proposal',
-        link: '/trades/123',
-        priority: 'normal',
-      }));
-      expect(mockSelect).toHaveBeenCalledTimes(1); // After insert
-      expect(mockSingle).toHaveBeenCalledTimes(1); // After select
+      // The insert mock from shared mock returns defaultBuilder, which has select, which returns defaultBuilder, which has single.
+      expect(mockInsert).toHaveBeenCalledWith(expect.objectContaining(expectedDbRecord)); // insert called with a single object
+      expect(mockSelect).toHaveBeenCalledTimes(1);
+      expect(mockSingle).toHaveBeenCalledTimes(1);
     });
     
     it('should send both in-app and email notifications when sendEmail is true', async () => {
       const { emailService } = require('@/lib/email/emailService');
-      
-      const notification = {
-        userId: 'user-123',
-        type: 'trade_proposal' as NotificationType,
-        title: 'New Trade Proposal',
-        content: 'You have received a new trade proposal',
-        link: '/trades/123',
-        sendEmail: true,
-        emailData: {
-          traderId: 'trader-456',
-          traderName: 'John Doe',
-          skillName: 'Web Development',
-          tradeId: 'trade-123',
-        },
+      const notificationInput = {
+        userId: 'user-123', type: 'trade_proposal' as NotificationType,
+        title: 'New Trade', content: 'Trade for you', link: '/trade/1', sendEmail: true,
+        emailData: { custom: 'data' }
       };
-
-      mockSingle.mockResolvedValueOnce({ data: { id: 'mock-notification-id' }, error: null });
+      const mockNotificationOutput = { id: 'notif-1', user_id: 'user-123' };
+      mockSingle.mockResolvedValueOnce({ data: mockNotificationOutput, error: null });
       
-      const result = await notificationService.sendNotification(notification);
+      const result = await notificationService.sendNotification(notificationInput);
       
       expect(result.success).toBe(true);
       expect(mockFrom).toHaveBeenCalledWith('notifications');
       expect(mockInsert).toHaveBeenCalledTimes(1);
       expect(emailService.sendNotificationEmail).toHaveBeenCalledWith(
-        'user-123',
-        'trade_proposal',
-        {
-          ...notification.emailData,
-          title: notification.title,
-          content: notification.content,
-        }
+        'user-123', notificationInput.type as EmailTemplateType,
+        { custom: 'data', title: 'New Trade', content: 'Trade for you' }
       );
     });
     
-    it('should not send email when sendEmail is true but emailData is missing', async () => {
+    it('should use default email data if specific emailData is missing but sendEmail is true', async () => {
       const { emailService } = require('@/lib/email/emailService');
-      
-      const notification = {
-        userId: 'user-123',
-        type: 'trade_proposal' as NotificationType,
-        title: 'New Trade Proposal',
-        content: 'You have received a new trade proposal',
-        link: '/trades/123',
-        sendEmail: true, // true but no emailData
+      const notificationInput = {
+        userId: 'user-123', type: 'trade_proposal' as NotificationType,
+        title: 'Generic Title', content: 'Generic Content', sendEmail: true,
       };
+      mockSingle.mockResolvedValueOnce({ data: { id: 'notif-2' }, error: null });
 
-      mockSingle.mockResolvedValueOnce({ data: { id: 'mock-notification-id' }, error: null });
-      
-      const result = await notificationService.sendNotification(notification);
-      
-      expect(result.success).toBe(true);
-      expect(mockInsert).toHaveBeenCalledTimes(1);
+      await notificationService.sendNotification(notificationInput);
+
       expect(emailService.sendNotificationEmail).toHaveBeenCalledWith(
-        notification.userId,
-        notification.type,
-        {
-          title: notification.title,
-          content: notification.content,
-        }
+        'user-123', 'trade_proposal',
+        { title: 'Generic Title', content: 'Generic Content' }
       );
     });
-    
+
     it('should handle errors when creating notification', async () => {
-      // Simulate an error from the .single() call after insert().select()
-      mockSingle.mockResolvedValueOnce({ data: null, error: new Error('Database error') });
+      const notificationInput = { userId: 'user-123', type: 'trade_proposal' as NotificationType, title: 'New Trade', content: 'Trade for you' };
+      const dbError = new Error('DB Insert Error');
+      mockSingle.mockResolvedValueOnce({ data: null, error: dbError });
       
-      const notification = {
-        userId: 'user-123',
-        type: 'trade_proposal' as NotificationType,
-        title: 'New Trade Proposal',
-        content: 'You have received a new trade proposal',
-        link: '/trades/123',
-      };
-      
-      const result = await notificationService.sendNotification(notification);
-      
+      const result = await notificationService.sendNotification(notificationInput);
+
       expect(result.success).toBe(false);
-      expect(result.error).toBeDefined();
-      expect(mockInsert).toHaveBeenCalledTimes(1); // Insert was still called
+      expect(result.error).toEqual(dbError);
+      expect(mockInsert).toHaveBeenCalledTimes(1);
     });
   });
   
   describe('markAsRead', () => {
     it('should mark a notification as read', async () => {
-      // update().eq() is expected to be thenable for this service method
-      // The default reset sets eq to return a thenable object.
-      // We need to ensure that the object returned by eq resolves successfully.
-      // The default for eq in resetAllSharedMocks might be sufficient if it resolves to { data: {}, error: null }
-      // Or, more explicitly:
-      mockEq.mockImplementationOnce(() => Promise.resolve({ data: { id: 'mock-notification-id' }, error: null }));
-
+      // The chain is update().eq(). The result of eq() is awaited.
+      // mockChainThen is the .then() method of the defaultBuilder returned by mockEq.
+      mockChainThen.mockImplementationOnce((onfulfilled: any) =>
+        Promise.resolve(onfulfilled({ data: { id: 'mock-notification-id' }, error: null }))
+      );
 
       const result = await notificationService.markAsRead('notification-123');
       
@@ -202,19 +131,24 @@ describe('NotificationService', () => {
     });
     
     it('should handle errors when marking as read', async () => {
-      mockEq.mockImplementationOnce(() => Promise.resolve({ data: null, error: new Error('Database error') }));
+      const dbError = new Error('Database error');
+      mockChainThen.mockImplementationOnce((onfulfilled: any) =>
+        Promise.resolve(onfulfilled({ data: null, error: dbError }))
+      );
       
       const result = await notificationService.markAsRead('notification-123');
       
       expect(result.success).toBe(false);
-      expect(result.error).toBeDefined();
-      expect(mockUpdate).toHaveBeenCalledTimes(1); // Update was still called
+      expect(result.error).toEqual(dbError);
+      expect(mockUpdate).toHaveBeenCalledTimes(1);
     });
   });
   
   describe('deleteNotification', () => {
     it('should delete a notification', async () => {
-      mockEq.mockImplementationOnce(() => Promise.resolve({ data: {}, error: null }));
+      mockChainThen.mockImplementationOnce((onfulfilled: any) =>
+        Promise.resolve(onfulfilled({ data: {}, error: null }))
+      );
 
       const result = await notificationService.deleteNotification('notification-123');
       
@@ -225,61 +159,68 @@ describe('NotificationService', () => {
     });
     
     it('should handle errors when deleting', async () => {
-      mockEq.mockImplementationOnce(() => Promise.resolve({ data: null, error: new Error('Database error') }));
+      const dbError = new Error('Database error');
+      mockChainThen.mockImplementationOnce((onfulfilled: any) =>
+        Promise.resolve(onfulfilled({ data: null, error: dbError }))
+      );
 
       const result = await notificationService.deleteNotification('notification-123');
       
       expect(result.success).toBe(false);
-      expect(result.error).toBeDefined();
+      expect(result.error).toEqual(dbError);
       expect(mockDelete).toHaveBeenCalledTimes(1);
     });
   });
   
   describe('getNotifications', () => {
+    const defaultUserId = 'user-xyz';
+    const mockNotificationsData = [{ id: 'n1', content: 'Notification 1' }, { id: 'n2', content: 'Notification 2' }];
+
     it('should return notifications for a user', async () => {
-      const mockNotifications = [
-        { id: 'notif-1', title: 'Notification 1', is_read: false },
-        { id: 'notif-2', title: 'Notification 2', is_read: true }
-      ];
-      mockRange.mockResolvedValueOnce({ data: mockNotifications, error: null });
+      // The chain is from().select().eq().order().limit().range(). <then is called on result of range>
+      // resetAllSharedMocks sets mockRange to return defaultBuilder, whose .then is mockChainThen.
+      mockChainThen.mockImplementationOnce((onfulfilled: any) =>
+        Promise.resolve(onfulfilled({ data: mockNotificationsData, error: null }))
+      );
       
-      const result = await notificationService.getNotifications('user-123');
+      const result = await notificationService.getNotifications(defaultUserId);
       
-      expect(result.data).toEqual(mockNotifications);
+      expect(result.data).toEqual(mockNotificationsData);
       expect(mockFrom).toHaveBeenCalledWith('notifications');
       expect(mockSelect).toHaveBeenCalledWith('*');
-      expect(mockEq).toHaveBeenCalledWith('user_id', 'user-123');
-      // Default order and limit/range are applied by the service
+      expect(mockEq).toHaveBeenCalledWith('user_id', defaultUserId);
       expect(mockOrder).toHaveBeenCalledWith('created_at', { ascending: false });
-      expect(mockLimit).toHaveBeenCalledWith(50); // Corrected default limit
-      expect(mockRange).toHaveBeenCalledWith(0, 49);  // Corrected range
+      expect(mockLimit).toHaveBeenCalledWith(50);
+      expect(mockRange).toHaveBeenCalledWith(0, 49);
     });
     
     it('should filter for unread notifications when specified', async () => {
-      const expectedUnread = [{ id: 'notif-1', title: 'Unread Notification', is_read: false }];
-      mockRange.mockResolvedValueOnce({ data: expectedUnread, error: null });
+      const mockUnreadNotificationsData = [{ id: 'n3', content: 'Unread Notification', is_read: false }];
+      mockChainThen.mockImplementationOnce((onfulfilled: any) =>
+        Promise.resolve(onfulfilled({ data: mockUnreadNotificationsData, error: null }))
+      );
       
-      const result = await notificationService.getNotifications('user-123', { unreadOnly: true });
+      const result = await notificationService.getNotifications(defaultUserId, { unreadOnly: true });
       
-      expect(result.data.length).toBe(1);
-      expect(result.data).toEqual(expectedUnread);
+      expect(result.data).toEqual(mockUnreadNotificationsData);
       expect(mockFrom).toHaveBeenCalledWith('notifications');
       expect(mockSelect).toHaveBeenCalledWith('*');
-      expect(mockEq).toHaveBeenCalledWith('user_id', 'user-123'); // First eq
-      expect(mockEq).toHaveBeenCalledWith('is_read', false);    // Second eq
+      expect(mockEq).toHaveBeenCalledWith('user_id', defaultUserId);
+      expect(mockEq).toHaveBeenCalledWith('is_read', false);
       expect(mockOrder).toHaveBeenCalledWith('created_at', { ascending: false });
-      expect(mockLimit).toHaveBeenCalledWith(50); // Corrected default limit
-      expect(mockRange).toHaveBeenCalledWith(0, 49);  // Corrected range
+      expect(mockLimit).toHaveBeenCalledWith(50);
+      expect(mockRange).toHaveBeenCalledWith(0, 49);
     });
     
     it('should handle errors when fetching notifications', async () => {
-      mockRange.mockResolvedValueOnce({ data: null, error: new Error('Database error') });
-      
-      const result = await notificationService.getNotifications('user-123');
-      
+      const dbError = new Error('DB Fetch Error');
+      mockChainThen.mockImplementationOnce((onfulfilled: any) =>
+        Promise.resolve(onfulfilled({ data: null, error: dbError }))
+      );
+
+      const result = await notificationService.getNotifications(defaultUserId);
       expect(result.data).toEqual([]);
-      expect(result.error).toBeDefined();
-      expect(mockFrom).toHaveBeenCalledWith('notifications'); // Ensure basic chain started
+      expect(result.error).toEqual(dbError);
     });
   });
 });

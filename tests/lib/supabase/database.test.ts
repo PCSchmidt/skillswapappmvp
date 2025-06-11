@@ -1,225 +1,162 @@
 // tests/lib/supabase/database.test.ts
-import { supabaseClient } from '@/lib/supabase/client'; // This will be mocked
+import {
+  getItemById,
+  createItem,
+  getComplexData,
+  MyData
+} from '@/lib/supabase/database'; // Import actual functions to test
+
 import {
   resetSupabaseMock,
   createSupabaseQueryBuilderMock,
   mockFrom,
-  // Individual mocks like mockSelect, mockEq are not directly asserted if using builder's methods.
-  // They are part of the builder returned by createSupabaseQueryBuilderMock.
+  // queryBuilderMock methods will be asserted, not necessarily all these global ones directly
+  // mockSelect, mockEq, mockSingle, mockInsert, mockOrder, mockIlike
 } from '../../../mocks/supabaseMock';
 
 jest.mock('@/lib/supabase/client', () => {
   const { supabaseMock: requiredSupabaseMock } = require('../../../mocks/supabaseMock');
-  const originalModule = jest.requireActual('@/lib/supabase/client');
+  const originalModule = jest.requireActual('@/lib/supabase/client'); // Keep other exports
   return {
     ...originalModule,
-    supabaseClient: requiredSupabaseMock,
-    supabase: requiredSupabaseMock,
+    supabase: requiredSupabaseMock, // Ensure database.ts uses this mock via its import { supabase } from './client'
+    supabaseClient: requiredSupabaseMock, // For any legacy test code if it used this name
   };
 });
 
-describe('Hypothetical Database Functions (Advanced Mocking)', () => {
+describe('Database Functions', () => {
   beforeEach(() => {
     resetSupabaseMock();
   });
 
-  // Test 1: getItemById - success
-  it('getItemById (hypothetical) should fetch an item successfully', async () => {
-    const mockItemId = 'item1';
-    const mockItemData = { id: mockItemId, name: 'Fetched Item' };
+  describe('getItemById', () => {
+    it('should fetch an item by id successfully', async () => {
+      const mockItemId = 'item1';
+      const mockItemData = { id: mockItemId, name: 'Fetched Item' };
+      const tableName = 'items';
 
-    const queryBuilderMock = createSupabaseQueryBuilderMock(mockItemData);
-    mockFrom.mockImplementationOnce(() => queryBuilderMock);
+      const queryBuilderMock = createSupabaseQueryBuilderMock(mockItemData);
+      mockFrom.mockImplementationOnce(() => queryBuilderMock);
 
-    const result = await supabaseClient.from('items').select('*').eq('id', mockItemId).single();
+      const result = await getItemById(tableName, mockItemId);
 
-    expect(mockFrom).toHaveBeenCalledWith('items');
-    expect(queryBuilderMock.select).toHaveBeenCalledWith('*');
-    expect(queryBuilderMock.eq).toHaveBeenCalledWith('id', mockItemId);
-    expect(queryBuilderMock.single).toHaveBeenCalledTimes(1);
-    expect(result.data).toEqual(mockItemData);
-    expect(result.error).toBeNull();
+      expect(mockFrom).toHaveBeenCalledWith(tableName);
+      expect(queryBuilderMock.select).toHaveBeenCalledWith('*');
+      expect(queryBuilderMock.eq).toHaveBeenCalledWith('id', mockItemId);
+      expect(queryBuilderMock.single).toHaveBeenCalledTimes(1);
+      expect(result.data).toEqual(mockItemData);
+      expect(result.error).toBeNull();
+    });
+
+    it('should handle error when fetching an item by id', async () => {
+      const mockItemId = 'itemError';
+      const tableName = 'items';
+      const dbError = new Error('Fetch Error');
+      const queryBuilderMock = createSupabaseQueryBuilderMock(null, dbError);
+      mockFrom.mockImplementationOnce(() => queryBuilderMock);
+
+      const result = await getItemById(tableName, mockItemId);
+
+      expect(mockFrom).toHaveBeenCalledWith(tableName);
+      expect(queryBuilderMock.select).toHaveBeenCalledWith('*');
+      expect(queryBuilderMock.eq).toHaveBeenCalledWith('id', mockItemId);
+      expect(queryBuilderMock.single).toHaveBeenCalledTimes(1);
+      expect(result.data).toBeNull();
+      expect(result.error).toEqual(dbError);
+    });
   });
 
-  // Test 2: getItemById - error
-  it('getItemById (hypothetical) should handle error', async () => {
-    const mockItemId = 'itemError';
-    const dbError = new Error('Fetch Error');
-    const queryBuilderMock = createSupabaseQueryBuilderMock(null, dbError);
-    mockFrom.mockImplementationOnce(() => queryBuilderMock);
+  describe('createItem', () => {
+    it('should insert an item successfully', async () => {
+      const newItemData = { name: 'New Item' };
+      const createdItem = { id: 'created123', ...newItemData };
+      const tableName = 'items';
 
-    const result = await supabaseClient.from('items').select('*').eq('id', mockItemId).single();
+      const queryBuilderMock = createSupabaseQueryBuilderMock(createdItem);
+      mockFrom.mockImplementationOnce(() => queryBuilderMock);
 
-    expect(mockFrom).toHaveBeenCalledWith('items');
-    expect(queryBuilderMock.select).toHaveBeenCalledWith('*');
-    expect(queryBuilderMock.eq).toHaveBeenCalledWith('id', mockItemId);
-    expect(queryBuilderMock.single).toHaveBeenCalledTimes(1);
-    expect(result.data).toBeNull();
-    expect(result.error).toEqual(dbError);
+      const result = await createItem(tableName, newItemData);
+
+      expect(mockFrom).toHaveBeenCalledWith(tableName);
+      expect(queryBuilderMock.insert).toHaveBeenCalledWith([newItemData]); // createItem wraps it in an array
+      expect(queryBuilderMock.select).toHaveBeenCalledTimes(1);
+      expect(queryBuilderMock.single).toHaveBeenCalledTimes(1);
+      expect(result.data).toEqual(createdItem);
+    });
+
+    it('should handle error on insert', async () => {
+      const newItemData = { name: 'Faulty New Item' };
+      const tableName = 'items';
+      const dbError = new Error('Insert Error');
+
+      const queryBuilderMock = createSupabaseQueryBuilderMock(null, dbError);
+      // Configure insert on this builder to be the one that resolves with an error
+      // (because createItem awaits the full insert().select().single() chain)
+      queryBuilderMock.insert.mockImplementationOnce(() => queryBuilderMock); // insert returns builder
+      queryBuilderMock.select.mockImplementationOnce(() => queryBuilderMock); // select returns builder
+      queryBuilderMock.single.mockResolvedValueOnce({data: null, error: dbError }); // single resolves with error
+
+
+      mockFrom.mockImplementationOnce(() => queryBuilderMock);
+
+      const result = await createItem(tableName, newItemData);
+
+      expect(mockFrom).toHaveBeenCalledWith(tableName);
+      expect(queryBuilderMock.insert).toHaveBeenCalledWith([newItemData]);
+      expect(result.data).toBeNull();
+      expect(result.error).toEqual(dbError);
+    });
   });
 
-  // Test 3: createItem - success
-  it('createItem (hypothetical) should insert an item successfully', async () => {
-    const newItem = { name: 'New Item' };
-    const createdItem = { id: 'created123', ...newItem };
+  describe('getComplexData', () => {
+    const testId = '1';
+    const expectedTableName = 'my_table';
+    const expectedSelectString = 'id, name, value';
 
-    // The queryBuilderMock's terminal methods (like .single() or its own .then())
-    // will resolve to 'createdItem' because that's what createSupabaseQueryBuilderMock is configured with.
-    const queryBuilderMock = createSupabaseQueryBuilderMock(createdItem);
-    mockFrom.mockImplementationOnce(() => queryBuilderMock);
+    it('should call basic query without filter and then order', async () => {
+      const mockDataArray: MyData[] = [{ id: testId, name: 'A' }];
+      const queryBuilderMock = createSupabaseQueryBuilderMock(mockDataArray); // order is terminal
+      mockFrom.mockImplementationOnce(() => queryBuilderMock);
 
-    const result = await supabaseClient.from('items').insert(newItem).select().single();
+      const result = await getComplexData(testId);
 
-    expect(mockFrom).toHaveBeenCalledWith('items');
-    expect(queryBuilderMock.insert).toHaveBeenCalledWith(newItem);
-    expect(queryBuilderMock.select).toHaveBeenCalledTimes(1);
-    expect(queryBuilderMock.single).toHaveBeenCalledTimes(1);
-    expect(result.data).toEqual(createdItem);
-  });
+      expect(mockFrom).toHaveBeenCalledWith(expectedTableName);
+      expect(queryBuilderMock.select).toHaveBeenCalledWith(expectedSelectString);
+      expect(queryBuilderMock.eq).toHaveBeenCalledWith('id', testId);
+      expect(queryBuilderMock.ilike).not.toHaveBeenCalled();
+      expect(queryBuilderMock.order).toHaveBeenCalledWith('name');
+      expect(result.data).toEqual(mockDataArray);
+    });
 
-  // Test 4: createItem - error on insert (insert itself returns error)
-  it('createItem (hypothetical) should handle error on insert', async () => {
-    const newItem = { name: 'Faulty New Item' };
-    const dbError = new Error('Insert Error');
+    it('should call query with ilike filter and then order', async () => {
+      const filterString = 'App';
+      const mockDataArray: MyData[] = [{ id: testId, name: 'Apple' }];
+      const queryBuilderMock = createSupabaseQueryBuilderMock(mockDataArray); // order is terminal
+      mockFrom.mockImplementationOnce(() => queryBuilderMock);
 
-    // Configure the builder so its terminal action (awaiting the result of insert()) resolves with an error.
-    const queryBuilderMock = createSupabaseQueryBuilderMock(null, dbError);
-    mockFrom.mockImplementationOnce(() => queryBuilderMock);
+      const result = await getComplexData(testId, filterString);
 
-    // If insert() itself is directly awaited and is configured to be thenable by the builder
-    const result = await supabaseClient.from('items').insert(newItem);
+      expect(mockFrom).toHaveBeenCalledWith(expectedTableName);
+      expect(queryBuilderMock.select).toHaveBeenCalledWith(expectedSelectString);
+      expect(queryBuilderMock.eq).toHaveBeenCalledWith('id', testId);
+      expect(queryBuilderMock.ilike).toHaveBeenCalledWith('name', `%${filterString}%`);
+      expect(queryBuilderMock.order).toHaveBeenCalledWith('name');
+      expect(result.data).toEqual(mockDataArray);
+    });
 
-    expect(mockFrom).toHaveBeenCalledWith('items');
-    expect(queryBuilderMock.insert).toHaveBeenCalledWith(newItem);
-    expect(result.data).toBeNull();
-    expect(result.error).toEqual(dbError);
-  });
+    it('should handle error in getComplexData', async () => {
+      const dbError = new Error('Complex Fetch Error');
+      const queryBuilderMock = createSupabaseQueryBuilderMock(null, dbError); // order is terminal
+      mockFrom.mockImplementationOnce(() => queryBuilderMock);
 
-  // Test 5: updateItem - success
-  it('updateItem (hypothetical) should update an item successfully', async () => {
-    const itemId = 'itemToUpdate';
-    const updateData = { name: 'Updated Name' };
-    const updatedResponseData = [{ id: itemId, ...updateData }]; // Supabase update often returns array
+      const result = await getComplexData(testId);
 
-    // The builder returned by from().update().eq() will resolve to updatedResponseData
-    const queryBuilderMock = createSupabaseQueryBuilderMock(updatedResponseData);
-    mockFrom.mockImplementationOnce(() => queryBuilderMock);
-
-    const result = await supabaseClient.from('items').update(updateData).eq('id', itemId);
-
-    expect(mockFrom).toHaveBeenCalledWith('items');
-    expect(queryBuilderMock.update).toHaveBeenCalledWith(updateData);
-    expect(queryBuilderMock.eq).toHaveBeenCalledWith('id', itemId);
-    expect(result.data).toEqual(updatedResponseData);
-  });
-
-  // Test 6: updateItem - error
-  it('updateItem (hypothetical) should handle error on update', async () => {
-    const itemId = 'itemToUpdateError';
-    const updateData = { name: 'Updated Name' };
-    const dbError = new Error('Update Error');
-
-    const queryBuilderMock = createSupabaseQueryBuilderMock(null, dbError);
-    mockFrom.mockImplementationOnce(() => queryBuilderMock);
-
-    const result = await supabaseClient.from('items').update(updateData).eq('id', itemId);
-
-    expect(mockFrom).toHaveBeenCalledWith('items');
-    expect(queryBuilderMock.update).toHaveBeenCalledWith(updateData);
-    expect(queryBuilderMock.eq).toHaveBeenCalledWith('id', itemId);
-    expect(result.data).toBeNull();
-    expect(result.error).toEqual(dbError);
-  });
-
-  // Test 7: deleteItem - success
-  it('deleteItem (hypothetical) should delete an item successfully', async () => {
-    const itemId = 'itemToDelete';
-
-    // delete().eq() often returns empty success or the deleted item(s)
-    const queryBuilderMock = createSupabaseQueryBuilderMock({});
-    mockFrom.mockImplementationOnce(() => queryBuilderMock);
-
-    const result = await supabaseClient.from('items').delete().eq('id', itemId);
-
-    expect(mockFrom).toHaveBeenCalledWith('items');
-    expect(queryBuilderMock.delete).toHaveBeenCalledTimes(1);
-    expect(queryBuilderMock.eq).toHaveBeenCalledWith('id', itemId);
-    expect(result.error).toBeNull();
-  });
-
-  // Test 8: deleteItem - error
-  it('deleteItem (hypothetical) should handle error on delete', async () => {
-    const itemId = 'itemToDeleteError';
-    const dbError = new Error('Delete Error');
-
-    const queryBuilderMock = createSupabaseQueryBuilderMock(null, dbError);
-    mockFrom.mockImplementationOnce(() => queryBuilderMock);
-
-    const result = await supabaseClient.from('items').delete().eq('id', itemId);
-
-    expect(mockFrom).toHaveBeenCalledWith('items');
-    expect(queryBuilderMock.delete).toHaveBeenCalledTimes(1);
-    expect(queryBuilderMock.eq).toHaveBeenCalledWith('id', itemId);
-    expect(result.error).toEqual(dbError);
-  });
-
-  // Test 9: getComplexData - no filter
-  it('getComplexData (hypothetical) no filter', async () => {
-    const mockData = [{id: '1', name: 'A'}];
-    const queryBuilderMock = createSupabaseQueryBuilderMock(mockData);
-    mockFrom.mockImplementationOnce(() => queryBuilderMock);
-
-    const result = await supabaseClient.from('my_table').select('id, name, value').eq('id', '1').order('name');
-
-    expect(mockFrom).toHaveBeenCalledWith('my_table');
-    expect(queryBuilderMock.select).toHaveBeenCalledWith('id, name, value');
-    expect(queryBuilderMock.eq).toHaveBeenCalledWith('id', '1');
-    expect(queryBuilderMock.order).toHaveBeenCalledWith('name');
-    expect(result.data).toEqual(mockData);
-  });
-
-  // Test 10: getComplexData - with filter
-  it('getComplexData (hypothetical) with ilike filter', async () => {
-    const mockData = [{id: '1', name: 'Apple'}];
-    const queryBuilderMock = createSupabaseQueryBuilderMock(mockData);
-    mockFrom.mockImplementationOnce(() => queryBuilderMock);
-
-    const result = await supabaseClient.from('my_table').select('id, name, value').eq('id', '1').ilike('name', '%App%').order('name');
-
-    expect(mockFrom).toHaveBeenCalledWith('my_table');
-    expect(queryBuilderMock.select).toHaveBeenCalledWith('id, name, value');
-    expect(queryBuilderMock.eq).toHaveBeenCalledWith('id', '1');
-    expect(queryBuilderMock.ilike).toHaveBeenCalledWith('name', '%App%');
-    expect(queryBuilderMock.order).toHaveBeenCalledWith('name');
-    expect(result.data).toEqual(mockData);
-  });
-
-  // Test 11: Chained eq
-  it('should handle chained eq calls', async () => {
-    const mockData = [{id: '1', name: 'A', status: 'active'}];
-    const queryBuilderMock = createSupabaseQueryBuilderMock(mockData);
-    mockFrom.mockImplementationOnce(() => queryBuilderMock);
-
-    const result = await supabaseClient.from('test').select('*').eq('status', 'active').eq('user', 'user1').single();
-
-    expect(queryBuilderMock.select).toHaveBeenCalledWith('*');
-    expect(queryBuilderMock.eq).toHaveBeenCalledWith('status', 'active');
-    expect(queryBuilderMock.eq).toHaveBeenCalledWith('user', 'user1');
-    expect(queryBuilderMock.single).toHaveBeenCalled();
-    expect(result.data).toEqual(mockData);
-  });
-
-  // Test 12: Order and Range
-  it('should handle order and range', async () => {
-    const mockData = [{id: '1'}, {id: '2'}];
-    const queryBuilderMock = createSupabaseQueryBuilderMock(mockData);
-    mockFrom.mockImplementationOnce(() => queryBuilderMock);
-
-    const result = await supabaseClient.from('test').select('*').order('name').range(0,1);
-
-    expect(queryBuilderMock.select).toHaveBeenCalledWith('*');
-    expect(queryBuilderMock.order).toHaveBeenCalledWith('name');
-    expect(queryBuilderMock.range).toHaveBeenCalledWith(0,1);
-    expect(result.data).toEqual(mockData);
+      expect(mockFrom).toHaveBeenCalledWith(expectedTableName);
+      expect(queryBuilderMock.select).toHaveBeenCalledWith(expectedSelectString);
+      expect(queryBuilderMock.eq).toHaveBeenCalledWith('id', testId);
+      expect(queryBuilderMock.order).toHaveBeenCalledWith('name');
+      expect(result.data).toBeNull();
+      expect(result.error).toEqual(dbError);
+    });
   });
 });
