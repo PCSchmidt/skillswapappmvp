@@ -24,11 +24,8 @@ beforeEach(() => {
   // Default viewport
   cy.viewport(1280, 720);
   
-  // Log test name
-  cy.log(`Running: ${Cypress.currentTest.title}`);
-  
-  // Preserve cookies between tests
-  Cypress.Cookies.preserveOnce('supabase-auth-token');
+  // Preserve cookies between tests (replaced with cy.session() in individual tests where needed)
+  // Cypress.Cookies.preserveOnce('supabase-auth-token');
 });
 
 // Handle uncaught exceptions

@@ -14,6 +14,13 @@ import matches from '../fixtures/matches.json';
 import skills from '../fixtures/skills.json';
 import users from '../fixtures/users.json';
 
+// -- Supabase Setup Command --
+Cypress.Commands.add('setupSupabaseClient', (supabaseUrl, supabaseAnonKey) => {
+  Cypress.env('NEXT_PUBLIC_SUPABASE_URL', supabaseUrl);
+  Cypress.env('NEXT_PUBLIC_SUPABASE_ANON_KEY', supabaseAnonKey);
+  cy.log(`Supabase client set up with URL: ${supabaseUrl}`);
+});
+
 // -- Authentication Commands --
 Cypress.Commands.add('supabaseLogin', (email, password) => {
   cy.log(`Logging in as ${email}`);
@@ -149,4 +156,24 @@ Cypress.Commands.add('fillFormFields', (selectors) => {
   Object.entries(selectors).forEach(([selector, value]) => {
     cy.get(selector).type(value);
   });
+});
+
+// -- Skill Management Commands --
+Cypress.Commands.add('createSkill', (skill) => {
+  cy.log(`Creating skill: ${skill.title}`);
+  cy.intercept('POST', '**/api/skills', {
+    statusCode: 201,
+    body: {
+      id: `mock-skill-${Date.now()}`,
+      ...skill,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+  }).as('createSkillApi');
+
+  // Assuming there's a UI flow to create a skill, or a direct API call
+  // For now, we'll just ensure the intercept is set up.
+  // If the test relies on a UI flow, that needs to be implemented in the test itself.
+  // If it's a direct API call, it would look something like:
+  // cy.request('POST', '/api/skills', skill);
 });

@@ -18,7 +18,7 @@ describe('Trade Proposal Flow', () => {
   
   beforeEach(() => {
     // Login before each test
-    cy.login(user.email, user.password);
+    cy.supabaseLogin(user.email, user.password);
     
     // Create a skill for testing if needed
     cy.visit('/dashboard');
