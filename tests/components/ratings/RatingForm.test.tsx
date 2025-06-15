@@ -4,8 +4,8 @@
  * Tests for the rating form component that allows users to submit ratings for completed trades
  */
 
-import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import React from 'react';
 import '@testing-library/jest-dom';
 import RatingForm from '@/components/ratings/RatingForm';
 

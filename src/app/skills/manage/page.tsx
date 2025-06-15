@@ -8,11 +8,11 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useSupabase } from '@/contexts/SupabaseContext';
+import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
 import SkillCard from '@/components/skills/SkillCard';
+import { useSupabase } from '@/contexts/SupabaseContext';
 
 export default function ManageSkillsPage() {
   const router = useRouter();

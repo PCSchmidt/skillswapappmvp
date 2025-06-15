@@ -1,0 +1,48 @@
+[2025-05-18T12:06:41.914Z] INFO: Checking for uncommitted changes...
+[2025-05-18T12:06:41.914Z] COMMAND: git status --porcelain
+[2025-05-18T12:06:41.995Z] WARNING: You have uncommitted changes:
+[2025-05-18T12:06:46.203Z] WARNING: Proceeding with uncommitted changes
+[2025-05-18T12:06:46.204Z] INFO: 
+Installing dependencies...
+[2025-05-18T12:06:46.205Z] COMMAND: npm ci
+[2025-05-18T12:06:57.679Z] ERROR: Command failed: npm ci
+[2025-05-18T12:06:57.679Z] ERROR: Command failed: npm ci
+[2025-05-18T12:06:57.680Z] INFO: 
+Updating environment variables for staging...
+[2025-05-18T12:06:57.680Z] COMMAND: npm run update-env:staging
+[2025-05-18T12:06:58.706Z] INFO: 
+Validating dependencies...
+[2025-05-18T12:06:58.707Z] COMMAND: npm run validate-deps
+[2025-05-18T12:06:59.710Z] ERROR: Command failed: npm run validate-deps
+[2025-05-18T12:06:59.711Z] ERROR: Command failed: npm run validate-deps
+[2025-05-18T12:07:02.803Z] INFO: 
+Verifying build...
+[2025-05-18T12:07:02.803Z] COMMAND: npm run prebuild:verify
+[2025-05-18T12:07:03.640Z] ERROR: Command failed: npm run prebuild:verify
+[2025-05-18T12:07:03.641Z] ERROR: Command failed: npm run prebuild:verify
+[2025-05-18T12:07:05.944Z] INFO: 
+Running tests...
+[2025-05-18T12:07:05.944Z] COMMAND: npm test
+[2025-05-18T12:07:07.529Z] ERROR: Command failed: npm test
+[2025-05-18T12:07:07.530Z] ERROR: Command failed: npm test
+[2025-05-18T12:07:09.421Z] INFO: 
+Deploying to staging...
+[2025-05-18T12:07:09.422Z] INFO: Cleaning up node_modules and package-lock.json...
+[2025-05-18T12:07:09.422Z] COMMAND: Remove-Item -Recurse -Force node_modules
+[2025-05-18T12:07:09.448Z] ERROR: Command failed: Remove-Item -Recurse -Force node_modules
+[2025-05-18T12:07:09.448Z] ERROR: Command failed: Remove-Item -Recurse -Force node_modules
+[2025-05-18T12:07:09.449Z] COMMAND: Remove-Item -Force package-lock.json
+[2025-05-18T12:07:09.476Z] ERROR: Command failed: Remove-Item -Force package-lock.json
+[2025-05-18T12:07:09.476Z] ERROR: Command failed: Remove-Item -Force package-lock.json
+[2025-05-18T12:07:09.477Z] COMMAND: npx vercel --prod
+[2025-05-18T12:08:34.351Z] ERROR: Command failed: npx vercel --prod
+[2025-05-18T12:08:34.351Z] ERROR: Command failed: npx vercel --prod
+[2025-05-18T12:08:34.352Z] ERROR: Deployment to Vercel failed
+[2025-05-18T12:09:21.259Z] INFO: 
+Verifying deployment...
+[2025-05-18T12:09:21.259Z] COMMAND: npm run verify-deployment -- https://skillswapappmvp-git-dev-chris-schmidts-projects.vercel.app/
+[2025-05-18T12:09:22.112Z] ERROR: Command failed: npm run verify-deployment -- https://skillswapappmvp-git-dev-chris-schmidts-projects.vercel.app/
+[2025-05-18T12:09:22.113Z] ERROR: Command failed: npm run verify-deployment -- https://skillswapappmvp-git-dev-chris-schmidts-projects.vercel.app/
+[2025-05-18T12:09:22.113Z] SUCCESS: 
+Deployment process completed
+[2025-05-18T12:09:22.113Z] INFO: Deployment log saved to C:\Users\pchri\Documents\Cline\skillswap_mvp\deployment-staging-2025-05-18-12-06-41.log

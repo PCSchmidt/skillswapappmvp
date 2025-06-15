@@ -1,0 +1,34 @@
+[2025-05-14T16:09:52.447Z] INFO: Checking for uncommitted changes...
+[2025-05-14T16:09:52.448Z] COMMAND: git status --porcelain
+[2025-05-14T16:09:52.531Z] WARNING: You have uncommitted changes:
+[2025-05-14T16:09:55.237Z] WARNING: Proceeding with uncommitted changes
+[2025-05-14T16:09:55.238Z] INFO: 
+Updating environment variables for staging...
+[2025-05-14T16:09:55.238Z] COMMAND: npm run update-env:staging
+[2025-05-14T16:09:56.105Z] INFO: 
+Validating dependencies...
+[2025-05-14T16:09:56.106Z] COMMAND: npm run validate-deps
+[2025-05-14T16:10:29.705Z] INFO: 
+Verifying build...
+[2025-05-14T16:10:29.706Z] COMMAND: npm run prebuild:verify
+[2025-05-14T16:11:26.498Z] ERROR: Command failed: npm run prebuild:verify
+[2025-05-14T16:11:26.499Z] ERROR: Command failed: npm run prebuild:verify
+[2025-05-14T16:11:54.261Z] INFO: 
+Running tests...
+[2025-05-14T16:11:54.262Z] COMMAND: npm test
+[2025-05-14T16:12:17.398Z] ERROR: Command failed: npm test
+[2025-05-14T16:12:17.399Z] ERROR: Command failed: npm test
+[2025-05-14T16:13:11.163Z] INFO: 
+Deploying to staging...
+[2025-05-14T16:13:11.164Z] COMMAND: npx vercel --prod
+[2025-05-14T16:14:48.674Z] ERROR: Command failed: npx vercel --prod
+[2025-05-14T16:14:48.675Z] ERROR: Command failed: npx vercel --prod
+[2025-05-14T16:14:48.675Z] ERROR: Deployment to Vercel failed
+[2025-05-14T16:47:24.089Z] INFO: 
+Verifying deployment...
+[2025-05-14T16:47:24.090Z] COMMAND: npm run verify-deployment -- https://skillswapappmvp-git-dev-chris-schmidts-projects.vercel.app/
+[2025-05-14T16:47:31.038Z] ERROR: Command failed: npm run verify-deployment -- https://skillswapappmvp-git-dev-chris-schmidts-projects.vercel.app/
+[2025-05-14T16:47:31.038Z] ERROR: Command failed: npm run verify-deployment -- https://skillswapappmvp-git-dev-chris-schmidts-projects.vercel.app/
+[2025-05-14T16:47:31.038Z] SUCCESS: 
+Deployment process completed
+[2025-05-14T16:47:31.038Z] INFO: Deployment log saved to C:\Users\pchri\Documents\Cline\skillswap_mvp\deployment-staging-2025-05-14-16-09-52.log

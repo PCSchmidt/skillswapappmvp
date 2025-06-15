@@ -6,11 +6,11 @@
 
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import React, { useState } from 'react';
+import { supabase } from '@/lib/supabase';
 import { useSupabase } from '@/contexts/SupabaseContext';
-import { supabase } from '@/lib/supabase/client';
 
 export default function SignupForm() {
   const router = useRouter();
@@ -97,11 +97,11 @@ export default function SignupForm() {
   
   return (
     <div className="w-full max-w-md mx-auto">
-      <form onSubmit={handleSignup} className="bg-white p-8 shadow-md rounded-lg">
+      <form onSubmit={handleSignup} className="bg-white p-8 shadow-md rounded-lg" data-testid="signup-form">
         <h2 className="text-2xl font-bold mb-6 text-gray-800">Create Account</h2>
         
         {error && (
-          <div className="mb-4 p-3 bg-error-50 text-error-700 rounded-md">
+          <div className="mb-4 p-3 bg-error-50 text-error-700 rounded-md" data-testid="auth-error">
             {error}
           </div>
         )}
@@ -124,6 +124,7 @@ export default function SignupForm() {
             className="form-input"
             placeholder="Your full name"
             required
+            data-testid="full-name-input"
           />
         </div>
         
@@ -139,6 +140,7 @@ export default function SignupForm() {
             className="form-input"
             placeholder="Your email address"
             required
+            data-testid="email-input"
           />
         </div>
         
@@ -154,6 +156,7 @@ export default function SignupForm() {
             className="form-input"
             placeholder="Create a password"
             required
+            data-testid="password-input"
           />
           <div className="mt-1 text-xs text-gray-500">
             Password must be at least 8 characters long
@@ -172,6 +175,7 @@ export default function SignupForm() {
             className="form-input"
             placeholder="Confirm your password"
             required
+            data-testid="confirm-password-input"
           />
         </div>
         
@@ -182,7 +186,7 @@ export default function SignupForm() {
               className="mr-2"
               required
             />
-            <span className="text-sm text-gray-700">
+            <span className="text-sm text-gray-500">
               I agree to the{' '}
               <Link href="/terms" className="text-primary-600 hover:text-primary-500">
                 Terms of Service
@@ -199,6 +203,7 @@ export default function SignupForm() {
           type="submit"
           className="btn btn-primary w-full"
           disabled={loading}
+          data-testid="signup-button"
         >
           {loading ? 'Creating Account...' : 'Create Account'}
         </button>
@@ -206,7 +211,7 @@ export default function SignupForm() {
         <div className="mt-6 text-center text-sm">
           <p>
             Already have an account?{' '}
-            <Link href="/login" className="text-primary-600 hover:text-primary-500 font-medium">
+            <Link href="/login" className="text-primary-600 hover:text-primary-500 font-medium" data-testid="login-link">
               Sign in
             </Link>
           </p>

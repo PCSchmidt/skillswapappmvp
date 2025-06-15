@@ -11,7 +11,7 @@ describe('Messaging System', () => {
   
   beforeEach(() => {
     // Login before each test
-    cy.login(user.email, user.password);
+    cy.supabaseLogin(user.email, user.password);
   });
 
   it('should allow users to view conversation list', () => {

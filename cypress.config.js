@@ -5,24 +5,35 @@ module.exports = defineConfig({
     baseUrl: 'http://localhost:3000',
     setupNodeEvents(on, config) {
       // implement node event listeners here
+      on('task', {
+        log(message) {
+          console.log(message);
+          return null;
+        },
+      });
     },
-    // Default command timeout
-    defaultCommandTimeout: 10000,
-    // Viewport settings
     viewportWidth: 1280,
     viewportHeight: 720,
-    // Enable experimental features
-    experimentalSessionAndOrigin: true,
+    video: false,
+    screenshotOnRunFailure: true,
+    defaultCommandTimeout: 10000,
+    // Only test files ending with .cy.js
+    specPattern: 'cypress/e2e/**/*.cy.js',
   },
-  component: {
-    devServer: {
-      framework: 'next',
-      bundler: 'webpack',
-    },
+  env: {
+    // Environment variables that can be accessed in tests via Cypress.env()
+    ENABLE_A11Y: true,
+    // Configure which env to test against (local, staging, production)
+    TEST_ENV: 'local',
   },
-  // Default retry for flaky tests
+  // Retry options
   retries: {
-    runMode: 1,
+    // Configure retry attempts for 'cypress run'
+    runMode: 2,
+    // Configure retry attempts for 'cypress open'
     openMode: 0,
   },
+  // Configure browser behavior
+  chromeWebSecurity: false,
+  experimentalStudio: true,
 });
