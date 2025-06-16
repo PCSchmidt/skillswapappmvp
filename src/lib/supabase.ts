@@ -1,12 +1,12 @@
 /**
  * Centralized Supabase Client Export
- * 
+ *
  * This file re-exports all Supabase client implementations and individual clients
  * to provide a consistent import pattern across the codebase.
  */
 
 // Import directly from the files without using re-exports
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createBrowserClient } from '@supabase/ssr'; // MODIFIED_LINE
 import { createClient } from '@supabase/supabase-js';
 
 // Initialize the clients directly here instead of importing
@@ -22,7 +22,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 // Create clients directly
 const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
-const supabaseCachedClient = createClientComponentClient();
+const supabaseCachedClient = createBrowserClient(supabaseUrl, supabaseAnonKey); // MODIFIED_LINE
 
 // Export the default client (non-cached version)
 export const supabase = supabaseClient;

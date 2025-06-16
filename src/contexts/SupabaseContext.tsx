@@ -1,6 +1,6 @@
 /**
  * Supabase Context Provider
- * 
+ *
  * Provides access to Supabase client throughout the application
  * and manages authentication state.
  */
@@ -9,7 +9,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createBrowserClient } from '@supabase/ssr'; // MODIFIED_LINE
 import { Session, User, AuthChangeEvent } from '@supabase/supabase-js';
 
 // Function to create a mock Supabase client for Storybook
@@ -70,7 +70,7 @@ const createMockSupabaseClient = () => {
 };
 
 // Determine which Supabase client to use
-const supabase = process.env.STORYBOOK ? createMockSupabaseClient() : createClientComponentClient();
+const supabase = process.env.STORYBOOK ? createMockSupabaseClient() : createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!); // MODIFIED_LINE
 
 type SupabaseContextType = {
   supabase: typeof supabase;
@@ -78,12 +78,12 @@ type SupabaseContextType = {
   user: User | null;
   isLoading: boolean;
   isVerified: boolean;
-  signIn: (email: string, password: string) => Promise<{ 
-    success: boolean; 
+  signIn: (email: string, password: string) => Promise<{
+    success: boolean;
     error: string | null;
   }>;
-  signUp: (email: string, password: string) => Promise<{ 
-    success: boolean; 
+  signUp: (email: string, password: string) => Promise<{
+    success: boolean;
     error: string | null;
   }>;
   signOut: () => Promise<void>;
@@ -121,26 +121,26 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
   // Function to refresh user data from the database
   const refreshUser = async () => {
     if (!user) return;
-    
+
     try {
       // Check if email is confirmed in Supabase Auth
       const isEmailConfirmed = user.email_confirmed_at != null;
-      
+
       // Debug log to see the email confirmation status
-      console.log('User verification debug:', { 
+      console.log('User verification debug:', {
         user_id: user.id,
         email: user.email,
         email_confirmed_at: user.email_confirmed_at,
-        isEmailConfirmed 
+        isEmailConfirmed
       });
-      
+
       // Get the user's profile information from our database
       const { data, error } = await supabase
         .from('users')
         .select('*')
         .eq('id', user.id)
         .single();
-      
+
       if (data && !error) {
         // If email is confirmed in Supabase Auth but not in our database, update our database
         if (isEmailConfirmed && !data.is_verified) {
@@ -148,7 +148,7 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
             .from('users')
             .update({ is_verified: true })
             .eq('id', user.id);
-          
+
           setIsVerified(true);
         } else {
           // Otherwise use whichever verification status is true (either source)
@@ -171,7 +171,7 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
         const { data: { session } } = await supabase.auth.getSession();
         setSession(session);
         setUser(session?.user || null);
-        
+
         // If user is logged in, get their profile data
         if (session?.user) {
           await refreshUser();
@@ -190,13 +190,13 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
       async (event: AuthChangeEvent, session: Session | null) => {
         setSession(session);
         setUser(session?.user || null);
-        
+
         if (session?.user) {
           await refreshUser();
         } else {
           setIsVerified(false);
         }
-        
+
         setIsLoading(false);
       }
     );
@@ -270,7 +270,7 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
       return { success: false, error: 'An unexpected error occurred' };
     }
   };
-  
+
   const value = {
     supabase,
     session,
