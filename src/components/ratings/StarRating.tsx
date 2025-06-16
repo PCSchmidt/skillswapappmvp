@@ -74,23 +74,36 @@ export default function StarRating({
       className={`flex ${spacing} items-center`}
       onMouseLeave={handleMouseLeave}
     >
-      {stars.map((star) => (
-        <Star
-          key={star}
-          filled={star <= displayRating}
-          size={starSize}
-          color={color}
-          interactive={interactive && !disabled}
-          onMouseEnter={() => handleMouseEnter(star)}
-          onClick={() => handleClick(star)}
-        />
-      ))}
+      {stars.map((star) => {
+        const status =
+          star <= displayRating
+            ? 'full'
+            : star - 0.5 === displayRating
+            ? 'half'
+            : 'empty';
+
+        return (
+          <Star
+            key={star}
+            index={star}
+            status={status as 'full' | 'half' | 'empty'}
+            filled={status !== 'empty'}
+            size={starSize}
+            color={color}
+            interactive={interactive && !disabled}
+            onMouseEnter={() => handleMouseEnter(star)}
+            onClick={() => handleClick(star)}
+          />
+        );
+      })}
     </div>
   );
 }
 
 interface StarProps {
+  index: number;
   filled: boolean;
+  status: 'full' | 'half' | 'empty';
   size: string;
   color: string;
   interactive: boolean;
@@ -99,12 +112,26 @@ interface StarProps {
 }
 
 // Star component for rendering individual stars
-function Star({ filled, size, color, interactive, onMouseEnter, onClick }: StarProps) {
+function Star({
+  index,
+  filled,
+  status,
+  size,
+  color,
+  interactive,
+  onMouseEnter,
+  onClick
+}: StarProps) {
   const cursorStyle = interactive ? 'cursor-pointer' : '';
   const fillColor = filled ? color : 'text-gray-300';
-  
+  const ariaLabel =
+    status === 'full' ? 'Full Star' : status === 'half' ? 'Half Star' : 'Empty Star';
+
   return (
     <svg
+      data-testid={`star-${index}`}
+      role={interactive ? 'button' : undefined}
+      aria-label={ariaLabel}
       className={`${size} ${fillColor} ${cursorStyle}`}
       viewBox="0 0 24 24"
       fill={filled ? 'currentColor' : 'none'}
@@ -114,7 +141,6 @@ function Star({ filled, size, color, interactive, onMouseEnter, onClick }: StarP
       strokeLinejoin="round"
       onMouseEnter={onMouseEnter}
       onClick={onClick}
-      aria-hidden="true"
     >
       <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
     </svg>
