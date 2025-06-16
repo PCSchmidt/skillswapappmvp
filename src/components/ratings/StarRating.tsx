@@ -70,14 +70,18 @@ export default function StarRating({
   const displayRating = hoverRating > 0 ? hoverRating : rating;
   
   return (
-    <div 
+    <div
       className={`flex ${spacing} items-center`}
       onMouseLeave={handleMouseLeave}
+      role="group"
+      data-testid="star-rating"
     >
       {stars.map((star) => (
         <Star
           key={star}
+          index={star}
           filled={star <= displayRating}
+          hover={interactive && hoverRating > 0 && star <= hoverRating}
           size={starSize}
           color={color}
           interactive={interactive && !disabled}
@@ -90,7 +94,9 @@ export default function StarRating({
 }
 
 interface StarProps {
+  index: number;
   filled: boolean;
+  hover: boolean;
   size: string;
   color: string;
   interactive: boolean;
@@ -99,13 +105,13 @@ interface StarProps {
 }
 
 // Star component for rendering individual stars
-function Star({ filled, size, color, interactive, onMouseEnter, onClick }: StarProps) {
+function Star({ index, filled, hover, size, color, interactive, onMouseEnter, onClick }: StarProps) {
   const cursorStyle = interactive ? 'cursor-pointer' : '';
   const fillColor = filled ? color : 'text-gray-300';
-  
+
   return (
     <svg
-      className={`${size} ${fillColor} ${cursorStyle}`}
+      className={`${size} ${fillColor} ${cursorStyle} ${hover ? 'hover' : ''}`}
       viewBox="0 0 24 24"
       fill={filled ? 'currentColor' : 'none'}
       stroke="currentColor"
@@ -114,6 +120,9 @@ function Star({ filled, size, color, interactive, onMouseEnter, onClick }: StarP
       strokeLinejoin="round"
       onMouseEnter={onMouseEnter}
       onClick={onClick}
+      role={interactive ? 'button' : undefined}
+      aria-label={filled ? 'Full Star' : 'Empty Star'}
+      data-testid={`star-${index}`}
       aria-hidden="true"
     >
       <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
