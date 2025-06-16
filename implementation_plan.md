@@ -47,7 +47,7 @@ This document outlines the concrete implementation steps to begin development of
   npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir
   
   # Install additional dependencies
-  npm install @supabase/supabase-js @supabase/auth-helpers-nextjs react-hook-form zod @hookform/resolvers
+  npm install @supabase/supabase-js @supabase/ssr react-hook-form zod @hookform/resolvers
   npm install -D @types/node @types/react @types/react-dom supabase
   ```
 
