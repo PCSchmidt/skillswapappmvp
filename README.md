@@ -92,6 +92,11 @@ SkillSwap includes comprehensive testing at multiple levels:
 
 ### Unit Testing (Jest)
 
+First, install dependencies:
+```bash
+npm install
+```
+
 Run unit tests with:
 ```bash
 # Run all unit tests
