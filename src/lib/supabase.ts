@@ -6,8 +6,9 @@
  */
 
 // Import directly from the files without using re-exports
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createBrowserClient } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
+import type { Database } from '@/types/supabase';
 
 // Initialize the clients directly here instead of importing
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
@@ -22,7 +23,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 // Create clients directly
 const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
-const supabaseCachedClient = createClientComponentClient();
+const supabaseCachedClient = createBrowserClient<Database>(supabaseUrl, supabaseAnonKey);
 
 // Export the default client (non-cached version)
 export const supabase = supabaseClient;
