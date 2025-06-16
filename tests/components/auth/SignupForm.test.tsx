@@ -10,8 +10,8 @@ import '@testing-library/jest-dom';
 import SignupForm from '@/components/auth/SignupForm';
 
 // Mock the Supabase auth
-jest.mock('@supabase/auth-helpers-nextjs', () => ({
-  createClientComponentClient: jest.fn(() => ({
+jest.mock('@supabase/ssr', () => ({
+  createBrowserClient: jest.fn(() => ({
     auth: {
       signUp: jest.fn().mockImplementation(({ email, password }) => {
         // Simulate successful signup for non-existing email
@@ -105,7 +105,7 @@ describe('SignupForm', () => {
   });
   
   it('handles successful signup correctly', async () => {
-    const { createClientComponentClient } = require('@supabase/auth-helpers-nextjs');
+    const { createBrowserClient } = require('@supabase/ssr');
     const { useRouter } = require('next/navigation');
     const mockPush = jest.fn();
     useRouter.mockReturnValue({ push: mockPush });
@@ -129,7 +129,7 @@ describe('SignupForm', () => {
     
     // Verify signUp was called with correct data
     await waitFor(() => {
-      expect(createClientComponentClient().auth.signUp).toHaveBeenCalledWith({
+      expect(createBrowserClient().auth.signUp).toHaveBeenCalledWith({
         email: 'new@example.com',
         password: 'password123',
         options: {
@@ -171,7 +171,7 @@ describe('SignupForm', () => {
   });
   
   it('handles OAuth signup correctly', async () => {
-    const { createClientComponentClient } = require('@supabase/auth-helpers-nextjs');
+    const { createBrowserClient } = require('@supabase/ssr');
     
     render(<SignupForm />);
     
@@ -181,7 +181,7 @@ describe('SignupForm', () => {
     
     // Verify OAuth sign in was called with Google provider
     await waitFor(() => {
-      expect(createClientComponentClient().auth.signInWithOAuth).toHaveBeenCalledWith({
+      expect(createBrowserClient().auth.signInWithOAuth).toHaveBeenCalledWith({
         provider: 'google',
         options: {
           redirectTo: expect.any(String),
@@ -207,8 +207,8 @@ describe('SignupForm', () => {
   
   it('shows loading state during signup', async () => {
     // Make auth method take some time
-    const { createClientComponentClient } = require('@supabase/auth-helpers-nextjs');
-    createClientComponentClient().auth.signUp = jest.fn().mockImplementation(() => {
+    const { createBrowserClient } = require('@supabase/ssr');
+    createBrowserClient().auth.signUp = jest.fn().mockImplementation(() => {
       return new Promise(resolve => {
         setTimeout(() => {
           resolve({
