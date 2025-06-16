@@ -20,6 +20,23 @@ To prepare for deployment after fixing ESLint dependency issues:
 ./prepare_for_deployment.sh
 ```
 
+## Local Development
+
+To run the app locally:
+
+```bash
+cp .env.example .env.local
+```
+
+Fill in real Supabase credentials for variables like:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `SUPABASE_JWT_SECRET`
+
+If these values are missing you’ll see warnings from `middleware.ts` when starting the dev server.
+
 ## ESLint Dependency Fix
 
 This project recently addressed an ESLint dependency conflict that caused Vercel build failures. The specific error was related to `@eslint/config-array@^3.0.0` not being found. 
