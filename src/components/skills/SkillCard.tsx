@@ -111,7 +111,7 @@ export default function SkillCard({
           <div className="text-sm font-medium text-gray-500 mb-1">Category</div>
           <div className="text-gray-700">
             {skill.category}
-            {skill.subcategory && ` > ${skill.subcategory}`}
+            {skill.subcategory && ` • ${skill.subcategory}`}
           </div>
         </div>
 
