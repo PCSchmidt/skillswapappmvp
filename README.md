@@ -139,7 +139,18 @@ For detailed information on our testing approach:
 
 ## Environment Setup
 
-Before deploying, ensure all environment variables are properly configured. See [Environment Variables Setup](docs/environment_variables_setup.md) for details.
+Before deploying, ensure all environment variables are properly configured. See
+[Environment Variables Setup](docs/environment_variables_setup.md) for details.
+
+1. Copy `.env.example` to `.env.local`.
+2. Fill in the Supabase variables:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+   - `SUPABASE_JWT_SECRET`
+
+If any of these values are missing, `src/middleware.ts` will output a warning
+when requests are processed.
 
 ## Deployment
 
