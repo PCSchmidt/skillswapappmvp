@@ -139,7 +139,14 @@ For detailed information on our testing approach:
 
 ## Environment Setup
 
-Before deploying, ensure all environment variables are properly configured. See [Environment Variables Setup](docs/environment_variables_setup.md) for details.
+Copy `.env.example` to `.env.local` and fill in the values. At a minimum set:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `SUPABASE_JWT_SECRET`
+
+Missing or incorrect values cause middleware warnings and failed requests. See [Environment Variables Setup](docs/environment_variables_setup.md) for details.
 
 ## Deployment
 
