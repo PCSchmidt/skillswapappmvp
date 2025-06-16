@@ -55,7 +55,7 @@ export default function RatingForm({
     
     // Validate inputs
     if (rating === 0) {
-      setError('Please select a star rating');
+      setError('Please select a rating before submitting');
       return;
     }
     
@@ -121,7 +121,7 @@ export default function RatingForm({
       
     } catch (err: any) {
       console.error('Error submitting rating:', err);
-      setError(err.message || 'Failed to submit rating. Please try again.');
+      setError(err.message || 'Error submitting rating');
     } finally {
       setIsSubmitting(false);
     }
