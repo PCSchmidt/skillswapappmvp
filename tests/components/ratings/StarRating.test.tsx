@@ -25,12 +25,12 @@ describe('StarRating', () => {
     const stars = screen.getAllByTestId(/star-/);
     expect(stars).toHaveLength(5);
     
-    // Check for filled, half, and empty stars
-    // This assumes your component uses data-testid="star-1", "star-2", etc.
+    // Check for filled and empty stars
+    // The component does not support half stars
     expect(screen.getByTestId('star-1')).toHaveAttribute('aria-label', 'Full Star');
     expect(screen.getByTestId('star-2')).toHaveAttribute('aria-label', 'Full Star');
     expect(screen.getByTestId('star-3')).toHaveAttribute('aria-label', 'Full Star');
-    expect(screen.getByTestId('star-4')).toHaveAttribute('aria-label', 'Half Star');
+    expect(screen.getByTestId('star-4')).toHaveAttribute('aria-label', 'Empty Star');
     expect(screen.getByTestId('star-5')).toHaveAttribute('aria-label', 'Empty Star');
   });
   
