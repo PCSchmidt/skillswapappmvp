@@ -4,7 +4,7 @@
   "framework": "nextjs",
   "outputDirectory": ".next",
   "buildCommand": "yarn add --dev typescript@5.0.4 @types/node --ignore-scripts && next build",
-  "installCommand": "yarn install",
+  "installCommand": "yarn install --production=false",
   "env": {
     "NODE_ENV": "production",
     "NEXT_TELEMETRY_DISABLED": "1",
