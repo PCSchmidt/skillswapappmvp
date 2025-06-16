@@ -141,6 +141,19 @@ For detailed information on our testing approach:
 
 Before deploying, ensure all environment variables are properly configured. See [Environment Variables Setup](docs/environment_variables_setup.md) for details.
 
+## Local Development
+
+Create a `.env.local` file by copying `.env.example` and replacing the placeholder values. The following variables are required for the app to run locally:
+
+```
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY
+SUPABASE_SERVICE_ROLE_KEY
+SUPABASE_JWT_SECRET
+```
+
+If any of these are missing, `middleware.ts` will log warnings and the site may render a blank page.
+
 ## Deployment
 
 Follow the [Deployment Verification Steps](docs/deployment_verification_steps.md) for deploying to staging and production environments.
