@@ -1,6 +1,6 @@
 'use client';
 
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createBrowserClient } from '@supabase/ssr';
 import { PostgrestError } from '@supabase/supabase-js';
 import { useState, useEffect } from 'react';
 import useSWR, { SWRConfiguration, SWRResponse } from 'swr';
@@ -31,7 +31,10 @@ export function useSupabaseData<T>(
   queryParams: SupabaseQueryParams | null,
   options: SupabaseQueryOptions = {}
 ): SWRResponse<T[], PostgrestError> & { isRealtime: boolean } {
-  const supabase = createClientComponentClient<Database>();
+  const supabase = createBrowserClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+  );
   const [isRealtime, setIsRealtime] = useState(!!options.realtime);
 
   // Create a stable key for SWR - use string format to avoid type issues
@@ -126,7 +129,10 @@ export function useSupabaseRecord<T>(
   id: string | number | null,
   options: SupabaseQueryOptions = {}
 ): SWRResponse<T | null, PostgrestError> {
-  const supabase = createClientComponentClient<Database>();
+  const supabase = createBrowserClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+  );
   
   // Create a stable key for SWR - use string format to avoid type issues
   const swrKey = table && id ? `supabase-record:${table}:${id}` : null;
