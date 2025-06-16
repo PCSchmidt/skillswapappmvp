@@ -20,6 +20,28 @@ To prepare for deployment after fixing ESLint dependency issues:
 ./prepare_for_deployment.sh
 ```
 
+## Local Development
+
+1. Copy `.env.example` to `.env.local`:
+   ```bash
+   cp .env.example .env.local
+   ```
+2. Fill in **all required environment variables** in `.env.local`:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+   - `SUPABASE_JWT_SECRET`
+   - `AUTH_SECRET`
+   - `JWT_SECRET`
+   - `NEXTAUTH_URL`
+
+   Missing or incorrect values will cause 401 authorization errors.
+
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
 ## ESLint Dependency Fix
 
 This project recently addressed an ESLint dependency conflict that caused Vercel build failures. The specific error was related to `@eslint/config-array@^3.0.0` not being found. 
