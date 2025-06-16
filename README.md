@@ -89,6 +89,7 @@ The SkillSwap MVP is a Next.js application with the following key components:
 ## Testing Infrastructure
 
 SkillSwap includes comprehensive testing at multiple levels:
+> **Note:** Run `npm install` once to install project dependencies before executing any Jest or Cypress commands.
 
 ### Unit Testing (Jest)
 
