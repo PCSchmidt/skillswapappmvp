@@ -7,10 +7,10 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
 import '@testing-library/jest-dom';
-import SkillCard, { Skill } from '../../../src/components/skills/SkillCard';
+import SkillCard, { Skill } from '@/components/skills/SkillCard';
 
 // Mock the Avatar component
-jest.mock('../../../src/components/shared/Avatar', () => ({
+jest.mock('@/components/shared/Avatar', () => ({
   __esModule: true,
   default: ({ user, size }: any) => (
     <div data-testid="avatar-mock">
@@ -27,7 +27,7 @@ const MockCategoryBadge = ({ category }: { category: string }) => (
 );
 
 // Mock the SkillCard's internal import of CategoryBadge
-jest.mock('../../../src/components/skills/CategoryBadge', () => ({
+jest.mock('@/components/skills/CategoryBadge', () => ({
   __esModule: true,
   default: (props: any) => <MockCategoryBadge {...props} />
 }), { virtual: true });

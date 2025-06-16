@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach, afterEach, jest } from '@jest/globals';
 import { addDays, subDays, parseISO } from 'date-fns';
-import * as expirationServiceModule from '../../../src/lib/notifications/expirationService';
+import * as expirationServiceModule from '@/lib/notifications/expirationService';
 
 // Directly get references to the functions
 const {
