@@ -1,11 +1,12 @@
 import { describe, expect, test, jest, beforeEach } from '@jest/globals';
-import * as authFunctions from '../../../src/lib/supabase/auth';
 import { supabaseMock } from '../../mocks/supabaseMock';
 
-// Mock the supabaseClient import
+// Mock the supabaseClient import prior to importing the auth functions
 jest.mock('../../../src/lib/supabase/client', () => ({
-  supabaseClient: supabaseMock
+  supabaseClient: supabaseMock,
 }));
+
+import * as authFunctions from '../../../src/lib/supabase/auth';
 
 describe('Authentication Functions', () => {
   beforeEach(() => {
