@@ -126,8 +126,8 @@ export const createMockSupabaseClient = () => {
   };
 };
 
-// Mock for @supabase/auth-helpers-nextjs
-export const createClientComponentClient = jest.fn().mockImplementation(() => {
+// Mock for @supabase/ssr
+export const createBrowserClient = jest.fn().mockImplementation(() => {
   return createMockSupabaseClient();
 });
 
