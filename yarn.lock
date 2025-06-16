@@ -2547,20 +2547,6 @@
   resolved "https://registry.npmjs.org/@storybook/theming/-/theming-8.6.14.tgz"
   integrity sha512-r4y+LsiB37V5hzpQo+BM10PaCsp7YlZ0YcZzQP1OCkPlYXmUAFy2VvDKaFRpD8IeNPKug2u4iFm/laDEbs03dg==
 
-"@supabase/auth-helpers-nextjs@^0.8.5":
-  version "0.8.7"
-  resolved "https://registry.npmjs.org/@supabase/auth-helpers-nextjs/-/auth-helpers-nextjs-0.8.7.tgz"
-  integrity sha512-iYdOjFo0GkRvha340l8JdCiBiyXQuG9v8jnq7qMJ/2fakrskRgHTCOt7ryWbip1T6BExcWKC8SoJrhCzPOxhhg==
-  dependencies:
-    "@supabase/auth-helpers-shared" "0.6.3"
-    set-cookie-parser "^2.6.0"
-
-"@supabase/auth-helpers-shared@0.6.3":
-  version "0.6.3"
-  resolved "https://registry.npmjs.org/@supabase/auth-helpers-shared/-/auth-helpers-shared-0.6.3.tgz"
-  integrity sha512-xYQRLFeFkL4ZfwC7p9VKcarshj3FB2QJMgJPydvOY7J5czJe6xSG5/wM1z63RmAzGbCkKg+dzpq61oeSyWiGBQ==
-  dependencies:
-    jose "^4.14.4"
 
 "@supabase/auth-js@2.69.1":
   version "2.69.1"
