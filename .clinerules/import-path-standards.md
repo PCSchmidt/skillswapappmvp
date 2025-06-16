@@ -25,7 +25,7 @@ Import external dependencies directly:
 // ✅ Correct
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createBrowserClient } from '@supabase/ssr';
 ```
 
 ### Type Imports
@@ -55,7 +55,7 @@ Example:
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createBrowserClient } from '@supabase/ssr';
 import { toast } from 'react-hot-toast';
 
 import Button from '@/components/ui/Button';
