@@ -1,6 +1,6 @@
 'use client';
 
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createBrowserClient } from '@supabase/ssr';
 import { useState, useEffect } from 'react';
 import Card from '@/components/ui/Card';
 
@@ -21,7 +21,10 @@ export function PushNotificationPrompt({
   const [serviceWorkerAvailable, setServiceWorkerAvailable] = useState<boolean>(false);
   const [showPrompt, setShowPrompt] = useState<boolean>(true);
   
-  const supabase = createClientComponentClient();
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+  );
 
   useEffect(() => {
     // Check if service workers and push notifications are supported

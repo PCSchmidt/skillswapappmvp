@@ -9,7 +9,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createBrowserClient } from '@supabase/ssr';
 import { Session, User, AuthChangeEvent } from '@supabase/supabase-js';
 
 // Function to create a mock Supabase client for Storybook
@@ -70,7 +70,12 @@ const createMockSupabaseClient = () => {
 };
 
 // Determine which Supabase client to use
-const supabase = process.env.STORYBOOK ? createMockSupabaseClient() : createClientComponentClient();
+const supabase = process.env.STORYBOOK
+  ? createMockSupabaseClient()
+  : createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+    );
 
 type SupabaseContextType = {
   supabase: typeof supabase;
