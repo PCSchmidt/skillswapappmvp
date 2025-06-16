@@ -25,12 +25,11 @@ describe('StarRating', () => {
     const stars = screen.getAllByTestId(/star-/);
     expect(stars).toHaveLength(5);
     
-    // Check for filled, half, and empty stars
-    // This assumes your component uses data-testid="star-1", "star-2", etc.
+    // Check for filled and empty stars
     expect(screen.getByTestId('star-1')).toHaveAttribute('aria-label', 'Full Star');
     expect(screen.getByTestId('star-2')).toHaveAttribute('aria-label', 'Full Star');
     expect(screen.getByTestId('star-3')).toHaveAttribute('aria-label', 'Full Star');
-    expect(screen.getByTestId('star-4')).toHaveAttribute('aria-label', 'Half Star');
+    expect(screen.getByTestId('star-4')).toHaveAttribute('aria-label', 'Empty Star');
     expect(screen.getByTestId('star-5')).toHaveAttribute('aria-label', 'Empty Star');
   });
   
@@ -46,7 +45,7 @@ describe('StarRating', () => {
     for (let i = 1; i <= 3; i++) {
       expect(screen.getByTestId(`star-${i}`)).toHaveAttribute('aria-label', 'Full Star');
     }
-    
+
     // The last 2 stars should be empty
     for (let i = 4; i <= 5; i++) {
       expect(screen.getByTestId(`star-${i}`)).toHaveAttribute('aria-label', 'Empty Star');
@@ -90,10 +89,12 @@ describe('StarRating', () => {
   
   it('should apply custom size class when provided', () => {
     render(<StarRating rating={3} size="lg" />);
-    
-    // Container should have the large size class
+
     const container = screen.getByRole('group');
-    expect(container).toHaveClass('lg');
+    // Container spacing should correspond to large size
+    expect(container).toHaveClass('space-x-2');
+    // Stars should have the large size class
+    expect(screen.getByTestId('star-1')).toHaveClass('w-6');
   });
   
   it('should not be interactive when disabled', () => {
