@@ -7,9 +7,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import SkillCard from './SkillCard';
 import { useSupabase } from '@/contexts/SupabaseContext';
 import { Database } from '@/types/supabase';
+import SkillCard from './SkillCard';
 
 type Skill = Database['public']['Tables']['skills']['Row'] & {
   users?: {

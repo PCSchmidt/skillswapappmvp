@@ -7,14 +7,14 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useSupabase } from '@/contexts/SupabaseContext';
-import SkillCard from '@/components/skills/SkillCard';
+import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
 import RatingsList from '@/components/ratings/RatingsList';
 import StarRating from '@/components/ratings/StarRating';
+import SkillCard from '@/components/skills/SkillCard';
+import { useSupabase } from '@/contexts/SupabaseContext';
 
 export default function UserProfilePage({ params }: { params: { id: string } }) {
   const router = useRouter();

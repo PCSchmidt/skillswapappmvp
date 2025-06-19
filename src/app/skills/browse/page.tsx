@@ -6,11 +6,11 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { useSupabase } from '@/contexts/SupabaseContext';
+import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
 import SkillCard from '@/components/skills/SkillCard';
+import { useSupabase } from '@/contexts/SupabaseContext';
 
 // Define filter state structure
 interface FilterState {

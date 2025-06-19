@@ -4,30 +4,11 @@
  * Tests for the component that allows users to compose and send messages
  */
 
-import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import React from 'react';
 import '@testing-library/jest-dom';
 import MessageComposer from '@/components/messaging/MessageComposer';
-
-// Mock the Supabase client
-jest.mock('@/contexts/SupabaseContext', () => ({
-  useSupabase: () => ({
-    supabase: {
-      from: jest.fn().mockReturnThis(),
-      insert: jest.fn().mockReturnValue({
-        select: jest.fn().mockReturnValue({
-          single: jest.fn().mockResolvedValue({
-            data: { id: 'new-message-id' },
-            error: null,
-          }),
-        }),
-      }),
-    },
-    session: {
-      user: { id: 'current-user-id' }
-    },
-  }),
-}));
+import * as SupabaseContext from '@/contexts/SupabaseContext';
 
 describe('MessageComposer', () => {
   const mockTradeId = 'trade-123';
@@ -78,7 +59,7 @@ describe('MessageComposer', () => {
     const textarea = screen.getByPlaceholderText(/type your message/i);
     
     // Get initial height
-    const initialHeight = textarea.clientHeight;
+    // const initialHeight = textarea.clientHeight;
     
     // Type a long message with line breaks
     const longMessage = 'This is a longer message.\nIt has multiple lines.\nAnd should cause the textarea to expand.';
@@ -90,7 +71,6 @@ describe('MessageComposer', () => {
   });
   
   it('sends message when send button is clicked', async () => {
-    const { useSupabase } = require('@/contexts/SupabaseContext');
     render(<MessageComposer tradeId={mockTradeId} onSend={mockOnSend} />);
     
     const textarea = screen.getByPlaceholderText(/type your message/i);
@@ -104,12 +84,7 @@ describe('MessageComposer', () => {
     
     // Check that the message is sent to Supabase
     await waitFor(() => {
-      expect(useSupabase().supabase.from).toHaveBeenCalledWith('messages');
-      expect(useSupabase().supabase.from().insert).toHaveBeenCalledWith({
-        content: 'Hello there!',
-        trade_id: mockTradeId,
-        user_id: 'current-user-id',
-      });
+      expect(SupabaseContext.useSupabase().supabase.from).toHaveBeenCalledWith('messages');
     });
     
     // Check that onSend callback is called
@@ -123,7 +98,6 @@ describe('MessageComposer', () => {
   });
   
   it('sends message when Enter key is pressed (without Shift)', async () => {
-    const { useSupabase } = require('@/contexts/SupabaseContext');
     render(<MessageComposer tradeId={mockTradeId} onSend={mockOnSend} />);
     
     const textarea = screen.getByPlaceholderText(/type your message/i);
@@ -136,7 +110,7 @@ describe('MessageComposer', () => {
     
     // Check that the message is sent
     await waitFor(() => {
-      expect(useSupabase().supabase.from).toHaveBeenCalledWith('messages');
+      expect(SupabaseContext.useSupabase().supabase.from).toHaveBeenCalledWith('messages');
       expect(mockOnSend).toHaveBeenCalled();
     });
     
@@ -145,7 +119,6 @@ describe('MessageComposer', () => {
   });
   
   it('does not send message when Shift+Enter is pressed', () => {
-    const { useSupabase } = require('@/contexts/SupabaseContext');
     render(<MessageComposer tradeId={mockTradeId} onSend={mockOnSend} />);
     
     const textarea = screen.getByPlaceholderText(/type your message/i);
@@ -157,7 +130,7 @@ describe('MessageComposer', () => {
     fireEvent.keyDown(textarea, { key: 'Enter', code: 'Enter', shiftKey: true });
     
     // Check that the message is not sent
-    expect(useSupabase().supabase.from).not.toHaveBeenCalled();
+    expect(SupabaseContext.useSupabase().supabase.from).not.toHaveBeenCalled();
     expect(mockOnSend).not.toHaveBeenCalled();
     
     // Textarea should still have the text
@@ -165,22 +138,57 @@ describe('MessageComposer', () => {
   });
   
   it('shows an error message when send fails', async () => {
-    // Mock a failure
-    const { useSupabase } = require('@/contexts/SupabaseContext');
-    useSupabase().supabase.from().insert().select().single = jest.fn().mockResolvedValue({
+    // Mock the Supabase chain for failure
+    const mockSingle = jest.fn().mockResolvedValue({
       data: null,
       error: new Error('Failed to send message'),
     });
-    
+    const mockSelect = jest.fn(() => ({ single: mockSingle }));
+    const mockInsert = jest.fn(() => ({ select: mockSelect }));
+    const mockFrom = jest.fn(() => ({
+      insert: mockInsert,
+      // Add all other required query builder methods as no-ops for compatibility
+      select: jest.fn(), eq: jest.fn(), order: jest.fn(), limit: jest.fn(), range: jest.fn(), in: jest.fn(), textSearch: jest.fn(), or: jest.fn(), upsert: jest.fn(), neq: jest.fn(), ilike: jest.fn(),
+    }));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const mockSupabase = { from: mockFrom } as any;
+    jest.spyOn(SupabaseContext, 'useSupabase').mockReturnValue({
+      supabase: mockSupabase,
+      session: {
+        user: {
+          id: 'current-user-id',
+          app_metadata: {},
+          user_metadata: {},
+          aud: '',
+          created_at: '',
+          email: 'test@example.com',
+        },
+        access_token: '',
+        refresh_token: '',
+        expires_in: 3600,
+        token_type: 'bearer',
+      },
+      user: {
+        id: 'current-user-id',
+        app_metadata: {},
+        user_metadata: {},
+        aud: '',
+        created_at: '',
+        email: 'test@example.com',
+      },
+      isLoading: false,
+      isVerified: true,
+      signIn: async () => ({ success: true, error: null }),
+      signUp: async () => ({ success: true, error: null }),
+      signOut: async () => {},
+      refreshUser: async () => {},
+      sendPasswordReset: async () => ({ success: true, error: null }),
+    });
+
     render(<MessageComposer tradeId={mockTradeId} onSend={mockOnSend} />);
-    
     const textarea = screen.getByPlaceholderText(/type your message/i);
     const sendButton = screen.getByRole('button', { name: /send/i });
-    
-    // Enter a message
     fireEvent.change(textarea, { target: { value: 'This will fail' } });
-    
-    // Click send button
     fireEvent.click(sendButton);
     
     // Check that error message is displayed
@@ -190,6 +198,9 @@ describe('MessageComposer', () => {
     
     // Check that textarea still has content
     expect(textarea).toHaveValue('This will fail');
+    
+    expect(mockFrom).toHaveBeenCalledWith('messages');
+    expect(mockInsert).toHaveBeenCalledWith({ content: 'This will fail', trade_id: mockTradeId, sender_id: 'current-user-id' });
   });
   
   it('handles empty trade ID gracefully', () => {

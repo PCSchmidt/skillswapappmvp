@@ -9,37 +9,59 @@ import { notificationService } from '@/lib/notifications/notificationService';
 // Import types from the notification service
 import { NotificationType, NotificationPriority } from '@/lib/notifications/notificationService';
 
-// Mock the Supabase client
-jest.mock('@supabase/supabase-js', () => ({
-  createClient: jest.fn(() => ({
-    from: jest.fn().mockReturnThis(),
-    select: jest.fn().mockReturnThis(),
-    eq: jest.fn().mockReturnThis(),
-    order: jest.fn().mockReturnThis(),
-    range: jest.fn().mockReturnThis(),
-    limit: jest.fn().mockReturnThis(),
-    single: jest.fn().mockResolvedValue({
-      data: { id: 'mock-notification-id' },
-      error: null,
-    }),
-    insert: jest.fn().mockReturnValue({
-      select: jest.fn().mockReturnValue({
-        single: jest.fn().mockResolvedValue({
-          data: { id: 'mock-notification-id' },
-          error: null,
-        })
-      })
-    }),
-    update: jest.fn().mockResolvedValue({
-      data: { id: 'mock-notification-id' },
-      error: null,
-    }),
-    delete: jest.fn().mockResolvedValue({
-      data: {},
-      error: null,
-    }),
-  })),
-}));
+// Mock data for notifications
+const mockNotifications = [
+  { id: 'notif-1', title: 'Notification 1', is_read: false },
+  { id: 'notif-2', title: 'Notification 2', is_read: true }
+];
+
+// Mock the Supabase client with a more complete implementation
+jest.mock('@supabase/supabase-js', () => {
+  // Create a function to generate a chainable mock
+  const createChainableMock = () => {
+    const mock: any = {};
+    const chainableMethods = [
+      'from', 'select', 'insert', 'update', 'delete', 
+      'eq', 'neq', 'order', 'limit', 'range', 'single'
+    ];
+    
+    chainableMethods.forEach(method => {
+      mock[method] = jest.fn().mockReturnValue(mock);
+    });
+    
+    // Add promise resolution for terminal methods
+    mock.then = jest.fn(callback => 
+      Promise.resolve({ data: mockNotifications, error: null }).then(callback)
+    );
+    
+    return mock;
+  };
+  
+  // Create the main mock
+  const supabaseMock: any = {
+    from: jest.fn(() => {
+      const mock = createChainableMock();
+      
+      // Override specific methods with custom implementations
+      mock.insert = jest.fn().mockImplementation((data: any) => {
+        const insertMock = createChainableMock();
+        insertMock.select = jest.fn().mockReturnValue({
+          single: jest.fn().mockResolvedValue({
+            data: { id: 'mock-notification-id', ...data },
+            error: null
+          })
+        });
+        return insertMock;
+      });
+      
+      return mock;
+    })
+  };
+  
+  return {
+    createClient: jest.fn(() => supabaseMock)
+  };
+});
 
 // Mock the email service
 jest.mock('@/lib/email/emailService', () => ({
@@ -68,7 +90,10 @@ describe('NotificationService', () => {
       
       expect(result.success).toBe(true);
       expect(notificationService['supabase'].from).toHaveBeenCalledWith('notifications');
-      expect(notificationService['supabase'].from().insert).toHaveBeenCalledWith({
+      // We need to verify the insert was called with the correct data
+      // The mock structure has changed, so we need to adjust how we verify
+      const insertCall = notificationService['supabase'].from().insert.mock.calls[0][0];
+      expect(insertCall).toEqual({
         user_id: 'user-123',
         type: 'trade_proposal',
         title: 'New Trade Proposal',
@@ -164,7 +189,9 @@ describe('NotificationService', () => {
       
       expect(result.success).toBe(true);
       expect(notificationService['supabase'].from).toHaveBeenCalledWith('notifications');
-      expect(notificationService['supabase'].from().update).toHaveBeenCalledWith({
+      // Verify update was called with correct data
+      const updateCall = notificationService['supabase'].from().update.mock.calls[0][0];
+      expect(updateCall).toEqual({
         is_read: true,
       });
       expect(notificationService['supabase'].from().update().eq).toHaveBeenCalledWith('id', 'notification-123');
@@ -223,6 +250,7 @@ describe('NotificationService', () => {
       
       const result = await notificationService.getNotifications('user-123');
       
+      // Since we've changed the mock structure, we need to ensure the test data matches
       expect(result.data).toEqual(mockNotifications);
       expect(notificationService['supabase'].from).toHaveBeenCalledWith('notifications');
       expect(notificationService['supabase'].from().select).toHaveBeenCalledWith('*');

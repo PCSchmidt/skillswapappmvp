@@ -7,9 +7,9 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
 import { useSupabase } from '@/contexts/SupabaseContext';
 
 export default function ProfileEditPage() {

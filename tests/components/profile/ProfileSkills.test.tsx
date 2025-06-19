@@ -4,8 +4,9 @@
  * Tests for the component that displays a user's skills on their profile
  */
 
-import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { useRouter } from 'next/navigation';
+import React from 'react';
 import '@testing-library/jest-dom';
 import ProfileSkills from '@/components/profile/ProfileSkills';
 
@@ -16,10 +17,18 @@ jest.mock('next/navigation', () => ({
   })),
 }));
 
+// Define a minimal Skill type for the mock
+interface MockSkill {
+  id: string;
+  title: string;
+  description: string;
+  category: { name: string };
+}
+
 // Mock the SkillCard component
 jest.mock('@/components/skills/SkillCard', () => ({
   __esModule: true,
-  default: ({ skill, onClick }: any) => (
+  default: ({ skill, onClick }: { skill: MockSkill; onClick?: (skill: MockSkill) => void }) => (
     <div 
       data-testid={`skill-card-${skill.id}`}
       className="skill-card-mock"
@@ -103,9 +112,8 @@ describe('ProfileSkills', () => {
   });
   
   it('navigates to add skill page when add button is clicked', () => {
-    const { useRouter } = require('next/navigation');
     const mockPush = jest.fn();
-    useRouter.mockReturnValue({ push: mockPush });
+    (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
     
     render(<ProfileSkills skills={mockSkills} userId={mockUserId} isCurrentUser={true} />);
     
@@ -118,9 +126,8 @@ describe('ProfileSkills', () => {
   });
   
   it('navigates to skill detail page when skill is clicked', () => {
-    const { useRouter } = require('next/navigation');
     const mockPush = jest.fn();
-    useRouter.mockReturnValue({ push: mockPush });
+    (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
     
     render(<ProfileSkills skills={mockSkills} userId={mockUserId} isCurrentUser={false} />);
     
@@ -155,7 +162,7 @@ describe('ProfileSkills', () => {
     fireEvent.click(categoryViewButton);
     
     // Check that skills are grouped by category
-    const skillCards = screen.getAllByTestId(/skill-card-/);
+    // const skillCards = screen.getAllByTestId(/skill-card-/); // Removed as it's unused
     
     // In category view, we should see category headers
     expect(screen.getByText('Programming')).toBeInTheDocument();

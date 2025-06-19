@@ -4,8 +4,8 @@
  * Tests for the profile header component that displays user information
  */
 
-import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
+import React from 'react';
 import '@testing-library/jest-dom';
 import ProfileHeader from '@/components/profile/ProfileHeader';
 

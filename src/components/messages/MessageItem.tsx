@@ -5,8 +5,8 @@
  * It handles different message styles for sent vs received messages.
  */
 
-import React from 'react';
 import Image from 'next/image';
+import React from 'react';
 import { Database } from '@/types/supabase';
 
 type MessageWithUser = Database['public']['Tables']['messages']['Row'] & {

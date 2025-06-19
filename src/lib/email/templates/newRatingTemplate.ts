@@ -4,8 +4,8 @@
  * Email sent when a user receives a new rating for a completed trade.
  */
 
+import { RatingTemplateData } from '@/types/email';
 import { baseTemplate } from './baseTemplate';
-import { RatingTemplateData } from '../emailService';
 
 export const newRatingTemplate = (data: RatingTemplateData): string => {
   const { recipientName, raterName, tradeId, rating, skillName } = data;

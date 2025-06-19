@@ -6,13 +6,11 @@
 
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useSupabase } from '@/contexts/SupabaseContext';
 import Link from 'next/link';
+import React, { useState } from 'react';
+import { useSupabase } from '@/contexts/SupabaseContext';
 
 export default function ForgotPassword() {
-  const router = useRouter();
   const { sendPasswordReset } = useSupabase();
   
   const [email, setEmail] = useState('');
@@ -40,7 +38,7 @@ export default function ForgotPassword() {
       } else {
         setError(error || 'Failed to send password reset email');
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error sending password reset:', err);
       setError('An unexpected error occurred');
     } finally {
@@ -60,13 +58,13 @@ export default function ForgotPassword() {
         
         <div className="mt-8 bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           {error && (
-            <div className="mb-4 p-3 bg-error-50 text-error-700 rounded-md">
+            <div className="mb-4 p-3 bg-error-50 text-error-700 rounded-md" data-testid="auth-error">
               {error}
             </div>
           )}
           
           {success ? (
-            <div className="text-center">
+            <div className="text-center" data-testid="reset-success-message">
               <div className="mb-4 mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
                 <svg className="h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
@@ -85,7 +83,7 @@ export default function ForgotPassword() {
               </div>
             </div>
           ) : (
-            <form className="space-y-6" onSubmit={handleSubmit}>
+            <form className="space-y-6" onSubmit={handleSubmit} data-testid="reset-form">
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                   Email address
@@ -101,6 +99,7 @@ export default function ForgotPassword() {
                     placeholder="you@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    data-testid="email-input"
                   />
                 </div>
               </div>
@@ -110,6 +109,7 @@ export default function ForgotPassword() {
                   type="submit"
                   className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
                   disabled={loading}
+                  data-testid="request-reset-button"
                 >
                   {loading ? 'Sending...' : 'Send Reset Link'}
                 </button>

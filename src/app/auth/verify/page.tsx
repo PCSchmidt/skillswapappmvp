@@ -7,10 +7,10 @@
 
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { supabase } from '@/lib/supabase/client';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase';
 
 export default function VerifyEmail() {
   const router = useRouter();

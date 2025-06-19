@@ -1,12 +1,12 @@
-import React from 'react';
 import { render, screen } from '@testing-library/react';
+import React from 'react';
 import '@testing-library/jest-dom';
-import SkillCard from '@/components/skills/SkillCard';
+import SkillCard, { Skill } from '@/components/skills/SkillCard';
 
 // Mock next/image since it's not available in the test environment
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: (props: any) => {
+  default: (props: React.ImgHTMLAttributes<HTMLImageElement>) => {
     // eslint-disable-next-line @next/next/no-img-element
     return <img {...props} src={props.src || ''} alt={props.alt || ''} />;
   },
@@ -22,7 +22,7 @@ jest.mock('next/link', () => ({
 
 describe('SkillCard', () => {
   // Using type assertion to avoid strict typing issues in tests
-  const mockOfferedSkill = {
+  const mockOfferedSkill: Skill = {
     id: '123',
     title: 'Web Development',
     description: 'I can teach you how to build responsive websites using modern frameworks',
@@ -32,13 +32,12 @@ describe('SkillCard', () => {
     hourly_equivalent_value: 50,
     availability: 'weekends',
     is_offering: true,
+    is_remote: true,
     is_remote_friendly: true,
     is_active: true,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     user_id: 'user123',
-    location_city: 'San Francisco',
-    location_state: 'CA',
     users: {
       id: 'user123',
       full_name: 'Jane Doe',
@@ -46,9 +45,9 @@ describe('SkillCard', () => {
       location_city: 'San Francisco',
       location_state: 'CA',
     },
-  } as any; // Type assertion to avoid strict typing issues in tests
+  };
 
-  const mockRequestedSkill = {
+  const mockRequestedSkill: Skill = {
     ...mockOfferedSkill,
     id: '456',
     title: 'Guitar Lessons',
@@ -57,7 +56,8 @@ describe('SkillCard', () => {
     subcategory: 'Instruments',
     experience_level: 'beginner',
     is_offering: false,
-  } as any; // Type assertion to avoid strict typing issues in tests
+    is_remote: false,
+  }; // Type assertion to avoid strict typing issues in tests
 
   it('renders offered skill correctly', () => {
     render(<SkillCard skill={mockOfferedSkill} />);
@@ -95,8 +95,8 @@ describe('SkillCard', () => {
     expect(screen.getByText('Offer Help')).toBeInTheDocument();
   });
 
-  it('should not show actions when showActions is false', () => {
-    render(<SkillCard skill={mockOfferedSkill} showActions={false} />);
+  it('should not show actions when isOwner is false', () => {
+    render(<SkillCard skill={mockOfferedSkill} isOwner={false} />);
     
     // Actions should not be visible
     expect(screen.queryByText('Request Skill')).not.toBeInTheDocument();

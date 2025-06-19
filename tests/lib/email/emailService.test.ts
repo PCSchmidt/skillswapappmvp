@@ -6,6 +6,70 @@
 
 import { EmailService } from '@/lib/email/emailService';
 
+// Create a properly chainable query builder
+const createQueryBuilder = (customBehavior = {}) => {
+  const queryBuilder = {
+    select: jest.fn().mockReturnThis(),
+    insert: jest.fn().mockReturnThis(),
+    update: jest.fn().mockReturnThis(),
+    delete: jest.fn().mockReturnThis(),
+    eq: jest.fn().mockImplementation((field, value) => {
+      if (field === 'user_id') {
+        if (value === 'user-with-disabled-emails') {
+          return {
+            ...queryBuilder,
+            single: jest.fn().mockResolvedValue({
+              data: {
+                notify_trade_proposal: false,
+                notify_new_message: false,
+              },
+              error: null,
+            }),
+          };
+        } else if (value === 'non-existent-user') {
+          return {
+            ...queryBuilder,
+            single: jest.fn().mockResolvedValue({
+              data: null,
+              error: 'User not found',
+            }),
+          };
+        }
+      }
+      
+      return {
+        ...queryBuilder,
+        single: jest.fn().mockResolvedValue({
+          data: {
+            notify_trade_proposal: true,
+            notify_new_message: true,
+            email: 'test@example.com',
+            full_name: 'Test User',
+          },
+          error: null,
+        }),
+      };
+    }),
+    neq: jest.fn().mockReturnThis(),
+    order: jest.fn().mockReturnThis(),
+    range: jest.fn().mockReturnThis(),
+    limit: jest.fn().mockReturnThis(),
+    single: jest.fn().mockResolvedValue({
+      data: { id: 'mock-id' },
+      error: null,
+    }),
+    then: jest.fn(callback => 
+      Promise.resolve({
+        data: { success: true },
+        error: null
+      }).then(callback)
+    ),
+    ...customBehavior
+  };
+  
+  return queryBuilder;
+};
+
 // Mock the Supabase client
 jest.mock('@supabase/supabase-js', () => ({
   createClient: jest.fn(() => ({
@@ -29,41 +93,7 @@ jest.mock('@supabase/supabase-js', () => ({
         }
       }),
     },
-    from: jest.fn().mockReturnThis(),
-    select: jest.fn().mockReturnThis(),
-    eq: jest.fn().mockImplementation((field, value) => {
-      // For testing email preferences
-      if (field === 'user_id' && value === 'user-with-disabled-emails') {
-        return {
-          single: jest.fn().mockResolvedValue({
-            data: {
-              notify_trade_proposal: false,
-              notify_new_message: false,
-            },
-            error: null,
-          }),
-        };
-      } 
-      // For testing user not found
-      else if (field === 'user_id' && value === 'non-existent-user') {
-        return {
-          single: jest.fn().mockResolvedValue({
-            data: null,
-            error: 'User not found',
-          }),
-        };
-      }
-      // Default case - user with enabled emails
-      return {
-        single: jest.fn().mockResolvedValue({
-          data: {
-            notify_trade_proposal: true,
-            notify_new_message: true,
-          },
-          error: null,
-        }),
-      };
-    }),
+    from: jest.fn().mockImplementation(() => createQueryBuilder()),
   })),
 }));
 
@@ -81,7 +111,7 @@ describe('EmailService', () => {
     // Mock the methods that fetch user details
     jest.spyOn(emailService['supabase'], 'from').mockReturnValue({
       select: jest.fn().mockReturnThis(),
-      eq: jest.fn().mockReturnValue({
+      eq: jest.fn().mockImplementation((field, value) => ({
         single: jest.fn().mockResolvedValue({
           data: {
             email: 'test@example.com',
@@ -89,7 +119,7 @@ describe('EmailService', () => {
           },
           error: null,
         }),
-      }),
+      })),
     } as any);
   });
   
@@ -147,6 +177,22 @@ describe('EmailService', () => {
         data: { messageId: 'mock-message-id' },
       });
       
+      // Setup mock for this test
+      emailService['supabase'].from = jest.fn().mockReturnValue({
+        select: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockImplementation((field, value) => ({
+          single: jest.fn().mockResolvedValue({
+            data: {
+              notify_trade_proposal: true,
+              notify_new_message: true,
+              email: 'enabled@example.com',
+              full_name: 'Enabled User',
+            },
+            error: null,
+          }),
+        })),
+      });
+      
       const mockNotificationData = {
         traderId: 'user-123',
         traderName: 'Jane Smith',
@@ -171,25 +217,28 @@ describe('EmailService', () => {
         data: { messageId: 'mock-message-id' },
       });
       
+      // Setup mock for this test to return disabled preferences
+      emailService['supabase'].from = jest.fn().mockReturnValue({
+        select: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockImplementation((field, value) => ({
+          single: jest.fn().mockResolvedValue({
+            data: {
+              notify_trade_proposal: false, // Disabled for this notification type
+              notify_new_message: false,
+              email: 'disabled@example.com',
+              full_name: 'Disabled User',
+            },
+            error: null,
+          }),
+        })),
+      });
+      
       const mockNotificationData = {
         traderId: 'user-123',
         traderName: 'Jane Smith',
         skillName: 'Web Development',
         tradeId: 'trade-456',
       };
-      
-      // Override the mock for this specific test
-      jest.spyOn(emailService['supabase'], 'from').mockReturnValue({
-        select: jest.fn().mockReturnThis(),
-        eq: jest.fn().mockReturnValue({
-          single: jest.fn().mockResolvedValue({
-            data: {
-              notify_trade_proposal: false, // Disabled for this notification type
-            },
-            error: null,
-          }),
-        }),
-      } as any);
       
       const result = await emailService.sendNotificationEmail(
         'user-with-disabled-emails',
@@ -203,13 +252,16 @@ describe('EmailService', () => {
     });
     
     it('should handle errors when fetching user preferences', async () => {
-      // Override the mock for this specific test
-      jest.spyOn(emailService['supabase'], 'from').mockReturnValue({
+      // Setup mock for this test to simulate a DB error
+      emailService['supabase'].from = jest.fn().mockReturnValue({
         select: jest.fn().mockReturnThis(),
-        eq: jest.fn().mockReturnValue({
-          single: jest.fn().mockRejectedValue(new Error('Database error')),
-        }),
-      } as any);
+        eq: jest.fn().mockImplementation((field, value) => ({
+          single: jest.fn().mockResolvedValue({
+            data: null,
+            error: new Error('Database error'),
+          }),
+        })),
+      });
       
       const mockNotificationData = {
         traderId: 'user-123',

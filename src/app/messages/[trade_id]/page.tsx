@@ -7,11 +7,11 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useSupabase } from '@/contexts/SupabaseContext';
+import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
 import ChatWindow from '@/components/messages/ChatWindow';
+import { useSupabase } from '@/contexts/SupabaseContext';
 import { Database } from '@/types/supabase';
 
 type TradeWithUsers = Database['public']['Tables']['trades']['Row'] & {

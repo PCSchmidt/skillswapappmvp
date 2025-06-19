@@ -7,25 +7,11 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSupabase } from '@/contexts/SupabaseContext';
+import React, { useState, useEffect } from 'react';
 import NotificationList from '@/components/notifications/NotificationList';
-
-// Define Notification type manually since it's not in the Database types yet
-type Notification = {
-  id: string;
-  user_id: string;
-  type: string;
-  title: string;
-  content: string | null;
-  link: string | null;
-  is_read: boolean;
-  created_at: string;
-  expires_at: string | null;
-  metadata: any;
-  priority: string | null;
-};
+import { useSupabase } from '@/contexts/SupabaseContext';
+import { Notification } from '@/types/supabase';
 
 export default function NotificationsPage() {
   const router = useRouter();
@@ -38,88 +24,19 @@ export default function NotificationsPage() {
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
   const [availableTypes, setAvailableTypes] = useState<string[]>([]);
 
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!isLoading && !user) {
-      router.push('/login');
-    }
-  }, [user, isLoading, router]);
-
-  // Fetch notifications when the page loads
-  useEffect(() => {
-    if (user) {
-      fetchNotifications();
-    }
-  }, [user, filter, typeFilter]);
-
-  // Set up real-time subscription for new notifications
-  useEffect(() => {
-    if (!user) return;
-
-    const subscription = supabase
-      .channel('notifications-page-changes')
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'notifications',
-        filter: `user_id=eq.${user.id}`
-      }, (payload) => {
-        console.log('Notification change received:', payload);
-
-        // Handle different change types
-        if (payload.eventType === 'INSERT') {
-          // Add to notifications if it matches filters
-          const newNotification = payload.new as Notification;
-          if (shouldShowNotification(newNotification)) {
-            setNotifications(prev => [newNotification, ...prev]);
-          }
-          // Update available types
-          setAvailableTypes(prev => {
-            if (!prev.includes(newNotification.type)) {
-              return [...prev, newNotification.type].sort();
-            }
-            return prev;
-          });
-        } else if (payload.eventType === 'UPDATE') {
-          // Update existing notification
-          const updatedNotification = payload.new as Notification;
-          setNotifications(prev => 
-            prev.map(n => n.id === updatedNotification.id ? updatedNotification : n)
-              .filter(n => shouldShowNotification(n))
-          );
-        } else if (payload.eventType === 'DELETE') {
-          // Remove from notifications
-          setNotifications(prev => 
-            prev.filter(n => n.id !== payload.old.id)
-          );
-        }
-      })
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(subscription);
-    };
-  }, [user, supabase, filter, typeFilter]);
-
   // Check if a notification should be shown based on current filters
-  const shouldShowNotification = (notification: Notification): boolean => {
-    // Filter by read/unread status
+  const shouldShowNotification = React.useCallback((notification: Notification): boolean => {
     if (filter === 'unread' && notification.is_read) return false;
     if (filter === 'read' && !notification.is_read) return false;
-    
-    // Filter by notification type
     if (typeFilter && notification.type !== typeFilter) return false;
-    
     return true;
-  };
+  }, [filter, typeFilter]);
 
   // Fetch notifications
-  const fetchNotifications = async () => {
+  const fetchNotifications = React.useCallback(async () => {
     if (!user) return;
-
     setLoading(true);
     setError(null);
-
     try {
       // Build query
       let query = supabase
@@ -143,27 +60,85 @@ export default function NotificationsPage() {
 
       if (error) throw error;
 
-      setNotifications(data as Notification[]);
+      setNotifications(Array.isArray(data) ? (data as Notification[]) : []);
 
       // Collect available types for filtering
-      if (!typeFilter) {
-        const types = [...new Set(data.map((n: any) => n.type))];
+      if (!typeFilter && Array.isArray(data)) {
+        const types = [...new Set((data as Notification[]).map((n) => n.type))];
         setAvailableTypes(types.sort());
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error fetching notifications:', err);
       setError('Failed to load notifications');
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, filter, typeFilter, supabase]);
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.push('/login');
+    }
+  }, [user, isLoading, router]);
+
+  // Fetch notifications when the page loads
+  useEffect(() => {
+    if (user) {
+      fetchNotifications();
+    }
+  }, [user, filter, typeFilter, fetchNotifications]);
+
+  // Set up real-time subscription for new notifications
+  useEffect(() => {
+    if (!user) return;
+    const subscription = supabase
+      .channel('notifications-page-changes')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'notifications',
+        filter: `user_id=eq.${user.id}`
+      }, (payload) => {
+        console.log('Notification change received:', payload);
+        if (payload.eventType === 'INSERT') {
+          const newNotification = payload.new as Notification;
+          if (shouldShowNotification(newNotification)) {
+            setNotifications(prev => [newNotification, ...prev]);
+          }
+          setAvailableTypes(prev => {
+            if (!prev.includes(newNotification.type)) {
+              return [...prev, newNotification.type].sort();
+            }
+            return prev;
+          });
+        } else if (payload.eventType === 'UPDATE') {
+          const updatedNotification = payload.new as Notification;
+          setNotifications(prev => 
+            prev.map(n => n.id === updatedNotification.id ? updatedNotification : n)
+              .filter(n => shouldShowNotification(n))
+          );
+        } else if (payload.eventType === 'DELETE') {
+          setNotifications(prev => 
+            prev.filter(n => n.id !== payload.old.id)
+          );
+        }
+      })
+      .subscribe();
+    return () => {
+      // Only call removeChannel if subscription is a RealtimeChannel (has 'topic')
+      if (subscription && 'topic' in subscription) {
+        supabase.removeChannel(subscription);
+      }
+    };
+  }, [user, supabase, filter, typeFilter, shouldShowNotification]);
 
   // Mark all notifications as read
   const handleMarkAllAsRead = async () => {
     if (!user) return;
 
     try {
-      const { error } = await supabase.rpc('mark_all_notifications_read');
+      const { error } = await supabase.rpc('mark_all_notifications_read', {});
 
       if (error) throw error;
 
@@ -171,7 +146,7 @@ export default function NotificationsPage() {
       setNotifications(prev => 
         prev.map(n => ({ ...n, is_read: true }))
       );
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error marking all notifications as read:', err);
       setError('Failed to mark all as read');
     }
@@ -191,7 +166,7 @@ export default function NotificationsPage() {
 
       // Update local state
       setNotifications([]);
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error clearing notifications:', err);
       setError('Failed to clear notifications');
     }

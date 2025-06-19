@@ -7,10 +7,11 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { supabase } from '@/lib/supabase/client';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import ButtonWrapper from '@/components/wrappers/ButtonWrapper';
+import { supabase } from '@/lib/supabase';
 
 export default function ResetPassword() {
   const router = useRouter();
@@ -222,13 +223,16 @@ export default function ResetPassword() {
               </div>
               
               <div>
-                <button
+                <ButtonWrapper
                   type="submit"
-                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                  variant="primary"
+                  fullWidth
                   disabled={loading}
+                  isLoading={loading}
+                  loadingText="Resetting Password..."
                 >
-                  {loading ? 'Resetting Password...' : 'Reset Password'}
-                </button>
+                  Reset Password
+                </ButtonWrapper>
               </div>
             </form>
           )}

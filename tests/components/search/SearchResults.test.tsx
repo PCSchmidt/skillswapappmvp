@@ -4,8 +4,8 @@
  * Tests for the component that displays search results
  */
 
-import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import React from 'react';
 import '@testing-library/jest-dom';
 import SearchResults from '@/components/search/SearchResults';
 
@@ -18,7 +18,6 @@ jest.mock('next/navigation', () => ({
     get: jest.fn((param) => {
       if (param === 'q') return 'web development';
       if (param === 'type') return 'skills';
-      if (param === 'location') return '10km';
       return null;
     }),
   })),
@@ -102,26 +101,6 @@ jest.mock('@/components/users/UserCard', () => ({
   ),
 }));
 
-// Mock the LocationFilter component
-jest.mock('@/components/search/LocationFilter', () => ({
-  __esModule: true,
-  default: ({ value, onChange }: any) => (
-    <div data-testid="location-filter-mock">
-      <select 
-        value={value} 
-        onChange={(e) => onChange && onChange(e.target.value)}
-        data-testid="location-select"
-      >
-        <option value="5km">5km</option>
-        <option value="10km">10km</option>
-        <option value="25km">25km</option>
-        <option value="50km">50km</option>
-        <option value="any">Any distance</option>
-      </select>
-    </div>
-  ),
-}));
-
 // Mock the SearchTypeFilter component
 jest.mock('@/components/search/SearchTypeFilter', () => ({
   __esModule: true,
@@ -156,8 +135,7 @@ describe('SearchResults', () => {
     // Check that search query is displayed
     expect(screen.getByText(/results for "web development"/i)).toBeInTheDocument();
     
-    // Check that filters are rendered
-    expect(screen.getByTestId('location-filter-mock')).toBeInTheDocument();
+    // Check that filters are rendered (only SearchTypeFilter remains)
     expect(screen.getByTestId('search-type-filter-mock')).toBeInTheDocument();
     
     // Check that skill cards are rendered
@@ -221,23 +199,7 @@ describe('SearchResults', () => {
     expect(screen.getByText('Location: San Francisco')).toBeInTheDocument();
   });
   
-  it('changes location filter', async () => {
-    const { useSupabase } = require('@/contexts/SupabaseContext');
-    const { useRouter } = require('next/navigation');
-    const mockPush = jest.fn();
-    useRouter.mockReturnValue({ push: mockPush });
-    
-    render(<SearchResults />);
-    
-    // Change location filter
-    const locationSelect = screen.getByTestId('location-select');
-    fireEvent.change(locationSelect, { target: { value: '25km' } });
-    
-    // Check that router.push was called with updated query params
-    await waitFor(() => {
-      expect(mockPush).toHaveBeenCalledWith(expect.stringContaining('location=25km'));
-    });
-  });
+  // Removed the 'changes location filter' test case as LocationFilter is no longer used
   
   it('navigates to skill detail page when skill is clicked', async () => {
     const { useRouter } = require('next/navigation');

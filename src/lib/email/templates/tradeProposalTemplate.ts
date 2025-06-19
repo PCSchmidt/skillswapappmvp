@@ -4,8 +4,8 @@
  * Email sent when a user receives a new trade proposal.
  */
 
+import { TradeTemplateData } from '@/types/email';
 import { baseTemplate } from './baseTemplate';
-import { TradeTemplateData } from '../emailService';
 
 export const tradeProposalTemplate = (data: TradeTemplateData): string => {
   const { recipientName, traderName, skillName, tradeId } = data;

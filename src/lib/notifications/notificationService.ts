@@ -7,8 +7,9 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
-import { emailService, EmailTemplateType } from '../email/emailService';
-
+import { emailService } from '@/lib/email';
+import { EmailTemplateType, EmailTemplateData } from '@/types/email';
+  
 // Get environment variables
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -34,10 +35,10 @@ export interface NotificationData {
   title: string;              // Notification title
   content: string;            // Notification content/body
   link?: string;              // Optional link to direct user to relevant page
-  metadata?: any;             // Additional data related to the notification
+  metadata?: Record<string, unknown>; // Additional data related to the notification
   priority?: NotificationPriority; // Priority level (default: normal)
   sendEmail?: boolean;        // Whether to also send an email (default: based on user preferences)
-  emailData?: any;            // Additional data needed for email template
+  emailData?: EmailTemplateData; // Additional data needed for email template
   expiresAt?: Date;           // Optional expiration date
 }
 
@@ -55,7 +56,7 @@ export class NotificationService {
   /**
    * Send a notification to a user (both in-app and email if enabled)
    */
-  async sendNotification(data: NotificationData): Promise<{ success: boolean; error?: any; data?: any }> {
+  async sendNotification(data: NotificationData): Promise<{ success: boolean; error?: unknown; data?: Record<string, unknown> }> {
     try {
       const {
         userId,
@@ -94,11 +95,9 @@ export class NotificationService {
       // Check if we should send an email notification
       if (sendEmail !== false) {
         // Send email notification (user preferences are checked within the email service)
-        await this.sendEmailNotification(userId, type as EmailTemplateType, {
-          ...emailData,
-          title,
-          content
-        });
+        if (emailData) {
+          await this.sendEmailNotification(userId, type as EmailTemplateType, emailData);
+        }
       }
 
       return { success: true, data: notification };
@@ -114,8 +113,8 @@ export class NotificationService {
   private async sendEmailNotification(
     userId: string,
     type: EmailTemplateType,
-    data: any
-  ): Promise<{ success: boolean; error?: any }> {
+    data: EmailTemplateData
+  ): Promise<{ success: boolean; error?: unknown }> {
     try {
       return await emailService.sendNotificationEmail(userId, type, data);
     } catch (error) {
@@ -127,7 +126,7 @@ export class NotificationService {
   /**
    * Mark a notification as read
    */
-  async markAsRead(notificationId: string): Promise<{ success: boolean; error?: any }> {
+  async markAsRead(notificationId: string): Promise<{ success: boolean; error?: unknown }> {
     try {
       const { error } = await this.supabase
         .from('notifications')
@@ -149,7 +148,7 @@ export class NotificationService {
   /**
    * Mark all notifications as read for a user
    */
-  async markAllAsRead(userId: string): Promise<{ success: boolean; error?: any }> {
+  async markAllAsRead(userId: string): Promise<{ success: boolean; error?: unknown }> {
     try {
       const { error } = await this.supabase
         .from('notifications')
@@ -172,7 +171,7 @@ export class NotificationService {
   /**
    * Delete a notification
    */
-  async deleteNotification(notificationId: string): Promise<{ success: boolean; error?: any }> {
+  async deleteNotification(notificationId: string): Promise<{ success: boolean; error?: unknown }> {
     try {
       const { error } = await this.supabase
         .from('notifications')
@@ -194,7 +193,7 @@ export class NotificationService {
   /**
    * Delete all notifications for a user
    */
-  async deleteAllNotifications(userId: string): Promise<{ success: boolean; error?: any }> {
+  async deleteAllNotifications(userId: string): Promise<{ success: boolean; error?: unknown }> {
     try {
       const { error } = await this.supabase
         .from('notifications')
@@ -223,7 +222,7 @@ export class NotificationService {
       limit?: number;
       offset?: number;
     }
-  ): Promise<{ data: any[]; error?: any }> {
+  ): Promise<{ data: Record<string, unknown>[]; error?: unknown }> {
     try {
       const { unreadOnly = false, limit = 50, offset = 0 } = options || {};
       

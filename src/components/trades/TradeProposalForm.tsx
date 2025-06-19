@@ -8,11 +8,13 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import Button from '@/components/ui/Button';
 import { useSupabase } from '@/contexts/SupabaseContext';
 import { Database } from '@/types/supabase';
 
+// Remove unused User interface
 type Skill = Database['public']['Tables']['skills']['Row'] & {
   users?: {
     id: string;
@@ -20,6 +22,11 @@ type Skill = Database['public']['Tables']['skills']['Row'] & {
     profile_image_url: string | null;
   } | null;
 };
+
+interface DateOption {
+  value: string;
+  label: string;
+}
 
 interface TradeProposalFormProps {
   requestedSkill: Skill;
@@ -49,8 +56,8 @@ export default function TradeProposalForm({
   const [locationDetails, setLocationDetails] = useState<string>('');
   
   // Date options for the next 2 weeks
-  const dateOptions = React.useMemo(() => {
-    const options = [];
+  const dateOptions = React.useMemo<DateOption[]>(() => {
+    const options: DateOption[] = [];
     const now = new Date();
     
     for (let i = 1; i <= 14; i++) {
@@ -86,14 +93,14 @@ export default function TradeProposalForm({
         
         if (error) throw error;
         
-        setMySkills(data || []);
+        setMySkills(Array.isArray(data) ? (data as Skill[]) : []);
         
         // Set the first skill as default if available
         if (data && data.length > 0) {
           setSelectedSkillId(data[0].id);
         }
         
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('Error fetching skills:', err);
         setError('Failed to load your skills');
       } finally {
@@ -176,7 +183,7 @@ export default function TradeProposalForm({
       const { data, error } = await supabase
         .from('trades')
         .insert(tradeData)
-        .select()
+        .select('*')
         .single();
       
       if (error) throw error;
@@ -186,9 +193,9 @@ export default function TradeProposalForm({
         onSuccess(data.id);
       }
       
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error proposing trade:', err);
-      setError(err.message || 'Failed to propose trade');
+      setError(err instanceof Error ? err.message : 'Failed to propose trade');
     } finally {
       setSubmitting(false);
     }
@@ -403,20 +410,22 @@ export default function TradeProposalForm({
           
           {/* Action Buttons */}
           <div className="flex justify-end gap-3">
-            <button
+            <Button
               type="button"
+              variant="outline"
               onClick={onCancel}
-              className="px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
+              variant="primary"
               disabled={submitting || mySkills.length === 0}
-              className="px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:bg-gray-300 disabled:cursor-not-allowed"
+              isLoading={submitting}
+              loadingText="Sending Proposal..."
             >
-              {submitting ? 'Sending Proposal...' : 'Propose Trade'}
-            </button>
+              Propose Trade
+            </Button>
           </div>
         </div>
       </form>
