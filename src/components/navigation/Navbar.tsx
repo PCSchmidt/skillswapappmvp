@@ -3,10 +3,10 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
+import { Container } from '@/components/layout/Container';
 import NotificationDropdown from '@/components/notifications/NotificationDropdown';
 import { useSupabase } from '@/contexts/SupabaseContext';
-import { classNames } from '../../lib/utils';
-import { Container } from '../layout/Container';
+import { classNames } from '@/lib/utils';
 
 const Navbar = () => {
   const { user, signOut, isLoading, supabase } = useSupabase();
@@ -55,7 +55,10 @@ const Navbar = () => {
       .subscribe();
     
     return () => {
-      supabase.removeChannel(subscription);
+      // Only call removeChannel if subscription is a RealtimeChannel (has 'topic')
+      if (subscription && 'topic' in subscription) {
+        supabase.removeChannel(subscription);
+      }
     };
   }, [user, supabase]);
 
@@ -162,7 +165,6 @@ const Navbar = () => {
                 <NotificationDropdown 
                   isOpen={showNotifications} 
                   onClose={() => setShowNotifications(false)}
-                  count={notificationCount}
                 />
               </div>
               

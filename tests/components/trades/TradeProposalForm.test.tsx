@@ -5,45 +5,50 @@
  */
 
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 import '@testing-library/jest-dom';
 import TradeProposalForm from '@/components/trades/TradeProposalForm';
+import { useSupabase } from '@/contexts/SupabaseContext';
 
 // Mock the Supabase client
-jest.mock('@/contexts/SupabaseContext', () => ({
-  useSupabase: () => ({
-    supabase: {
-      from: jest.fn().mockReturnThis(),
-      select: jest.fn().mockReturnThis(),
-      eq: jest.fn().mockReturnThis(),
-      insert: jest.fn().mockReturnValue({
-        select: jest.fn().mockReturnValue({
-          single: jest.fn().mockResolvedValue({
-            data: { id: 'new-trade-id' },
-            error: null,
-          }),
-        }),
+jest.mock('@/contexts/SupabaseContext', () => {
+  const insertMock = jest.fn().mockReturnValue({
+    select: jest.fn().mockReturnValue({
+      single: jest.fn().mockResolvedValue({
+        data: { id: 'new-trade-id' },
+        error: null,
       }),
-    },
-    session: {
-      user: { id: 'current-user-id', email: 'user@example.com' }
-    },
-  }),
-}));
+    }),
+  });
+  return {
+    useSupabase: () => ({
+      supabase: {
+        from: jest.fn().mockReturnThis(),
+        select: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockReturnThis(),
+        insert: insertMock,
+      },
+      session: {
+        user: { id: 'current-user-id', email: 'user@example.com' }
+      },
+      __insertMock: insertMock, // expose for per-test configuration
+    }),
+  };
+});
 
 // Mock the SkillSelect component
 jest.mock('@/components/skills/SkillSelect', () => ({
   __esModule: true,
-  default: ({ 
-    userId, 
-    selectedSkillId, 
-    onChange, 
-    label, 
-    isOffered = false 
-  }: any) => (
+  default: ({
+    selectedSkillId,
+    onChange,
+    label,
+    isOffered = false,
+  }: { selectedSkillId: string; onChange: (id: string) => void; label: string; isOffered?: boolean }) => (
     <div data-testid={`skill-select-${isOffered ? 'offered' : 'requested'}`}>
       <label>{label}</label>
-      <select 
+      <select
         value={selectedSkillId || ''}
         onChange={(e) => onChange(e.target.value)}
         data-testid={`skill-select-input-${isOffered ? 'offered' : 'requested'}`}
@@ -65,30 +70,29 @@ jest.mock('next/navigation', () => ({
 }));
 
 describe('TradeProposalForm', () => {
-  const mockRecipientUser = {
-    id: 'recipient-user-id',
-    full_name: 'Jane Doe',
-    email: 'jane@example.com',
+  const mockRequestedSkill = {
+    id: 'skill-456',
+    title: 'Guitar Lessons',
+    user_id: 'recipient-user-id',
+    description: 'Learn to play guitar',
+    category: 'Music',
+    experience_level: 'beginner',
+    is_remote: false,
+    availability: 'Weekends',
+    is_offering: true,
   };
-  
-  const mockOfferedSkill = {
-    id: 'skill-123',
-    title: 'Web Development',
-    user_id: 'current-user-id',
-  };
+  const mockOnCancel = jest.fn();
+  const mockOnSuccess = jest.fn();
   
   beforeEach(() => {
     jest.clearAllMocks();
   });
   
   it('renders form with skill selection and notes', () => {
-    render(<TradeProposalForm recipientUser={mockRecipientUser} />);
+    render(<TradeProposalForm requestedSkill={mockRequestedSkill} onCancel={mockOnCancel} onSuccess={mockOnSuccess} />);
     
     // Check that the form title is rendered
     expect(screen.getByText(/propose a trade/i)).toBeInTheDocument();
-    
-    // Check that the recipient name is shown
-    expect(screen.getByText(/Jane Doe/i)).toBeInTheDocument();
     
     // Check that both skill selects are rendered
     expect(screen.getByTestId('skill-select-offered')).toBeInTheDocument();
@@ -104,7 +108,7 @@ describe('TradeProposalForm', () => {
   });
   
   it('enables submit button when valid selections are made', () => {
-    render(<TradeProposalForm recipientUser={mockRecipientUser} />);
+    render(<TradeProposalForm requestedSkill={mockRequestedSkill} onCancel={mockOnCancel} onSuccess={mockOnSuccess} />);
     
     const offeredSkillSelect = screen.getByTestId('skill-select-input-offered');
     const requestedSkillSelect = screen.getByTestId('skill-select-input-requested');
@@ -133,12 +137,10 @@ describe('TradeProposalForm', () => {
   });
   
   it('submits the trade proposal with correct data', async () => {
-    const { useSupabase } = require('@/contexts/SupabaseContext');
-    const { useRouter } = require('next/navigation');
     const mockPush = jest.fn();
-    useRouter.mockReturnValue({ push: mockPush });
+    (useRouter as unknown as jest.Mock).mockReturnValue({ push: mockPush });
     
-    render(<TradeProposalForm recipientUser={mockRecipientUser} />);
+    render(<TradeProposalForm requestedSkill={mockRequestedSkill} onCancel={mockOnCancel} onSuccess={mockOnSuccess} />);
     
     // Select the offered skill
     const offeredSkillSelect = screen.getByTestId('skill-select-input-offered');
@@ -159,7 +161,7 @@ describe('TradeProposalForm', () => {
     // Check that the trade was created with correct data
     await waitFor(() => {
       expect(useSupabase().supabase.from).toHaveBeenCalledWith('trades');
-      expect(useSupabase().supabase.from().insert).toHaveBeenCalledWith({
+      expect(useSupabase().supabase.from('trades').insert).toHaveBeenCalledWith({
         proposer_user_id: 'current-user-id',
         recipient_user_id: 'recipient-user-id',
         offered_skill_id: 'skill-123',
@@ -174,7 +176,7 @@ describe('TradeProposalForm', () => {
   });
   
   it('shows validation error when selecting same skill for offered and requested', () => {
-    render(<TradeProposalForm recipientUser={mockRecipientUser} />);
+    render(<TradeProposalForm requestedSkill={mockRequestedSkill} onCancel={mockOnCancel} onSuccess={mockOnSuccess} />);
     
     // Select the same skill for both
     const offeredSkillSelect = screen.getByTestId('skill-select-input-offered');
@@ -191,51 +193,42 @@ describe('TradeProposalForm', () => {
     expect(submitButton).toBeDisabled();
   });
   
-  it('pre-selects skills when provided as props', () => {
-    render(
-      <TradeProposalForm 
-        recipientUser={mockRecipientUser} 
-        preSelectedOfferedSkillId="skill-123"
-        preSelectedRequestedSkillId="skill-456"
-      />
-    );
-    
-    // Check that the skill selects have the correct values
-    const offeredSkillSelect = screen.getByTestId('skill-select-input-offered');
-    const requestedSkillSelect = screen.getByTestId('skill-select-input-requested');
-    
-    expect(offeredSkillSelect).toHaveValue('skill-123');
-    expect(requestedSkillSelect).toHaveValue('skill-456');
-    
-    // Submit button should be enabled
-    const submitButton = screen.getByRole('button', { name: /send proposal/i });
-    expect(submitButton).not.toBeDisabled();
-  });
-  
   it('handles error during trade creation', async () => {
     // Mock a failure
-    const { useSupabase } = require('@/contexts/SupabaseContext');
-    useSupabase().supabase.from().insert().select().single = jest.fn().mockResolvedValue({
-      data: null,
-      error: new Error('Failed to create trade'),
+    (useSupabase() as unknown as SupabaseMock).__insertMock.mockReturnValueOnce({
+      select: jest.fn().mockReturnValue({
+        single: jest.fn().mockResolvedValue({
+          data: null,
+          error: new Error('Failed to create trade'),
+        }),
+      }),
     });
-    
-    render(<TradeProposalForm recipientUser={mockRecipientUser} />);
-    
+    render(<TradeProposalForm requestedSkill={mockRequestedSkill} onCancel={mockOnCancel} onSuccess={mockOnSuccess} />);
     // Select skills
     const offeredSkillSelect = screen.getByTestId('skill-select-input-offered');
     const requestedSkillSelect = screen.getByTestId('skill-select-input-requested');
-    
     fireEvent.change(offeredSkillSelect, { target: { value: 'skill-123' } });
     fireEvent.change(requestedSkillSelect, { target: { value: 'skill-456' } });
-    
     // Submit the form
     const submitButton = screen.getByRole('button', { name: /send proposal/i });
     fireEvent.click(submitButton);
-    
     // Check that error message is displayed
     await waitFor(() => {
       expect(screen.getByText(/failed to create trade/i)).toBeInTheDocument();
     });
   });
 });
+
+// Add a type for the Supabase mock that includes __insertMock
+interface SupabaseMock {
+  supabase: {
+    from: jest.Mock;
+    select: jest.Mock;
+    eq: jest.Mock;
+    insert: jest.Mock;
+  };
+  session: {
+    user: { id: string; email: string };
+  };
+  __insertMock: jest.Mock;
+}

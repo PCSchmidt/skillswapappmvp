@@ -4,7 +4,7 @@
  * Email sent to new users when they sign up for SkillSwap.
  */
 
-import { WelcomeTemplateData } from '../emailService';
+import { WelcomeTemplateData } from '@/types/email';
 import { baseTemplate } from './baseTemplate';
 
 export const welcomeTemplate = (data: WelcomeTemplateData): string => {

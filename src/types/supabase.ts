@@ -245,6 +245,92 @@ export interface Database {
         Insert: Omit<Notification, 'id' | 'created_at'>;
         Update: Partial<Omit<Notification, 'id' | 'user_id' | 'created_at'>>;
       };
+      trades: {
+        Row: {
+          id: string;
+          proposer_id: string;
+          receiver_id: string;
+          offered_skill_id: string;
+          requested_skill_id: string;
+          status: 'pending' | 'accepted' | 'declined' | 'cancelled' | 'completed';
+          created_at: string;
+          updated_at?: string;
+          // Add other fields as needed
+        };
+        Insert: Omit<{
+          id: string;
+          proposer_id: string;
+          receiver_id: string;
+          offered_skill_id: string;
+          requested_skill_id: string;
+          status: 'pending' | 'accepted' | 'declined' | 'cancelled' | 'completed';
+          created_at: string;
+          updated_at?: string;
+        }, 'id' | 'created_at'>;
+        Update: Partial<Omit<{
+          id: string;
+          proposer_id: string;
+          receiver_id: string;
+          offered_skill_id: string;
+          requested_skill_id: string;
+          status: 'pending' | 'accepted' | 'declined' | 'cancelled' | 'completed';
+          created_at: string;
+          updated_at?: string;
+        }, 'id' | 'proposer_id' | 'created_at'>>;
+      };
+      ratings: {
+        Row: {
+          id: string;
+          trade_id: string;
+          rater_id: string;
+          rated_user_id: string;
+          rating: number;
+          comment?: string;
+          created_at: string;
+        };
+        Insert: Omit<{
+          id: string;
+          trade_id: string;
+          rater_id: string;
+          rated_user_id: string;
+          rating: number;
+          comment?: string;
+          created_at: string;
+        }, 'id' | 'created_at'>;
+        Update: Partial<Omit<{
+          id: string;
+          trade_id: string;
+          rater_id: string;
+          rated_user_id: string;
+          rating: number;
+          comment?: string;
+          created_at: string;
+        }, 'id' | 'rater_id' | 'created_at'>>;
+      };
+      messages: {
+        Row: {
+          id: string;
+          trade_id: string;
+          sender_id: string;
+          content: string;
+          created_at: string;
+          // Add other fields as needed
+        };
+        Insert: Omit<{
+          id: string;
+          trade_id: string;
+          sender_id: string;
+          content: string;
+          created_at: string;
+        }, 'id' | 'created_at'>;
+        Update: Partial<Omit<{
+          id: string;
+          trade_id: string;
+          sender_id: string;
+          content: string;
+          created_at: string;
+        }, 'id' | 'sender_id' | 'created_at'>>;
+      };
       // Add other tables as needed
     };
     Views: {

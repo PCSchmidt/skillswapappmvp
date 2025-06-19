@@ -4,7 +4,7 @@
  * Email sent to users when a trade has been marked as completed.
  */
 
-import { TradeTemplateData } from '../emailService';
+import { TradeTemplateData } from '@/types/email';
 import { baseTemplate } from './baseTemplate';
 
 export const tradeStatusCompletedTemplate = (data: TradeTemplateData): string => {

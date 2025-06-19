@@ -183,9 +183,9 @@ function renderGrid(
     case 'section':
       return <section className={className} style={style} {...props}>{children}</section>;
     case 'ul':
-      return <ul className={className} style={style} {...props}>{children}</ul>;
+      return <ul className={className} style={style} {...(props as unknown as React.HTMLAttributes<HTMLUListElement>)}>{children}</ul>;
     case 'ol':
-      return <ol className={className} style={style} {...props}>{children}</ol>;
+      return <ol className={className} style={style} {...(props as unknown as React.HTMLAttributes<HTMLOListElement>)}>{children}</ol>;
     case 'div':
     default:
       return <div className={className} style={style} {...props}>{children}</div>;

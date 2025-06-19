@@ -20,10 +20,10 @@ export { tradeStatusCompletedTemplate } from './tradeStatusCompletedTemplate';
 export { verificationTemplate } from './verificationTemplate';
 
 // Export types
-export { EmailTemplateType, EmailTemplateData } from '../emailService';
+export type { EmailTemplateType, EmailTemplateData } from '@/types/email';
 
 // Template mapping function to get the right template based on notification type
-import { EmailTemplateType, EmailTemplateData } from '../emailService';
+import { EmailTemplateType, EmailTemplateData } from '@/types/email';
 import { newMessageTemplate } from './newMessageTemplate';
 import { newRatingTemplate } from './newRatingTemplate';
 import { passwordResetTemplate } from './passwordResetTemplate';

@@ -4,7 +4,7 @@
  * Email sent when a user receives a new message in a trade conversation.
  */
 
-import { MessageTemplateData } from '../emailService';
+import { MessageTemplateData } from '@/types/email';
 import { baseTemplate } from './baseTemplate';
 
 export const newMessageTemplate = (data: MessageTemplateData): string => {

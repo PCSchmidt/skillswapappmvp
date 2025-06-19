@@ -6,73 +6,11 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
+import { EmailTemplateType, EmailTemplateData } from '@/types/email';
 
 // Get environment variables
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
-// Email template types that match our notification types
-export type EmailTemplateType = 
-  | 'trade_proposal'
-  | 'trade_status_accepted'
-  | 'trade_status_declined'
-  | 'trade_status_cancelled'
-  | 'trade_status_completed'
-  | 'new_message'
-  | 'new_rating'
-  | 'welcome'
-  | 'password_reset'
-  | 'verification';
-
-// Template data interface - common properties for all email templates
-interface BaseTemplateData {
-  recipientName: string;
-  recipientEmail: string;
-}
-
-// Trade-related template data
-interface TradeTemplateData extends BaseTemplateData {
-  traderId: string;
-  traderName: string;
-  skillName: string;
-  tradeId: string;
-  tradeDate?: string;
-}
-
-// Message template data
-interface MessageTemplateData extends BaseTemplateData {
-  senderId: string;
-  senderName: string;
-  tradeId: string;
-  messagePreview: string;
-}
-
-// Rating template data
-interface RatingTemplateData extends BaseTemplateData {
-  raterId: string;
-  raterName: string;
-  tradeId: string;
-  rating: number;
-  skillName: string;
-}
-
-// Welcome template data
-interface WelcomeTemplateData extends BaseTemplateData {
-  verificationLink?: string;
-}
-
-// Password reset template data
-interface PasswordResetTemplateData extends BaseTemplateData {
-  resetLink: string;
-}
-
-// Union type of all template data types
-export type EmailTemplateData = 
-  | TradeTemplateData
-  | MessageTemplateData
-  | RatingTemplateData
-  | WelcomeTemplateData
-  | PasswordResetTemplateData;
 
 /**
  * Email sending service class
@@ -91,7 +29,7 @@ export class EmailService {
   async sendEmail(
     templateType: EmailTemplateType,
     templateData: EmailTemplateData
-  ): Promise<{ success: boolean; error?: any; data?: any }> {
+  ): Promise<{ success: boolean; error?: unknown; data?: Record<string, unknown> }> {
     try {
       // Call the Supabase Edge Function for sending emails
       const { data, error } = await this.supabase.functions.invoke('send-email', {
@@ -119,8 +57,8 @@ export class EmailService {
   async sendNotificationEmail(
     userId: string,
     notificationType: EmailTemplateType,
-    notificationData: any
-  ): Promise<{ success: boolean; error?: any }> {
+    notificationData: EmailTemplateData
+  ): Promise<{ success: boolean; error?: unknown }> {
     try {
       // First, check if the user has email notifications enabled for this type
       const { data: preferences, error: preferencesError } = await this.supabase
@@ -153,10 +91,10 @@ export class EmailService {
       }
 
       // Prepare email template data
-      const templateData = {
+      const templateData: EmailTemplateData = {
+        ...notificationData,
         recipientName: user.full_name,
         recipientEmail: user.email,
-        ...notificationData,
       };
 
       // Send the email

@@ -4,7 +4,7 @@
  * Email sent to users when their trade proposal has been accepted.
  */
 
-import { TradeTemplateData } from '../emailService';
+import { TradeTemplateData } from '@/types/email';
 import { baseTemplate } from './baseTemplate';
 
 export const tradeStatusAcceptedTemplate = (data: TradeTemplateData): string => {

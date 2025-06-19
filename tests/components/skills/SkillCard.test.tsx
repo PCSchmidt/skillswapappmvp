@@ -5,14 +5,16 @@
  */
 
 import { render, screen, fireEvent } from '@testing-library/react';
+import Image from 'next/image';
 import React from 'react';
 import '@testing-library/jest-dom';
-import SkillCard, { Skill } from '../../../src/components/skills/SkillCard';
+import SkillCard from '@/components/skills/SkillCard';
+import type { Skill } from '@/types/supabase';
 
 // Mock the Avatar component
-jest.mock('../../../src/components/shared/Avatar', () => ({
+jest.mock('@/components/shared/Avatar', () => ({
   __esModule: true,
-  default: ({ user, size }: any) => (
+  default: ({ user, size }: { user: { full_name?: string }; size: string }) => (
     <div data-testid="avatar-mock">
       Avatar for {user?.full_name || 'Unknown'} (size: {size})
     </div>
@@ -27,20 +29,16 @@ const MockCategoryBadge = ({ category }: { category: string }) => (
 );
 
 // Mock the SkillCard's internal import of CategoryBadge
-jest.mock('../../../src/components/skills/CategoryBadge', () => ({
+jest.mock('@/components/skills/CategoryBadge', () => ({
   __esModule: true,
-  default: (props: any) => <MockCategoryBadge {...props} />
+  default: (props: { category: string }) => <MockCategoryBadge {...props} />
 }), { virtual: true });
 
 // Mock next/image
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: (props: any) => (
-    <img
-      {...props}
-      data-testid="next-image"
-      alt={props.alt}
-    />
+  default: (props: React.ComponentProps<typeof Image>) => (
+    <Image {...props} data-testid="next-image" alt={props.alt || ''} />
   ),
 }));
 
@@ -105,7 +103,7 @@ describe('SkillCard', () => {
   });
   
   it('shows experience level badge', () => {
-    const expertSkill = { ...mockSkill, experience_level: 'expert' };
+    const expertSkill: Skill = { ...mockSkill, experience_level: 'expert' };
     render(<SkillCard skill={expertSkill} />);
     
     // Check for experience level badge
@@ -139,7 +137,7 @@ describe('SkillCard', () => {
   });
   
   it('handles undefined optional fields gracefully', () => {
-    const minimalSkill: Partial<Skill> = {
+    const minimalSkill: Skill = {
       id: 'skill-123',
       title: 'Web Development',
       category: 'Programming',
@@ -148,10 +146,15 @@ describe('SkillCard', () => {
       is_remote: false,
       availability: 'weekdays',
       description: '',
-      is_offering: false
+      is_offering: false,
+      created_at: '',
+      updated_at: '',
+      is_active: true,
+      hourly_equivalent_value: 0,
+      users: undefined
     };
     
-    render(<SkillCard skill={minimalSkill as any} />);
+    render(<SkillCard skill={minimalSkill} />);
     
     // Should still render without errors
     expect(screen.getByText('Web Development')).toBeInTheDocument();

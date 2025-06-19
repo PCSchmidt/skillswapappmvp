@@ -13,12 +13,13 @@ import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import SkillCard from '@/components/skills/SkillCard';
 import { useSupabase } from '@/contexts/SupabaseContext';
+import { Skill } from '@/types/supabase';
 
 export default function ManageSkillsPage() {
   const router = useRouter();
   const { supabase, user, isLoading } = useSupabase();
   
-  const [skills, setSkills] = useState<any[]>([]);
+  const [skills, setSkills] = useState<Skill[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'offering' | 'seeking'>('offering');
@@ -54,9 +55,8 @@ export default function ManageSkillsPage() {
           .order('created_at', { ascending: false });
         
         if (error) throw error;
-        
-        setSkills(data || []);
-      } catch (err: any) {
+        setSkills(Array.isArray(data) ? (data as Skill[]) : []);
+      } catch (err) {
         console.error('Error fetching skills:', err);
         setError('Failed to load your skills');
       } finally {
@@ -94,7 +94,7 @@ export default function ManageSkillsPage() {
       // Update the skills list after successful deletion
       setSkills(prevSkills => prevSkills.filter(skill => skill.id !== skillId));
       
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error deleting skill:', err);
       setError('Failed to delete skill');
     } finally {
@@ -236,7 +236,7 @@ export default function ManageSkillsPage() {
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                   {filteredSkills.map((skill) => (
                     <div key={skill.id} className="relative">
-                      <SkillCard skill={skill} showActions={false} />
+                      <SkillCard skill={skill} isOwner={true} />
                       
                       {/* Custom action buttons */}
                       <div className="mt-3 flex justify-end gap-2">

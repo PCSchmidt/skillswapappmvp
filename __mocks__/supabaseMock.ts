@@ -36,26 +36,29 @@ const createFinalQueryMock = (): FinalQueryMock => {
 
 // This represents the result of insert/update/delete, which can then be chained with .eq() and .select()
 interface ChainedMutationMock {
-  eq: jest.Mock<() => ChainedMutationMock>; // Changed to () =>
-  select: jest.Mock<(...args: any[]) => FinalQueryMock>; // select after mutation returns a FinalQueryMock
+  eq: jest.Mock<(_column: string, _value: unknown) => ChainedMutationMock>;
+  select: jest.Mock<(_columns?: string) => FinalQueryMock>;
   mockResolvedValue: jest.Mock<(value: SupabaseQueryResult) => ChainedMutationMock>;
   mockRejectedValue: jest.Mock<(error: unknown) => ChainedMutationMock>;
 }
 
 // Helper to create a mock for chained mutations
 const createChainedMutationMock = (): ChainedMutationMock => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let resolvedValue: SupabaseQueryResult = { data: null, error: null, count: null };
 
   const mock: ChainedMutationMock = {
-    eq: jest.fn(function(this: ChainedMutationMock) { return this; }), // Explicitly return 'this'
-    select: jest.fn(() => createFinalQueryMock()), // select after mutation returns a FinalQueryMock
-    mockResolvedValue: jest.fn((value: SupabaseQueryResult) => {
-      resolvedValue = value;
-      return mock;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    eq: jest.fn(function(this: ChainedMutationMock, _column: string, _value: unknown) { return this; }), 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    select: jest.fn((_columns?: string) => createFinalQueryMock()), 
+    mockResolvedValue: jest.fn(function(this: ChainedMutationMock, value: SupabaseQueryResult) {
+      resolvedValue = value; 
+      return this;
     }),
-    mockRejectedValue: jest.fn((error: unknown) => {
+    mockRejectedValue: jest.fn(function(this: ChainedMutationMock, error: unknown) {
       resolvedValue = { data: null, error: error, count: null };
-      return mock;
+      return this;
     }),
   };
   return mock;
@@ -63,92 +66,116 @@ const createChainedMutationMock = (): ChainedMutationMock => {
 
 // This represents the intermediate stage of a query chain (e.g., after .from())
 interface SupabaseQueryBuilderMock {
-  eq: jest.Mock<() => SupabaseQueryBuilderMock>; // Changed to () =>
-  order: jest.Mock<() => SupabaseQueryBuilderMock>; // Changed to () =>
-  limit: jest.Mock<() => SupabaseQueryBuilderMock>; // Changed to () =>
-  range: jest.Mock<() => SupabaseQueryBuilderMock>; // Changed to () =>
-  in: jest.Mock<() => SupabaseQueryBuilderMock>; // Changed to () =>
-  textSearch: jest.Mock<() => SupabaseQueryBuilderMock>; // Changed to () =>
-  // These methods now return a FinalQueryMock or ChainedMutationMock
-  select: jest.Mock<(...args: any[]) => FinalQueryMock>; // select directly on from() returns FinalQueryMock
-  insert: jest.Mock<(...args: any[]) => ChainedMutationMock>; // insert returns ChainedMutationMock
-  update: jest.Mock<(...args: any[]) => ChainedMutationMock>; // update returns ChainedMutationMock
-  delete: jest.Mock<(...args: any[]) => ChainedMutationMock>; // delete returns ChainedMutationMock
+  eq: jest.Mock<(_column: string, _value: unknown) => SupabaseQueryBuilderMock>;
+  order: jest.Mock<(_column: string, _options?: { ascending?: boolean; nullsFirst?: boolean }) => SupabaseQueryBuilderMock>;
+  limit: jest.Mock<(_count: number) => SupabaseQueryBuilderMock>;
+  range: jest.Mock<(_from: number, _to: number) => SupabaseQueryBuilderMock>;
+  in: jest.Mock<(_column: string, _values: unknown[]) => SupabaseQueryBuilderMock>;
+  textSearch: jest.Mock<(_column: string, _query: string, _options?: { config?: string; type?: 'plain' | 'phrase' | 'websearch'; }) => SupabaseQueryBuilderMock>;
+  select: jest.Mock<(_columns?: string) => FinalQueryMock>;
+  insert: jest.Mock<(_values: unknown | unknown[]) => ChainedMutationMock>;
+  update: jest.Mock<(_values: unknown) => ChainedMutationMock>;
+  delete: jest.Mock<() => ChainedMutationMock>;
+  or: jest.Mock<(_filter: string) => SupabaseQueryBuilderMock>;
+  upsert: jest.Mock<(_values: unknown, _options?: unknown) => SupabaseQueryBuilderMock>;
+  neq: jest.Mock<(_column: string, _value: unknown) => SupabaseQueryBuilderMock>;
+  ilike: jest.Mock<(_column: string, _pattern: string) => SupabaseQueryBuilderMock>;
 }
 
 // Helper to create a chainable query builder mock
 const createSupabaseQueryBuilderMock = (): SupabaseQueryBuilderMock => {
   const mock: SupabaseQueryBuilderMock = {
-    eq: jest.fn(function(this: SupabaseQueryBuilderMock) { return this; }),
-    order: jest.fn(function(this: SupabaseQueryBuilderMock) { return this; }),
-    limit: jest.fn(function(this: SupabaseQueryBuilderMock) { return this; }),
-    range: jest.fn(function(this: SupabaseQueryBuilderMock) { return this; }),
-    in: jest.fn(function(this: SupabaseQueryBuilderMock) { return this; }),
-    textSearch: jest.fn(function(this: SupabaseQueryBuilderMock) { return this; }),
-    select: jest.fn(() => createFinalQueryMock()), // select directly on from() returns FinalQueryMock
-    insert: jest.fn(() => createChainedMutationMock()), // insert returns ChainedMutationMock
-    update: jest.fn(() => createChainedMutationMock()), // update returns ChainedMutationMock
-    delete: jest.fn(() => createChainedMutationMock()), // delete returns ChainedMutationMock
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    eq: jest.fn(function(this: SupabaseQueryBuilderMock, _column: string, _value: unknown) { return this; }),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    order: jest.fn(function(this: SupabaseQueryBuilderMock, _column: string, _options?: { ascending?: boolean; nullsFirst?: boolean }) { return this; }),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    limit: jest.fn(function(this: SupabaseQueryBuilderMock, _count: number) { return this; }),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    range: jest.fn(function(this: SupabaseQueryBuilderMock, _from: number, _to: number) { return this; }),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    in: jest.fn(function(this: SupabaseQueryBuilderMock, _column: string, _values: unknown[]) { return this; }),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    textSearch: jest.fn(function(this: SupabaseQueryBuilderMock, _column: string, _query: string, _options?: { config?: string; type?: 'plain' | 'phrase' | 'websearch'; }) { return this; }),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    select: jest.fn((_columns?: string) => createFinalQueryMock()),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    insert: jest.fn((_values: unknown | unknown[]) => createChainedMutationMock()),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    update: jest.fn((_values: unknown) => createChainedMutationMock()),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    delete: jest.fn(() => createChainedMutationMock()),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    or: jest.fn(function(this: SupabaseQueryBuilderMock, _filter: string) { return this; }),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    upsert: jest.fn(function(this: SupabaseQueryBuilderMock, _values: unknown, _options?: unknown) { return this; }),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    neq: jest.fn(function(this: SupabaseQueryBuilderMock, _column: string, _value: unknown) { return this; }),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    ilike: jest.fn(function(this: SupabaseQueryBuilderMock, _column: string, _pattern: string) { return this; }),
   };
   return mock;
 };
 
 // Mock the Supabase client and its methods
 export const supabaseMock = {
-  from: jest.fn((_tableName: string) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  from: jest.fn((_tableName: string) => { 
     return createSupabaseQueryBuilderMock();
   }),
-  rpc: jest.fn(() => createFinalQueryMock()), // rpc directly returns a FinalQueryMock
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  rpc: jest.fn((_fn: string, _params?: object) => createFinalQueryMock()), 
   auth: {
-    signInWithPassword: jest.fn((_credentials: any) => {
-      if (_credentials.email === 'test@example.com' && _credentials.password === 'password') {
-        return {
-          data: { user: { id: 'test-user-id', email: 'test@example.com' }, session: { access_token: 'mock-token' } },
+    signInWithPassword: jest.fn((credentials: {email?: string; password?: string}) => {
+      if (credentials.email === 'test@example.com' && credentials.password === 'password') {
+        return Promise.resolve({ 
+          data: { user: { id: 'test-user-id', email: 'test@example.com' } as unknown, session: { access_token: 'mock-token' } as unknown },
           error: null,
-        };
+        });
       }
-      return { data: { user: null, session: null }, error: { message: 'Invalid credentials' } };
+      return Promise.resolve({ data: { user: null, session: null }, error: { message: 'Invalid credentials' } as unknown });
     }),
-    signUp: jest.fn((_credentials: any) => {
-      if (_credentials.email === 'new@example.com') {
-        return {
-          data: { user: { id: 'new-user-id', email: 'new@example.com' }, session: { access_token: 'mock-token' } },
+    signUp: jest.fn((credentials: {email?: string; password?: string; options?:unknown}) => {
+      if (credentials.email === 'new@example.com') {
+        return Promise.resolve({ 
+          data: { user: { id: 'new-user-id', email: 'new@example.com' } as unknown, session: { access_token: 'mock-token' } as unknown },
           error: null,
-        };
+        });
       }
-      return { data: { user: null, session: null }, error: { message: 'Signup failed' } };
+      return Promise.resolve({ data: { user: null, session: null }, error: { message: 'Signup failed' } as unknown });
     }),
-    signOut: jest.fn(() => ({
+    signOut: jest.fn(() => Promise.resolve({ 
       error: null,
     })),
-    resetPasswordForEmail: jest.fn(() => ({
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    resetPasswordForEmail: jest.fn((_email: string, _options?: unknown) => Promise.resolve({ 
+      data: { user: null, session: null }, 
       error: null,
     })),
-    verifyOtp: jest.fn((_params: any) => {
-      if (_params.token === 'valid-token') {
-        return {
-          data: { user: { id: 'verified-user-id', email: 'verified@example.com' } },
+    verifyOtp: jest.fn((params: {token?: string; type?: string; email?:string}) => {
+      if (params.token === 'valid-token') {
+        return Promise.resolve({ 
+          data: { user: { id: 'verified-user-id', email: 'verified@example.com' } as unknown, session: {} as unknown }, 
           error: null,
-        };
+        });
       }
-      return { data: { user: null }, error: { message: 'Invalid OTP' } };
+      return Promise.resolve({ data: { user: null, session: null }, error: { message: 'Invalid OTP' } as unknown });
     }),
-    getUser: jest.fn((_uid?: string) => {
-      if (_uid === 'current-user-id' || !_uid) { // Mock for both specific user and current user
-        return {
-          data: { user: { id: 'current-user-id', email: 'current@example.com' } },
-          error: null,
-        };
-      }
-      return { data: { user: null }, error: { message: 'User not found' } };
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    getUser: jest.fn((_token?: string) => { 
+      return Promise.resolve({ 
+        data: { user: { id: 'current-user-id', email: 'current@example.com' } as unknown },
+        error: null,
+      });
     }),
-    getSession: jest.fn(() => ({
-      data: { session: { access_token: 'mock-token' } },
+    getSession: jest.fn(() => Promise.resolve({ 
+      data: { session: { access_token: 'mock-token' } as unknown },
       error: null,
     })),
   },
   functions: {
-    invoke: jest.fn(() => ({
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    invoke: jest.fn((_functionName: string, _options?: unknown) => Promise.resolve({ 
       data: {},
       error: null,
     })),

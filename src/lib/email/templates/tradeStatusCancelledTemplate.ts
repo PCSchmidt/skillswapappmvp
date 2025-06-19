@@ -4,7 +4,7 @@
  * Email sent to users when a trade has been cancelled.
  */
 
-import { TradeTemplateData } from '../emailService';
+import { TradeTemplateData } from '@/types/email';
 import { baseTemplate } from './baseTemplate';
 
 export const tradeStatusCancelledTemplate = (data: TradeTemplateData): string => {

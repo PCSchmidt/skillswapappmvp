@@ -14,6 +14,7 @@ import Button from '@/components/ui/Button';
 import { useSupabase } from '@/contexts/SupabaseContext';
 import { Database } from '@/types/supabase';
 
+// Remove unused User interface
 type Skill = Database['public']['Tables']['skills']['Row'] & {
   users?: {
     id: string;
@@ -92,7 +93,7 @@ export default function TradeProposalForm({
         
         if (error) throw error;
         
-        setMySkills(data || []);
+        setMySkills(Array.isArray(data) ? (data as Skill[]) : []);
         
         // Set the first skill as default if available
         if (data && data.length > 0) {
@@ -182,7 +183,7 @@ export default function TradeProposalForm({
       const { data, error } = await supabase
         .from('trades')
         .insert(tradeData)
-        .select()
+        .select('*')
         .single();
       
       if (error) throw error;

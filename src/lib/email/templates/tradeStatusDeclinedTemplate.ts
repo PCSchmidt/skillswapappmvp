@@ -4,7 +4,7 @@
  * Email sent to users when their trade proposal has been declined.
  */
 
-import { TradeTemplateData } from '../emailService';
+import { TradeTemplateData } from '@/types/email';
 import { baseTemplate } from './baseTemplate';
 
 export const tradeStatusDeclinedTemplate = (data: TradeTemplateData): string => {

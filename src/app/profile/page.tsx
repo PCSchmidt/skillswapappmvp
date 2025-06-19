@@ -12,7 +12,7 @@ import { useEffect, useState } from 'react';
 import Container from '@/components/layout/Container';
 import Section from '@/components/layout/Section';
 import NotificationBar from '@/components/notifications/NotificationBar';
-import ProfileHeader from '@/components/profile/ProfileHeader';
+import ProfileHeader, { User as ProfileUser } from '@/components/profile/ProfileHeader';
 import ProfileTabs from '@/components/profile/ProfileTabs';
 import { Skill } from '@/components/skills/SkillCard';
 import { useSupabase } from '@/contexts/SupabaseContext';
@@ -20,7 +20,7 @@ import { useSupabase } from '@/contexts/SupabaseContext';
 export default function ProfilePage() {
   const router = useRouter();
   const { supabase, user } = useSupabase();
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<ProfileUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [offeredSkills, setOfferedSkills] = useState<Skill[]>([]);
   const [requestedSkills, setRequestedSkills] = useState<Skill[]>([]);
@@ -84,37 +84,41 @@ export default function ProfilePage() {
     loadUserData();
   }, [user, supabase, router]);
 
-  const handleUpdateProfile = async (updatedProfile: any) => {
-    try {
-      setLoading(true);
+  // const handleUpdateProfile = async (updatedProfile: Partial<ProfileUser>) => {
+  //   try {
+  //     setLoading(true);
       
-      const { error } = await supabase
-        .from('profiles')
-        .update(updatedProfile)
-        .eq('id', user!.id);
+  //     const { error } = await supabase
+  //       .from('profiles')
+  //       .update(updatedProfile)
+  //       .eq('id', user!.id);
 
-      if (error) throw error;
+  //     if (error) throw error;
 
-      // Update local state with new profile data
-      setProfile(prev => ({
-        ...prev,
-        ...updatedProfile
-      }));
+  //     // Update local state with new profile data
+  //     setProfile(prev => {
+  //       if (!prev) return null;
+  //       return {
+  //         ...prev,
+  //         ...updatedProfile,
+  //         id: prev.id, // always preserve id
+  //       };
+  //     });
 
-      setNotification({
-        type: 'success',
-        message: 'Profile updated successfully!'
-      });
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      setNotification({
-        type: 'error',
-        message: 'Failed to update profile. Please try again.'
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     setNotification({
+  //       type: 'success',
+  //       message: 'Profile updated successfully!'
+  //     });
+  //   } catch (error) {
+  //     console.error('Error updating profile:', error);
+  //     setNotification({
+  //       type: 'error',
+  //       message: 'Failed to update profile. Please try again.'
+  //     });
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const handleSkillsChange = async () => {
     try {
@@ -195,8 +199,9 @@ export default function ProfilePage() {
         <Container>
           <div className="space-y-8">
             <ProfileHeader 
-              profile={profile} 
-              onUpdateProfile={handleUpdateProfile} 
+              user={profile}
+              isCurrentUser={true}
+              onFollow={() => {}}
             />
             
             <ProfileTabs

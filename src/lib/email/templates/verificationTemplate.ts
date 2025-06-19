@@ -4,7 +4,7 @@
  * Email sent to users when they need to verify their email address.
  */
 
-import { WelcomeTemplateData } from '../emailService';
+import { WelcomeTemplateData } from '@/types/email';
 import { baseTemplate } from './baseTemplate';
 
 export const verificationTemplate = (data: WelcomeTemplateData): string => {

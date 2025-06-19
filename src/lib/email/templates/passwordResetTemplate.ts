@@ -4,7 +4,7 @@
  * Email sent to users when they request a password reset.
  */
 
-import { PasswordResetTemplateData } from '../emailService';
+import { PasswordResetTemplateData } from '@/types/email';
 import { baseTemplate } from './baseTemplate';
 
 export const passwordResetTemplate = (data: PasswordResetTemplateData): string => {

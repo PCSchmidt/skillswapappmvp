@@ -187,7 +187,7 @@ export default function SkillForm({
         }));
       }
     }
-  }, [formData.category]);
+  }, [formData.category, formData.subcategory]);
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;

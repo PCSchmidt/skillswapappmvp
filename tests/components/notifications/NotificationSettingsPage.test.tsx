@@ -1,4 +1,3 @@
-// @ts-nocheck - Test files often have complex mocking that's difficult to type correctly
 import { jest } from '@jest/globals';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
@@ -16,15 +15,6 @@ interface UserSettings {
   theme_preference: string;
   notification_frequency?: string;
 }
-
-interface SupabaseResponse<T> {
-  data: T | null;
-  error: { message: string } | null;
-}
-
-// Add typescript ignore directive for Jest mocks
-// This is a common pattern in test files where type complexity for mocks isn't worth fixing
-// @ts-ignore
 
 // Mock the useSupabase hook
 jest.mock('@/contexts/SupabaseContext', () => ({
@@ -78,16 +68,15 @@ describe('NotificationSettingsPage Component', () => {
         from: jest.fn().mockImplementation(() => ({
           select: jest.fn().mockImplementation(() => ({
             eq: jest.fn().mockImplementation(() => ({
-              // @ts-ignore - Ignore type conflict in Jest mocks
-          // @ts-ignore - Ignore type conflict in Jest mocks
-          single: jest.fn().mockResolvedValue({
+              single: jest.fn(() => Promise.resolve({
                 data: mockUserSettings,
                 error: null
-              })
+              }))
             }))
           })),
           update: jest.fn().mockImplementation(() => ({
             eq: jest.fn().mockImplementation(() => ({
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               then: jest.fn((callback: any) => {
                 callback({ data: true, error: null });
                 return { catch: jest.fn() };
@@ -156,22 +145,22 @@ describe('NotificationSettingsPage Component', () => {
     const mockFrom = jest.fn().mockImplementation(() => ({
       select: jest.fn().mockImplementation(() => ({
         eq: jest.fn().mockImplementation(() => ({
-          // @ts-ignore - Ignore type conflict in Jest mocks
-          single: jest.fn().mockResolvedValue({
+          single: jest.fn(() => Promise.resolve({
             data: mockUserSettings,
             error: null
-          })
+          }))
         }))
       })),
       update: jest.fn().mockImplementation(() => ({
         eq: jest.fn().mockImplementation(() => ({
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           then: jest.fn((callback: any) => {
             callback({ data: true, error: null });
             return { catch: jest.fn() };
           })
         }))
       }))
-    }));
+    }) as unknown);
     
     (useSupabase as jest.Mock).mockReturnValue({
       session: { user: { id: 'test-user-id' } },
@@ -197,7 +186,8 @@ describe('NotificationSettingsPage Component', () => {
     // Check that update was called
     await waitFor(() => {
       expect(mockFrom).toHaveBeenCalledWith('user_settings');
-      expect(mockFrom().update).toHaveBeenCalled();
+      // @ts-expect-error - mockFrom returns unknown, so we assert type for test
+      expect((mockFrom().update as jest.Mock)).toHaveBeenCalled();
     });
     
     // Check for success message
@@ -219,14 +209,15 @@ describe('NotificationSettingsPage Component', () => {
     const mockFrom = jest.fn().mockImplementation(() => ({
       select: jest.fn().mockImplementation(() => ({
         eq: jest.fn().mockImplementation(() => ({
-          single: jest.fn().mockResolvedValue({
+          single: jest.fn(() => Promise.resolve({
             data: mockUserSettings,
             error: null
-          })
+          })) as jest.Mock
         }))
       })),
       update: jest.fn().mockImplementation(() => ({
         eq: jest.fn().mockImplementation(() => ({
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           then: jest.fn((callback: any) => {
             callback({ 
               data: null, 
@@ -236,7 +227,7 @@ describe('NotificationSettingsPage Component', () => {
           })
         }))
       }))
-    }));
+    }) as unknown);
     
     (useSupabase as jest.Mock).mockReturnValue({
       session: { user: { id: 'test-user-id' } },
@@ -275,6 +266,7 @@ describe('NotificationSettingsPage Component', () => {
     
     const mockUpdate = jest.fn().mockImplementation(() => ({
       eq: jest.fn().mockImplementation(() => ({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         then: jest.fn((callback: any) => {
           callback({ data: true, error: null });
           return { catch: jest.fn() };
@@ -285,14 +277,14 @@ describe('NotificationSettingsPage Component', () => {
     const mockFrom = jest.fn().mockImplementation(() => ({
       select: jest.fn().mockImplementation(() => ({
         eq: jest.fn().mockImplementation(() => ({
-          single: jest.fn().mockResolvedValue({
+          single: jest.fn(() => Promise.resolve({
             data: mockUserSettings,
             error: null
-          })
+          })) as jest.Mock
         }))
       })),
       update: mockUpdate
-    }));
+    }) as unknown);
     
     (useSupabase as jest.Mock).mockReturnValue({
       session: { user: { id: 'test-user-id' } },
