@@ -14,7 +14,14 @@ const Navbar = () => {
   const [notificationCount, setNotificationCount] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    // Fetch unread notification count
+  const [isHydrated, setIsHydrated] = useState(false);
+  
+  // Handle hydration to prevent SSR mismatch
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
+  // Fetch unread notification count
   useEffect(() => {
     if (!user) return;
     
@@ -75,6 +82,11 @@ const Navbar = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };
 
+  if (!isHydrated) {
+    // Prevent rendering until hydrated to avoid flickering
+    return null;
+  }
+
   return (
     <header className="bg-white border-b border-neutral-200 sticky top-0 z-50 shadow-sm">
       <Container size="xl" padding="sm" className="flex justify-between items-center">
@@ -97,9 +109,8 @@ const Navbar = () => {
           </span>
         </Link>
         
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex space-x-8">
-          <Link href="/" className="text-neutral-700 hover:text-primary-600 font-medium transition-colors">
+        {/* Desktop Navigation */}        <nav className="hidden md:flex space-x-8">
+          <Link href="/discover" className="text-neutral-700 hover:text-primary-600 font-medium transition-colors">
             Discover
           </Link>
           <Link href="/how-it-works" className="text-neutral-700 hover:text-primary-600 font-medium transition-colors">
@@ -129,12 +140,16 @@ const Navbar = () => {
               </svg>
             )}
           </button>
-        </div>
-        
-        {/* Desktop Authentication Links */}
+        </div>        {/* Desktop Authentication Links */}
         <div className="hidden md:flex items-center space-x-5">
-          {isLoading ? (
-            <div className="animate-pulse h-10 w-24 bg-neutral-200 rounded"></div>
+          {!isHydrated || isLoading ? (
+            <div className="flex items-center space-x-5">
+              <div className="animate-pulse h-6 w-20 bg-neutral-200 rounded"></div>
+              <div className="animate-pulse h-6 w-16 bg-neutral-200 rounded"></div>
+              <div className="animate-pulse h-6 w-6 bg-neutral-200 rounded-full"></div>
+              <div className="animate-pulse h-6 w-16 bg-neutral-200 rounded"></div>
+              <div className="animate-pulse h-10 w-20 bg-neutral-200 rounded"></div>
+            </div>
           ) : user ? (
             <>              <Link 
                 href="/dashboard" 
@@ -214,10 +229,9 @@ const Navbar = () => {
           "absolute top-full left-0 w-full bg-white border-b border-neutral-200 shadow-lg md:hidden transition-all duration-300 ease-in-out",
           mobileMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 pointer-events-none"
         )}>
-          <Container size="xl" padding="sm" className="py-4 flex flex-col space-y-4">
-            <nav className="flex flex-col space-y-3">
+          <Container size="xl" padding="sm" className="py-4 flex flex-col space-y-4">            <nav className="flex flex-col space-y-3">
               <Link 
-                href="/" 
+                href="/discover" 
                 className="text-neutral-700 hover:text-primary-600 font-medium transition-colors p-2 rounded hover:bg-neutral-50"
                 onClick={() => setMobileMenuOpen(false)}
               >
@@ -239,11 +253,14 @@ const Navbar = () => {
               </Link>
             </nav>
             
-            <hr className="border-neutral-200" />
-            
-            <div className="flex flex-col space-y-3">
-              {isLoading ? (
-                <div className="animate-pulse h-10 w-full bg-neutral-200 rounded"></div>
+            <hr className="border-neutral-200" />            <div className="flex flex-col space-y-3">
+              {!isHydrated || isLoading ? (
+                <div className="flex flex-col space-y-3">
+                  <div className="animate-pulse h-10 w-full bg-neutral-200 rounded"></div>
+                  <div className="animate-pulse h-10 w-full bg-neutral-200 rounded"></div>
+                  <div className="animate-pulse h-10 w-full bg-neutral-200 rounded"></div>
+                  <div className="animate-pulse h-10 w-full bg-neutral-200 rounded"></div>
+                </div>
               ) : user ? (
                 <>                  <Link 
                     href="/dashboard" 
