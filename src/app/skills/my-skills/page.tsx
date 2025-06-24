@@ -4,28 +4,37 @@
  * Allows users to manage their offered and wanted skills
  */
 
-import { Metadata } from 'next';
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+'use client';
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import UserSkillsManager from '@/components/skills/UserSkillsManager';
+import { useSupabase } from '@/contexts/SupabaseContext';
 
-export const metadata: Metadata = {
-  title: 'My Skills | SkillSwap',
-  description: 'Manage your skills - add skills you can offer and skills you want to learn',
-};
-
-export default async function MySkillsPage() {
-  const supabase = createServerComponentClient({ cookies });
+export default function MySkillsPage() {
+  const { user, isLoading } = useSupabase();
+  const router = useRouter();
   
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.push('/login?redirect=/skills/my-skills');
+    }
+  }, [user, isLoading, router]);
 
-  if (!session) {
-    redirect('/auth/signin?callbackUrl=/skills/my-skills');
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <p className="text-gray-700">Loading your skills...</p>
+        </div>
+      </div>
+    );
   }
-
+  if (!user) {
+    return null; // Will redirect via useEffect
+  }
+  
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -41,7 +50,7 @@ export default async function MySkillsPage() {
         <div className="space-y-8">
           {/* Offered Skills */}
           <UserSkillsManager
-            userId={session.user.id}
+            userId={user.id}
             skillType="offered"
             title="Skills I Offer"
             description="Skills you can teach or help others with"
@@ -49,7 +58,7 @@ export default async function MySkillsPage() {
 
           {/* Wanted Skills */}
           <UserSkillsManager
-            userId={session.user.id}
+            userId={user.id}
             skillType="wanted"
             title="Skills I Want to Learn"
             description="Skills you'd like to learn from others"
@@ -68,15 +77,15 @@ export default async function MySkillsPage() {
             </li>
             <li className="flex items-start">
               <span className="flex-shrink-0 w-2 h-2 bg-blue-400 rounded-full mt-2 mr-3"></span>
-              <span>Add detailed descriptions to help potential skill exchange partners understand your experience</span>
+              <span>Add detailed descriptions to help potential skill partners find you</span>
             </li>
             <li className="flex items-start">
               <span className="flex-shrink-0 w-2 h-2 bg-blue-400 rounded-full mt-2 mr-3"></span>
-              <span>Regularly update your skills as you learn new things or want to learn different topics</span>
+              <span>Keep your skills updated as you learn and grow</span>
             </li>
             <li className="flex items-start">
               <span className="flex-shrink-0 w-2 h-2 bg-blue-400 rounded-full mt-2 mr-3"></span>
-              <span>Your skills will be visible to other users looking for skill exchanges</span>
+              <span>Use the search feature to find others with complementary skills</span>
             </li>
           </ul>
         </div>
