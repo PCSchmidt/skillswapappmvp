@@ -4,21 +4,42 @@
  * Tests for the email service that handles sending emails through Supabase Edge Functions
  */
 
-import { EmailService } from '@/lib/email/emailService';
+// Mock @supabase/supabase-js createClient
+jest.mock('@supabase/supabase-js', () => ({
+  createClient: jest.fn(),
+}));
 
-// Use global mocks - no inline mocking needed
-// The global mocks from __mocks__ directory will handle Supabase
+import { createClient } from '@supabase/supabase-js';
+import { EmailService } from '@/lib/email/emailService';
 
 describe('EmailService', () => {
   let emailService: EmailService;
+  let mockSupabaseClient: Record<string, unknown>;
 
   beforeEach(() => {
     jest.clearAllMocks();
+    
+    // Create a mock Supabase client
+    mockSupabaseClient = {
+      functions: {
+        invoke: jest.fn(),
+      },
+      from: jest.fn(),
+    };
+    
+    // Mock createClient to return our mock client
+    (createClient as jest.Mock).mockReturnValue(mockSupabaseClient);
+    
     emailService = new EmailService();
   });
-
   describe('sendEmail', () => {
     it('should successfully send an email', async () => {
+      // Mock the functions.invoke method to return success
+      (mockSupabaseClient.functions as any).invoke.mockResolvedValue({
+        data: { success: true },
+        error: null,
+      });
+
       const mockTemplateData = {
         recipientName: 'John Doe',
         recipientEmail: 'john@example.com',
@@ -66,9 +87,8 @@ describe('EmailService', () => {
     });
   });
 
-  describe('sendNotificationEmail', () => {
-    it('should send notification email when user has enabled that notification type', async () => {
-      // Mock user preferences - enabled
+  describe('sendNotificationEmail', () => {    it('should send notification email when user has enabled that notification type', async () => {
+      // Mock user preferences query
       const mockQueryBuilder = {
         select: jest.fn().mockReturnThis(),
         eq: jest.fn().mockReturnThis(),
@@ -83,7 +103,14 @@ describe('EmailService', () => {
         }),
       };
 
-      emailService['supabase'].from = jest.fn().mockReturnValue(mockQueryBuilder);
+      // Mock the from method to return our query builder
+      (mockSupabaseClient.from as jest.Mock).mockReturnValue(mockQueryBuilder);
+      
+      // Mock the functions.invoke method to return success
+      (mockSupabaseClient.functions as any).invoke.mockResolvedValue({
+        data: { success: true },
+        error: null,
+      });
 
       const result = await emailService.sendNotificationEmail(
         'user-123',

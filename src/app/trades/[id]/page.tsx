@@ -46,6 +46,7 @@ type ExtendedTrade = Database['public']['Tables']['trades']['Row'] & {
   } | null;
   notes?: string | null;
   scheduled_date?: string | null;
+  proposed_schedule?: string | null;
 };
 
 export default function TradeDetailPage({ params }: { params: { id: string } }) {

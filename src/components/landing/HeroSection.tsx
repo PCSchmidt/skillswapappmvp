@@ -78,11 +78,11 @@ export default function HeroSection({
                   {ctaSecondaryText}
                 </Link>
               )}
-              
-              {ctaPrimaryText && ctaPrimaryLink && (
+                {ctaPrimaryText && ctaPrimaryLink && (
                 <Link 
                   href={ctaPrimaryLink} 
                   className="btn bg-accent-yellow-500 hover:bg-accent-yellow-600 text-neutral-900 font-semibold px-6 py-3 shadow-lg hover:shadow-xl transition-all text-center"
+                  data-testid="signup-button"
                 >
                   {ctaPrimaryText}
                 </Link>

@@ -87,11 +87,10 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
           
           if (ratingsError) throw ratingsError;
           
-          setRatings((ratingsData as Database['public']['Tables']['ratings']['Row'][]) || []);
-          
-          // Calculate average rating
+          setRatings((ratingsData as Database['public']['Tables']['ratings']['Row'][]) || []);          // Calculate average rating
           if (ratingsData && ratingsData.length > 0) {
-            const sum = ratingsData.reduce((acc, rating) => acc + rating.rating_score, 0);
+            const typedRatings = ratingsData as Database['public']['Tables']['ratings']['Row'][];
+            const sum = typedRatings.reduce((acc, rating) => acc + rating.rating, 0);
             setAverageRating(sum / ratingsData.length);
           }
         }      } catch (err: unknown) {
@@ -353,10 +352,14 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
                   </Link>
                 )}
               </div>
-            ) : (
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            ) : (              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {filteredSkills.map((skill) => (
-                  <SkillCard key={skill.id} skill={skill} showActions={true} />
+                  <SkillCard 
+                    key={skill.id} 
+                    skill={skill} 
+                    isOwner={profile?.id === user?.id}
+                    isProfileView={true}
+                  />
                 ))}
               </div>
             )}

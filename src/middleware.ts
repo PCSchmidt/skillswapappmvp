@@ -4,6 +4,7 @@ import type { NextRequest } from 'next/server';
 /**
  * Minimal middleware that allows all requests to pass through
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function middleware(_req: NextRequest) {
   return NextResponse.next();
 }

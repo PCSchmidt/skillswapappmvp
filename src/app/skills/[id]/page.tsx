@@ -15,6 +15,7 @@ import Section from '@/components/layout/Section';
 import NotificationBar from '@/components/notifications/NotificationBar';
 import { Skill } from '@/components/skills/SkillCard';
 import { useSupabase } from '@/contexts/SupabaseContext';
+import { Database } from '@/types/supabase';
 
 interface SkillOwner {
   id: string;
@@ -80,10 +81,8 @@ export default function SkillDetailsPage() {
           .eq('category', skillData.category)
           .eq('is_active', true)
           .neq('id', skillId)
-          .limit(4);
-
-        if (similarError) throw similarError;
-        setSimilarSkills(similarData || []);
+          .limit(4);        if (similarError) throw similarError;
+        setSimilarSkills((similarData as Database['public']['Tables']['skills']['Row'][]) || []);
       } catch (error) {
         console.error('Error loading skill data:', error);
         setNotification({

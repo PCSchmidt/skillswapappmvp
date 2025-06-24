@@ -98,7 +98,7 @@ export default function SignupForm() {
   return (
     <div className="w-full max-w-md mx-auto">
       <form onSubmit={handleSignup} className="bg-white p-8 shadow-md rounded-lg" data-testid="signup-form">
-        <h2 className="text-2xl font-bold mb-6 text-gray-800">Create Account</h2>
+        <h2 className="text-2xl font-bold mb-6 text-gray-800">Create an account</h2>
         
         {error && (
           <div className="mb-4 p-3 bg-error-50 text-error-700 rounded-md" data-testid="auth-error">
@@ -180,11 +180,11 @@ export default function SignupForm() {
         </div>
         
         <div className="mb-6">
-          <label className="flex items-center">
-            <input
+          <label className="flex items-center">            <input
               type="checkbox"
               className="mr-2"
               required
+              data-testid="terms-checkbox"
             />
             <span className="text-sm text-gray-500">
               I agree to the{' '}
@@ -198,8 +198,7 @@ export default function SignupForm() {
             </span>
           </label>
         </div>
-        
-        <button
+          <button
           type="submit"
           className="btn btn-primary w-full"
           disabled={loading}

@@ -196,15 +196,15 @@ export default function TradesPage() {
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
               >
                 All Trades
-              </button>
-              <button 
+              </button>              <button 
                 onClick={() => setActiveTab('proposed')}
                 className={`whitespace-nowrap py-4 px-4 border-b-2 font-medium text-sm 
                   ${activeTab === 'proposed' 
                     ? 'border-primary-500 text-primary-600' 
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+                data-testid="received-trades-tab"
               >
-                Proposed
+                Received Trades
               </button>
               <button 
                 onClick={() => setActiveTab('accepted')}
@@ -262,9 +262,8 @@ export default function TradesPage() {
               Browse Skills
             </Link>
           </div>
-        ) : (
-          <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-            <ul className="divide-y divide-gray-200">
+        ) : (          <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
+            <ul className="divide-y divide-gray-200" data-testid="trades-list">
               {trades.map((trade) => (
                 <li key={trade.id} className="relative">
                   <Link href={`/trades/${trade.id}`} className="block hover:bg-gray-50">

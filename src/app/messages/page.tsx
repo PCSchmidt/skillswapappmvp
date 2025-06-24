@@ -265,9 +265,8 @@ export default function MessagesPage() {
               Browse Skills
             </Link>
           </div>
-        ) : (
-          <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-            <ul className="divide-y divide-gray-200">
+        ) : (          <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
+            <ul className="divide-y divide-gray-200" data-testid="conversation-list">
               {conversations.map((convo) => (
                 <li key={convo.tradeId}>
                   <Link href={`/messages/${convo.tradeId}`} className="block hover:bg-gray-50">

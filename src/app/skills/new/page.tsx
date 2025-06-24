@@ -42,10 +42,19 @@ export default function NewSkillPage() {
           <p className="text-gray-700">You need to be logged in to create a skill.</p>
         </div>
       </div>
-    );
-  }
+    );  }
   
   // Handle successful skill creation
+  const handleSave = () => {
+    // Navigate back to skills page or profile
+    router.push('/profile');
+  };
+
+  const handleCancel = () => {
+    // Navigate back to previous page
+    router.back();
+  };
+
   const handleSuccess = (skillId: string) => {
     // Navigate to the skill detail page
     setTimeout(() => {
@@ -63,7 +72,11 @@ export default function NewSkillPage() {
           </p>
         </div>
         
-        <SkillForm onSuccess={handleSuccess} />
+        <SkillForm 
+          userId={user.id}
+          onSave={handleSave}
+          onCancel={handleCancel}
+        />
       </div>
     </div>
   );
