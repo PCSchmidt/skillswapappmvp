@@ -7,6 +7,10 @@ import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
+// Force dynamic route to prevent build-time static generation issues
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 // GET /api/skills - Get all skills with optional filtering
 export async function GET(request: Request) {
   try {
@@ -16,17 +20,21 @@ export async function GET(request: Request) {
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
 
-    const supabase = createRouteHandlerClient({ cookies });    let query = supabase
+    const cookieStore = cookies();
+    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+
+    let query = supabase
       .from('skills')
       .select('*')
-      .eq('is_active', true)
       .range(offset, offset + limit - 1)
       .order('title');
 
     // Apply filters
     if (category) {
       query = query.eq('category', category);
-    }    if (search) {
+    }
+
+    if (search) {
       query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
     }
 

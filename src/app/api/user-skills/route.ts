@@ -7,14 +7,19 @@ import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
+// Force dynamic route to prevent build-time static generation issues
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 // GET /api/user-skills - Get user's skills (both offered and wanted)
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId');
-    const skillType = searchParams.get('type'); // 'offered' or 'wanted'
+    const userId = searchParams.get('user_id'); // Changed from userId to user_id for consistency
+    const skillType = searchParams.get('skill_type'); // Changed from type to skill_type
 
-    const supabase = createRouteHandlerClient({ cookies });
+    const cookieStore = cookies();
+    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
 
     // Check if user is authenticated
     const { data: { session } } = await supabase.auth.getSession();
@@ -23,9 +28,7 @@ export async function GET(request: Request) {
         { error: 'Authentication required' },
         { status: 401 }
       );
-    }
-
-    // Use current user if no userId specified
+    }    // Use current user if no user_id specified
     const targetUserId = userId || session.user.id;
 
     let query = supabase
@@ -38,7 +41,7 @@ export async function GET(request: Request) {
         created_at,
         skills:skill_id (
           id,
-          name,
+          title,
           category,
           description
         )

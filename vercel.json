@@ -2,13 +2,9 @@
   "version": 2,
   "regions": ["iad1"],
   "framework": "nextjs",
-  "outputDirectory": ".next",
-  "buildCommand": "yarn add --dev typescript@5.0.4 @types/node --ignore-scripts && next build",
-  "installCommand": "yarn install",
   "env": {
     "NODE_ENV": "production",
-    "NEXT_TELEMETRY_DISABLED": "1",
-    "NODE_OPTIONS": "--max-old-space-size=4096"
+    "NEXT_TELEMETRY_DISABLED": "1"
   },
   "github": {
     "enabled": true,
