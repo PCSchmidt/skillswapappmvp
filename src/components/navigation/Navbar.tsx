@@ -136,12 +136,18 @@ const Navbar = () => {
           {isLoading ? (
             <div className="animate-pulse h-10 w-24 bg-neutral-200 rounded"></div>
           ) : user ? (
-            <>
-              <Link 
+            <>              <Link 
                 href="/dashboard" 
                 className="text-neutral-700 hover:text-primary-600 font-medium transition-colors"
               >
                 Dashboard
+              </Link>
+              
+              <Link 
+                href="/skills/my-skills" 
+                className="text-neutral-700 hover:text-primary-600 font-medium transition-colors"
+              >
+                My Skills
               </Link>
               
               {/* Notification Bell */}
@@ -239,13 +245,19 @@ const Navbar = () => {
               {isLoading ? (
                 <div className="animate-pulse h-10 w-full bg-neutral-200 rounded"></div>
               ) : user ? (
-                <>
-                  <Link 
+                <>                  <Link 
                     href="/dashboard" 
                     className="text-neutral-700 hover:text-primary-600 font-medium transition-colors p-2 rounded hover:bg-neutral-50"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Dashboard
+                  </Link>
+                  <Link 
+                    href="/skills/my-skills" 
+                    className="text-neutral-700 hover:text-primary-600 font-medium transition-colors p-2 rounded hover:bg-neutral-50"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    My Skills
                   </Link>
                   <Link 
                     href={`/profile/${user.id}`}

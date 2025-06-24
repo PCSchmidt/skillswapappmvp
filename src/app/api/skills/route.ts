@@ -16,21 +16,18 @@ export async function GET(request: Request) {
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
 
-    const supabase = createRouteHandlerClient({ cookies });
-
-    let query = supabase
+    const supabase = createRouteHandlerClient({ cookies });    let query = supabase
       .from('skills')
       .select('*')
+      .eq('is_active', true)
       .range(offset, offset + limit - 1)
-      .order('name');
+      .order('title');
 
     // Apply filters
     if (category) {
       query = query.eq('category', category);
-    }
-
-    if (search) {
-      query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%`);
+    }    if (search) {
+      query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
     }
 
     const { data: skills, error } = await query;
@@ -65,29 +62,28 @@ export async function POST(request: Request) {
         { error: 'Authentication required' },
         { status: 401 }
       );
-    }
-
-    const body = await request.json();
-    const { name, category, description } = body;
+    }    const body = await request.json();
+    const { title, category, description, subcategory, experience_level, hourly_equivalent_value, is_offering, is_remote_friendly } = body;
 
     // Validate required fields
-    if (!name || !category) {
+    if (!title || !category) {
       return NextResponse.json(
-        { error: 'Name and category are required' },
+        { error: 'Title and category are required' },
         { status: 400 }
       );
     }
 
-    // Check if skill already exists
+    // Check if skill already exists for this user
     const { data: existingSkill } = await supabase
       .from('skills')
       .select('id')
-      .eq('name', name)
+      .eq('title', title)
+      .eq('user_id', session.user.id)
       .single();
 
     if (existingSkill) {
       return NextResponse.json(
-        { error: 'Skill with this name already exists' },
+        { error: 'You already have a skill with this title' },
         { status: 409 }
       );
     }
@@ -97,10 +93,16 @@ export async function POST(request: Request) {
       .from('skills')
       .insert([
         {
-          name: name.trim(),
+          user_id: session.user.id,
+          title: title.trim(),
           category: category.trim(),
           description: description?.trim() || null,
-          created_by: session.user.id
+          subcategory: subcategory?.trim() || null,
+          experience_level: experience_level || 'intermediate',
+          hourly_equivalent_value: hourly_equivalent_value || null,
+          is_offering: is_offering || true,
+          is_remote_friendly: is_remote_friendly || false,
+          is_active: true
         }
       ])
       .select()
@@ -136,15 +138,13 @@ export async function PUT(request: Request) {
         { error: 'Authentication required' },
         { status: 401 }
       );
-    }
-
-    const body = await request.json();
-    const { id, name, category, description } = body;
+    }    const body = await request.json();
+    const { id, title, category, description, subcategory, experience_level, hourly_equivalent_value, is_offering, is_remote_friendly } = body;
 
     // Validate required fields
-    if (!id || !name || !category) {
+    if (!id || !title || !category) {
       return NextResponse.json(
-        { error: 'ID, name, and category are required' },
+        { error: 'ID, title, and category are required' },
         { status: 400 }
       );
     }
@@ -152,7 +152,7 @@ export async function PUT(request: Request) {
     // Check if skill exists and user has permission to edit
     const { data: existingSkill } = await supabase
       .from('skills')
-      .select('created_by')
+      .select('user_id')
       .eq('id', id)
       .single();
 
@@ -163,8 +163,8 @@ export async function PUT(request: Request) {
       );
     }
 
-    // Only allow creator to edit (or admin in future)
-    if (existingSkill.created_by !== session.user.id) {
+    // Only allow creator to edit
+    if (existingSkill.user_id !== session.user.id) {
       return NextResponse.json(
         { error: 'Permission denied' },
         { status: 403 }
@@ -175,9 +175,14 @@ export async function PUT(request: Request) {
     const { data: skill, error } = await supabase
       .from('skills')
       .update({
-        name: name.trim(),
+        title: title.trim(),
         category: category.trim(),
         description: description?.trim() || null,
+        subcategory: subcategory?.trim() || null,
+        experience_level: experience_level,
+        hourly_equivalent_value: hourly_equivalent_value,
+        is_offering: is_offering,
+        is_remote_friendly: is_remote_friendly,
         updated_at: new Date().toISOString()
       })
       .eq('id', id)
@@ -224,12 +229,10 @@ export async function DELETE(request: Request) {
         { error: 'Skill ID is required' },
         { status: 400 }
       );
-    }
-
-    // Check if skill exists and user has permission to delete
+    }    // Check if skill exists and user has permission to delete
     const { data: existingSkill } = await supabase
       .from('skills')
-      .select('created_by')
+      .select('user_id')
       .eq('id', id)
       .single();
 
@@ -240,8 +243,8 @@ export async function DELETE(request: Request) {
       );
     }
 
-    // Only allow creator to delete (or admin in future)
-    if (existingSkill.created_by !== session.user.id) {
+    // Only allow creator to delete
+    if (existingSkill.user_id !== session.user.id) {
       return NextResponse.json(
         { error: 'Permission denied' },
         { status: 403 }
