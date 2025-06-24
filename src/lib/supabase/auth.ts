@@ -5,7 +5,7 @@
  * operations to provide a consistent API and error handling.
  */
 
-import { supabaseClient } from './client';
+import { supabaseClient } from '@/lib/supabase/client';
 
 /**
  * Sign in a user with email and password
@@ -34,7 +34,7 @@ export async function signIn(email: string, password: string) {
  * @param metadata Additional user metadata (optional)
  * @returns Object containing user data or error
  */
-export async function signUp(email: string, password: string, metadata?: Record<string, any>) {
+export async function signUp(email: string, password: string, metadata?: Record<string, unknown>) {
   const { data, error } = await supabaseClient.auth.signUp({
     email,
     password,

@@ -7,7 +7,6 @@
  * It implements a stale-while-revalidate caching strategy for optimized data fetching.
  */
 
-import localforage from 'localforage';
 import React, { ReactNode } from 'react';
 import { SWRConfig } from 'swr';
 import type { SWRConfiguration } from 'swr';
@@ -60,7 +59,7 @@ export const SWRProvider: React.FC<SWRProviderProps> = ({ children }) => {
     <SWRConfig 
       value={{
         ...SWR_DEFAULT_CONFIG,
-        onError: (error: any, key: string) => {
+        onError: (error: unknown, key: string) => {
           // Create the error options with proper typing
           const errorOptions: ErrorOptions = {
             context: { 

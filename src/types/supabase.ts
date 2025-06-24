@@ -64,8 +64,13 @@ export interface Profile {
   username?: string;
   full_name?: string;
   avatar_url?: string;
+  profile_image_url?: string;
+  email?: string;
   bio?: string;
   location?: string;
+  location_city?: string;
+  location_state?: string;
+  location_country?: string;
   created_at?: string;
   updated_at?: string;
 }

@@ -8,7 +8,12 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 import '@testing-library/jest-dom';
 import MessageComposer from '@/components/messaging/MessageComposer';
-import * as SupabaseContext from '@/contexts/SupabaseContext';
+import { useSupabase } from '@/contexts/SupabaseContext';
+
+// Mock the useSupabase hook
+jest.mock('@/contexts/SupabaseContext', () => ({
+  useSupabase: jest.fn(),
+}));
 
 describe('MessageComposer', () => {
   const mockTradeId = 'trade-123';
@@ -16,6 +21,30 @@ describe('MessageComposer', () => {
   
   beforeEach(() => {
     jest.clearAllMocks();
+    
+    // Setup the default mock implementation for useSupabase
+    (useSupabase as jest.Mock).mockReturnValue({
+      user: {
+        id: 'current-user-id',
+        app_metadata: {},
+        user_metadata: {},
+        aud: '',
+        created_at: '',
+        email: 'test@example.com',
+      },
+      supabase: {
+        from: jest.fn().mockImplementation(() => ({
+          insert: jest.fn().mockImplementation(() => ({
+            select: jest.fn().mockImplementation(() => ({
+              single: jest.fn(() => Promise.resolve({
+                data: { id: 'message-123', content: 'Hello there!', trade_id: mockTradeId, sender_id: 'current-user-id' },
+                error: null
+              }))
+            }))
+          }))
+        }))
+      }
+    });
   });
   
   it('renders the message input field', () => {
@@ -81,10 +110,9 @@ describe('MessageComposer', () => {
     
     // Click send button
     fireEvent.click(sendButton);
-    
-    // Check that the message is sent to Supabase
+      // Check that the message is sent to Supabase
     await waitFor(() => {
-      expect(SupabaseContext.useSupabase().supabase.from).toHaveBeenCalledWith('messages');
+      expect(useSupabase().supabase.from).toHaveBeenCalledWith('messages');
     });
     
     // Check that onSend callback is called
@@ -107,10 +135,9 @@ describe('MessageComposer', () => {
     
     // Press Enter (without Shift)
     fireEvent.keyDown(textarea, { key: 'Enter', code: 'Enter', shiftKey: false });
-    
-    // Check that the message is sent
+      // Check that the message is sent
     await waitFor(() => {
-      expect(SupabaseContext.useSupabase().supabase.from).toHaveBeenCalledWith('messages');
+      expect(useSupabase().supabase.from).toHaveBeenCalledWith('messages');
       expect(mockOnSend).toHaveBeenCalled();
     });
     
@@ -128,16 +155,14 @@ describe('MessageComposer', () => {
     
     // Press Shift+Enter (should add a new line instead of sending)
     fireEvent.keyDown(textarea, { key: 'Enter', code: 'Enter', shiftKey: true });
-    
-    // Check that the message is not sent
-    expect(SupabaseContext.useSupabase().supabase.from).not.toHaveBeenCalled();
+      // Check that the message is not sent
+    expect(useSupabase().supabase.from).not.toHaveBeenCalled();
     expect(mockOnSend).not.toHaveBeenCalled();
     
     // Textarea should still have the text
     expect(textarea).toHaveValue('Hello there!');
   });
-  
-  it('shows an error message when send fails', async () => {
+    it('shows an error message when send fails', async () => {
     // Mock the Supabase chain for failure
     const mockSingle = jest.fn().mockResolvedValue({
       data: null,
@@ -147,27 +172,10 @@ describe('MessageComposer', () => {
     const mockInsert = jest.fn(() => ({ select: mockSelect }));
     const mockFrom = jest.fn(() => ({
       insert: mockInsert,
-      // Add all other required query builder methods as no-ops for compatibility
-      select: jest.fn(), eq: jest.fn(), order: jest.fn(), limit: jest.fn(), range: jest.fn(), in: jest.fn(), textSearch: jest.fn(), or: jest.fn(), upsert: jest.fn(), neq: jest.fn(), ilike: jest.fn(),
     }));
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const mockSupabase = { from: mockFrom } as any;
-    jest.spyOn(SupabaseContext, 'useSupabase').mockReturnValue({
-      supabase: mockSupabase,
-      session: {
-        user: {
-          id: 'current-user-id',
-          app_metadata: {},
-          user_metadata: {},
-          aud: '',
-          created_at: '',
-          email: 'test@example.com',
-        },
-        access_token: '',
-        refresh_token: '',
-        expires_in: 3600,
-        token_type: 'bearer',
-      },
+    
+    // Override the mock for this test
+    (useSupabase as jest.Mock).mockReturnValue({
       user: {
         id: 'current-user-id',
         app_metadata: {},
@@ -176,13 +184,9 @@ describe('MessageComposer', () => {
         created_at: '',
         email: 'test@example.com',
       },
-      isLoading: false,
-      isVerified: true,
-      signIn: async () => ({ success: true, error: null }),
-      signUp: async () => ({ success: true, error: null }),
-      signOut: async () => {},
-      refreshUser: async () => {},
-      sendPasswordReset: async () => ({ success: true, error: null }),
+      supabase: {
+        from: mockFrom
+      }
     });
 
     render(<MessageComposer tradeId={mockTradeId} onSend={mockOnSend} />);

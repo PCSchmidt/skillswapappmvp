@@ -11,12 +11,13 @@ import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import SkillForm from '@/components/skills/SkillForm';
 import { useSupabase } from '@/contexts/SupabaseContext';
+import { Database } from '@/types/supabase';
 
 export default function EditSkillPage({ params }: { params: { id: string } }) {
   const router = useRouter();
   const { supabase, user, isLoading } = useSupabase();
   
-  const [skill, setSkill] = useState<any>(null);
+  const [skill, setSkill] = useState<Database['public']['Tables']['skills']['Row'] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [unauthorized, setUnauthorized] = useState(false);
@@ -69,8 +70,7 @@ export default function EditSkillPage({ params }: { params: { id: string } }) {
           }
           
           setSkill(data);
-        }
-      } catch (err: any) {
+        }      } catch (err: unknown) {
         console.error('Error fetching skill:', err);
         setError('Failed to load skill details');
       } finally {
@@ -82,13 +82,17 @@ export default function EditSkillPage({ params }: { params: { id: string } }) {
       fetchSkill();
     }
   }, [params.id, supabase, user]);
-  
-  // Handle successful edit
-  const handleSuccess = (skillId: string) => {
+    // Handle successful edit
+  const handleSuccess = () => {
     // Navigate back to the skill detail page
     setTimeout(() => {
-      router.push(`/skills/${skillId}`);
+      router.push(`/skills/${params.id}`);
     }, 1500);
+  };
+
+  // Handle cancel
+  const handleCancel = () => {
+    router.push(`/skills/${params.id}`);
   };
   
   // Show loading state
@@ -152,8 +156,7 @@ export default function EditSkillPage({ params }: { params: { id: string } }) {
       </div>
     );
   }
-  
-  return (
+    return (
     <div className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
@@ -163,12 +166,14 @@ export default function EditSkillPage({ params }: { params: { id: string } }) {
           </p>
         </div>
         
-        <SkillForm 
-          initialData={skill}
-          skillId={params.id}
-          isEdit={true}
-          onSuccess={handleSuccess}
-        />
+        {user && (
+          <SkillForm 
+            userId={user.id}
+            initialData={skill}
+            onSave={handleSuccess}
+            onCancel={handleCancel}
+          />
+        )}
       </div>
     </div>
   );

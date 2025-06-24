@@ -13,7 +13,7 @@ export default function SentryTestPage() {
   const handleTriggerError = () => {
     try {
       // Intentionally call a non-existent function
-      // @ts-ignore - deliberately causing an error
+      // @ts-expect-error - deliberately causing an error for Sentry testing
       nonExistentFunction();
     } catch (error) {
       console.error('Error triggered for Sentry test:', error);

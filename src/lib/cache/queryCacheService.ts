@@ -11,7 +11,7 @@ interface CacheEntry<T> {
   expiresAt: number;
 }
 
-type CacheMap = Map<string, CacheEntry<any>>;
+type CacheMap = Map<string, CacheEntry<unknown>>;
 
 class QueryCacheService {
   private static instance: QueryCacheService;

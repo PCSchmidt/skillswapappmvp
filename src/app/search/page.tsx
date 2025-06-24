@@ -9,6 +9,20 @@ import SearchComponent from '@/components/search/SearchComponent';
 import EnhancedSkillCard from '@/components/skills/EnhancedSkillCard';
 import SkillFilters from '@/components/skills/SkillFilters';
 
+interface MockSkill {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  experienceLevel: string;
+  location: string;
+  type: string;
+  imageUrl: string;
+  userAvatar: string;
+  userName: string;
+  rating: number | null;
+}
+
 // Mock data for demonstration purposes
 const MOCK_SKILLS = [
   {
@@ -130,7 +144,7 @@ interface SearchFilters {
 export default function SearchPage() {
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(true);
-  const [results, setResults] = useState<any[]>([]);
+  const [results, setResults] = useState<MockSkill[]>([]);
   const [totalResults, setTotalResults] = useState(0);
   const [filters, setFilters] = useState<SearchFilters>({
     query: '',
@@ -215,9 +229,8 @@ export default function SearchPage() {
     // which would then trigger the useEffect above
     console.log('Searching for:', searchTerm);
   };
-
   // Handle filter changes
-  const handleFilterChange = (newFilters: any) => {
+  const handleFilterChange = (newFilters: Partial<SearchFilters>) => {
     // In a real app, you would update the URL with the new filters
     // which would then trigger the useEffect above
     console.log('Filters changed:', newFilters);

@@ -3,7 +3,6 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useState, useEffect, useCallback } from 'react';
 import Input from '@/components/ui/Input';
-import { useSupabase } from '@/contexts/SupabaseContext';
 import { debounce } from '@/lib/utils';
 
 interface SearchComponentProps {
@@ -38,14 +37,16 @@ export default function SearchComponent({
     
     setIsSearching(false);
   };
-  
-  // Debounced search function for auto-search functionality
+    // Debounced search function for auto-search functionality
   const debouncedSearch = useCallback(
-    debounce((term: string) => {
-      if (onSearch) {
-        onSearch(term);
-      }
-    }, 500),
+    (term: string) => {
+      const debouncedFn = debounce((searchTerm: string) => {
+        if (onSearch) {
+          onSearch(searchTerm);
+        }
+      }, 500);
+      debouncedFn(term);
+    },
     [onSearch]
   );
   

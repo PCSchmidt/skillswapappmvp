@@ -52,7 +52,7 @@ export default function EmailPreferences({ userId }: EmailPreferencesProps) {
         if (error) throw error;
         
         setPreferences(data);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('Error fetching email preferences:', err);
         setError('Failed to load your email preferences');
       } finally {
@@ -95,7 +95,7 @@ export default function EmailPreferences({ userId }: EmailPreferencesProps) {
       setTimeout(() => {
         setSuccess(null);
       }, 3000);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error saving email preferences:', err);
       setError('Failed to save your preferences');
     } finally {

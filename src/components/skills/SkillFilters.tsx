@@ -116,11 +116,8 @@ export default function SkillFilters({
         offeringType,
         locationTypes
       });
-    }
-
-    // Update URL with filter params if no callback is provided
+    }    // Update URL with filter params if no callback is provided
     if (!onFilterChange) {
-      const url = '/skills?';
       const params = new URLSearchParams();
 
       selectedCategories.forEach(cat => params.append('category', cat));

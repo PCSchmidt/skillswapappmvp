@@ -11,7 +11,7 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Column from '@/components/layout/Column';
 import Container from '@/components/layout/Container';
 import Grid from '@/components/layout/Grid';
@@ -48,63 +48,36 @@ export default function NotificationCenter() {
   // Available notification types and priorities
   const [availableTypes, setAvailableTypes] = useState<string[]>([]);
   const [availablePriorities, setAvailablePriorities] = useState<string[]>([]);
-  
   // State for grouped notifications
   const [groupedNotifications, setGroupedNotifications] = useState<Record<string, Notification[]>>({});
   
-  // Fetch notifications when component mounts
-  useEffect(() => {
-    if (user) {
-      fetchNotifications();
-    }
-  }, [user]);
+  // Update available filters based on current notifications
+  const updateAvailableFilters = useCallback((notifs: Notification[]) => {
+    const types = [...new Set(notifs.map(n => n.type))];
+    const priorities = [...new Set(notifs.map(n => n.priority).filter(Boolean))];
+    
+    setAvailableTypes(types);
+    setAvailablePriorities(priorities as string[]);
+  }, []);
   
-  // Set up real-time subscription for notifications
-  useEffect(() => {
-    if (!user) return;
+  // Group notifications by context or type
+  const updateGroupedNotifications = useCallback((notifs: Notification[]) => {
+    // First try to group by context if available
+    const grouped: Record<string, Notification[]> = {};
     
-    const subscription = supabase
-      .channel('notifications-changes')
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'notifications',
-        filter: `user_id=eq.${user.id}`
-      }, (payload: any) => { // Use any for payload for now to avoid deep type issues
-        console.log('Notification change received:', payload);
-        
-        // Handle different change types
-        if (payload.eventType === 'INSERT') {
-          // Add to notifications
-          setNotifications(prev => [payload.new as Notification, ...prev]);
-          updateAvailableFilters([payload.new as Notification, ...notifications]);
-          updateGroupedNotifications([payload.new as Notification, ...notifications]);
-        } else if (payload.eventType === 'UPDATE') {
-          // Update existing notification
-          setNotifications(prev => 
-            prev.map(n => n.id === payload.new.id ? payload.new as Notification : n)
-          );
-          updateGroupedNotifications(
-            notifications.map(n => n.id === payload.new.id ? payload.new as Notification : n)
-          );
-        } else if (payload.eventType === 'DELETE') {
-          // Remove from notifications
-          setNotifications(prev => 
-            prev.filter(n => n.id !== payload.old.id)
-          );
-          updateAvailableFilters(notifications.filter(n => n.id !== payload.old.id));
-          updateGroupedNotifications(notifications.filter(n => n.id !== payload.old.id));
-        }
-      })
-      .subscribe();
+    notifs.forEach(notification => {
+      const groupKey = (notification.metadata?.context as string) || notification.type || 'other';
+      if (!grouped[groupKey]) {
+        grouped[groupKey] = [];
+      }
+      grouped[groupKey].push(notification);
+    });
     
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [user, supabase, notifications]);
+    setGroupedNotifications(grouped);
+  }, []);
   
   // Fetch notifications with support for filtering and pagination
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     if (!user) return;
     
     setLoading(true);
@@ -167,32 +140,56 @@ export default function NotificationCenter() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, supabase, filters, updateAvailableFilters, updateGroupedNotifications]);
+
+  // Fetch notifications when component mounts
+  useEffect(() => {
+    if (user) {
+      fetchNotifications();
+    }
+  }, [user, fetchNotifications]);
   
-  // Update available filters based on current notifications
-  const updateAvailableFilters = (notifs: Notification[]) => {
-    const types = [...new Set(notifs.map(n => n.type))];
-    const priorities = [...new Set(notifs.map(n => n.priority).filter(Boolean))];
+  // Set up real-time subscription for notifications
+  useEffect(() => {
+    if (!user) return;
     
-    setAvailableTypes(types);
-    setAvailablePriorities(priorities as string[]);
-  };
-  
-  // Group notifications by context or type
-  const updateGroupedNotifications = (notifs: Notification[]) => {
-    // First try to group by context if available
-    const grouped: Record<string, Notification[]> = {};
+    const subscription = supabase
+      .channel('notifications-changes')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'notifications',
+        filter: `user_id=eq.${user.id}`
+      }, (payload: { eventType: string; new?: Notification; old?: Notification }) => {
+        console.log('Notification change received:', payload);
+          // Handle different change types
+        if (payload.eventType === 'INSERT' && payload.new) {
+          // Add to notifications
+          setNotifications(prev => [payload.new as Notification, ...prev]);
+          updateAvailableFilters([payload.new as Notification, ...notifications]);
+          updateGroupedNotifications([payload.new as Notification, ...notifications]);
+        } else if (payload.eventType === 'UPDATE' && payload.new) {
+          // Update existing notification
+          setNotifications(prev => 
+            prev.map(n => n.id === (payload.new as Notification).id ? payload.new as Notification : n)
+          );
+          updateGroupedNotifications(
+            notifications.map(n => n.id === (payload.new as Notification).id ? payload.new as Notification : n)
+          );
+        } else if (payload.eventType === 'DELETE' && payload.old) {
+          // Remove from notifications
+          setNotifications(prev => 
+            prev.filter(n => n.id !== (payload.old as Notification).id)
+          );
+          updateAvailableFilters(notifications.filter(n => n.id !== (payload.old as Notification).id));
+          updateGroupedNotifications(notifications.filter(n => n.id !== (payload.old as Notification).id));
+        }
+      })
+      .subscribe();
     
-    notifs.forEach(notification => {
-      const groupKey = (notification.metadata?.context as string) || notification.type || 'other';
-      if (!grouped[groupKey]) {
-        grouped[groupKey] = [];
-      }
-      grouped[groupKey].push(notification);
-    });
-    
-    setGroupedNotifications(grouped);
-  };
+    return () => {
+      subscription.unsubscribe();
+    };  }, [user, supabase, notifications, updateAvailableFilters, updateGroupedNotifications]);
   
   // Update filters and refetch notifications
   const handleFilterChange = (newFilters: Partial<FilterOptions>) => {

@@ -10,9 +10,6 @@ import { baseTemplate } from './baseTemplate';
 export const passwordResetTemplate = (data: PasswordResetTemplateData): string => {
   const { recipientName, resetLink } = data;
   
-  // Create the base URL for the application
-  const appUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://skillswap.example.com';
-  
   // Create the content for the email
   const content = `
     <h1>Reset Your Password</h1>

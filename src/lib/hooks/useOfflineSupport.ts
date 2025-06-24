@@ -84,7 +84,7 @@ export function useOfflineSupport(options: OfflineSupportOptions = {}) {
    * @param key Storage key
    * @param data Data to store
    */
-  const saveOfflineData = useCallback((key: string, data: any): void => {
+  const saveOfflineData = useCallback((key: string, data: unknown): void => {
     try {
       localStorage.setItem(
         `offline_${key}`, 
@@ -159,7 +159,7 @@ export function useOfflineSupport(options: OfflineSupportOptions = {}) {
    * @param key Storage key
    * @param operation Operation details (e.g., { type: 'create', data: {...} })
    */
-  const savePendingOperation = useCallback((key: string, operation: any): void => {
+  const savePendingOperation = useCallback((key: string, operation: Record<string, unknown>): void => {
     try {
       // Get existing pending operations or initialize empty array
       const pendingString = localStorage.getItem(`offline_pending_${key}`);

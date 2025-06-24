@@ -3,8 +3,39 @@ const path = require('path');
 
 const nextConfig = {
   reactStrictMode: true,
+  
+  // Configure external image domains
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'randomuser.me',
+        port: '',
+        pathname: '/api/portraits/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'via.placeholder.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.supabase.co',
+        port: '',
+        pathname: '/**',
+      }
+    ]
+  },
+  
   // Configure webpack for path aliases
-  webpack: (config, { isServer }) => {
+  webpack: (config) => {
     // Add path resolution for webpack
     config.resolve.alias = {
       ...config.resolve.alias,

@@ -19,8 +19,8 @@ export async function GET() {
   
   // Initialize services status
   let databaseStatus = 'unknown';
-  let databaseResponseTime = null;
-  let error = null;
+  let databaseResponseTime: number | null = null;
+  let error: string | null = null;
   
   try {
     // Create Supabase client for database check

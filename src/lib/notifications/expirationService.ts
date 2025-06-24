@@ -6,7 +6,7 @@
  * should be expired.
  */
 
-import { parseISO, addDays, addHours, subDays } from 'date-fns';
+import { parseISO, addDays, addHours } from 'date-fns';
 
 // Notification types and their default expiration periods (in days)
 const DEFAULT_EXPIRATION_PERIODS = {

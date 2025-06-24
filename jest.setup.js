@@ -61,19 +61,17 @@ global.fetch = jest.fn(() =>
   })
 );
 
+// Set Supabase env vars for tests
+process.env.NEXT_PUBLIC_SUPABASE_URL = 'http://localhost:54321';
+process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-key';
+
 // Suppress React 18 console errors
 const originalConsoleError = console.error;
 console.error = (...args) => {
   if (
     typeof args[0] === 'string' &&
-    args[0].includes('Warning: ReactDOM.render is no longer supported')
-  ) {
-    return;
-  }
-  if (
-    typeof args[0] === 'string' &&
-    args[0].includes('An update to') && 
-    args[0].includes('inside a test was not wrapped in act')
+    args[0].includes('Warning:') &&
+    args[0].includes('act(...)')
   ) {
     return;
   }

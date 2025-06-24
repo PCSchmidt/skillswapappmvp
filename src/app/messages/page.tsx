@@ -12,7 +12,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import { useSupabase } from '@/contexts/SupabaseContext';
-import { Database } from '@/types/supabase';
 
 type ConversationSummary = {
   tradeId: string;
@@ -88,15 +87,15 @@ export default function MessagesPage() {
               .order('created_at', { ascending: false })
               .limit(1);
             
-            const lastMessage = lastMessageData && lastMessageData.length > 0 ? lastMessageData[0] : null;
-            
-            // Get unread count
-            const { count: unreadCount } = await supabase
+            const lastMessage = lastMessageData && lastMessageData.length > 0 ? lastMessageData[0] : null;            // Get unread count
+            const unreadResult = await supabase
               .from('messages')
               .select('*', { count: 'exact', head: true })
               .eq('trade_id', trade.id)
               .eq('receiver_id', user.id)
               .eq('is_read', false);
+            
+            const unreadCount = 'count' in unreadResult ? (unreadResult.count || 0) : 0;
             
             return {
               tradeId: trade.id,
@@ -132,8 +131,7 @@ export default function MessagesPage() {
         
         const results = await Promise.all(conversationPromises);
         setConversations(results);
-        
-      } catch (err: any) {
+          } catch (err: unknown) {
         console.error('Error fetching conversations:', err);
         setError('Failed to load conversations');
       } finally {

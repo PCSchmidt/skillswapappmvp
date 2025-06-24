@@ -15,6 +15,8 @@ jest.mock('@sentry/nextjs', () => ({
 const originalConsoleError = console.error;
 beforeEach(() => {
   console.error = jest.fn();
+  // Clear all mocks before each test
+  jest.clearAllMocks();
 });
 afterEach(() => {
   console.error = originalConsoleError;

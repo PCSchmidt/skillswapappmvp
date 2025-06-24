@@ -8,12 +8,11 @@ import { Database } from '@/types/supabase';
 
 export type SupabaseQueryParams = {
   table: string;
-  select?: string;
-  match?: Record<string, any>;
+  select?: string;  match?: Record<string, unknown>;
   order?: { column: string; ascending: boolean };
   limit?: number;
   range?: [number, number];
-  filter?: Array<{ column: string; operator: string; value: any }>;
+  filter?: Array<{ column: string; operator: string; value: unknown }>;
 };
 
 export type SupabaseQueryOptions = SWRConfiguration & {

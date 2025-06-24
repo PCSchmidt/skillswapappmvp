@@ -8,7 +8,7 @@ import { RatingTemplateData } from '@/types/email';
 import { baseTemplate } from './baseTemplate';
 
 export const newRatingTemplate = (data: RatingTemplateData): string => {
-  const { recipientName, raterName, tradeId, rating, skillName } = data;
+  const { recipientName, raterName, rating, skillName } = data;
   
   // Create the base URL for the application
   const appUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://skillswap.example.com';

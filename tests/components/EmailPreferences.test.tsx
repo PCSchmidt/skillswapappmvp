@@ -3,24 +3,6 @@ import React from 'react';
 import '@testing-library/jest-dom';
 import EmailPreferences from '@/components/settings/EmailPreferences';
 
-// Mock the SupabaseContext
-jest.mock('@/contexts/SupabaseContext', () => ({
-  useSupabase: () => ({
-    supabase: {
-      from: jest.fn().mockReturnThis(),
-      select: jest.fn().mockReturnThis(),
-      eq: jest.fn().mockReturnThis(),
-      single: jest.fn().mockResolvedValue({
-        data: mockPreferences,
-        error: null,
-      }),
-      update: jest.fn().mockResolvedValue({
-        error: null,
-      }),
-    },
-  }),
-}));
-
 // Mock data for testing
 const mockPreferences = {
   id: 'pref-123',
@@ -37,17 +19,43 @@ const mockPreferences = {
   weekly_digest: true,
 };
 
-describe('EmailPreferences', () => {
-  it('renders email preferences correctly', async () => {
+// Mock the SupabaseContext with a reference to a mutable object
+const mockSupabaseClient = {
+  from: jest.fn(() => ({
+    select: jest.fn(() => ({
+      eq: jest.fn(() => ({
+        single: jest.fn(() => Promise.resolve({
+          data: mockPreferences,
+          error: null,
+        })),
+      })),
+    })),
+    update: jest.fn(() => ({
+      eq: jest.fn(() => Promise.resolve({
+        error: null,
+      })),
+    })),
+  })),
+};
+
+jest.mock('@/contexts/SupabaseContext', () => ({
+  useSupabase: () => ({
+    supabase: mockSupabaseClient,
+  }),
+}));
+
+describe('EmailPreferences', () => {  it('renders email preferences correctly', async () => {
     render(<EmailPreferences userId="user-123" />);
     
+    // Wait for preferences to load
+    await waitFor(() => {
+      expect(screen.getByText('Email Notification Preferences')).toBeInTheDocument();
+    });
+    
     // Check for section headings
-    expect(screen.getByText('Email Notification Preferences')).toBeInTheDocument();
     expect(screen.getByText('Trade Notifications')).toBeInTheDocument();
     expect(screen.getByText('Communication')).toBeInTheDocument();
     expect(screen.getByText('Digest Emails')).toBeInTheDocument();
-    
-    // Wait for preferences to load
     await waitFor(() => {
       // Verify specific preference items are displayed
       expect(screen.getByText('New trade proposals')).toBeInTheDocument();
@@ -126,26 +134,21 @@ describe('EmailPreferences', () => {
     // but we can check that the regular content is not there yet
     expect(screen.queryByText('Email Notification Preferences')).not.toBeInTheDocument();
   });
-  
   it('should handle error state correctly', async () => {
-    // Mock implementation that returns an error
-    jest.mock('@/contexts/SupabaseContext', () => ({
-      useSupabase: () => ({
-        supabase: {
-          from: jest.fn().mockReturnThis(),
-          select: jest.fn().mockReturnThis(),
-          eq: jest.fn().mockReturnThis(),
-          single: jest.fn().mockResolvedValue({
+    // Override the mock for this test to return an error
+    (mockSupabaseClient.from as jest.Mock).mockImplementationOnce(() => ({
+      select: jest.fn(() => ({
+        eq: jest.fn(() => ({
+          single: jest.fn(() => Promise.resolve({
             data: null,
             error: new Error('Failed to load preferences'),
-          }),
-        },
-      }),
+          })),
+        })),
+      })),
     }));
     
     render(<EmailPreferences userId="user-123" />);
-    
-    // Check for error message
+      // Check for error message
     await waitFor(() => {
       expect(screen.getByText(/Failed to load email preferences/i)).toBeInTheDocument();
     });

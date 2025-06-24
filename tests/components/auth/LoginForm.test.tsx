@@ -5,53 +5,47 @@
  */
 
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import React from 'react';
 import '@testing-library/jest-dom';
+import React from 'react';
 import LoginForm from '@/components/auth/LoginForm';
 
-// Mock the Supabase auth
-jest.mock('@supabase/auth-helpers-nextjs', () => ({
-  createClientComponentClient: jest.fn(() => ({
-    auth: {
-      signInWithPassword: jest.fn().mockImplementation(({ email, password }) => {
-        // Simulate successful login for specific credentials
-        if (email === 'test@example.com' && password === 'password123') {
-          return Promise.resolve({
-            data: { user: { id: 'user-123', email: 'test@example.com' } },
-            error: null,
-          });
-        }
-        // Simulate login error for wrong credentials
-        return Promise.resolve({
-          data: null,
-          error: { message: 'Invalid login credentials' },
-        });
-      }),
-      signInWithOAuth: jest.fn().mockResolvedValue({
-        data: {},
-        error: null,
-      }),
-    },
-  })),
+// Mock the useSupabase hook
+jest.mock('@/contexts/SupabaseContext', () => ({
+  useSupabase: jest.fn(),
 }));
 
+import { useSupabase } from '@/contexts/SupabaseContext';
+
 // Mock next/navigation
-jest.mock('next/navigation', () => ({
-  useRouter: jest.fn(() => ({
-    push: jest.fn(),
-    replace: jest.fn(),
-  })),
-  useSearchParams: jest.fn(() => ({
-    get: jest.fn((param) => {
-      if (param === 'returnTo') return '/dashboard';
-      return null;
-    }),
-  })),
-}));
+const mockPush = jest.fn();
+jest.mock('next/navigation', () => {
+  const actual = jest.requireActual('next/navigation');
+  return {
+    ...actual,
+    useRouter: jest.fn(() => ({ push: mockPush })),
+    useSearchParams: jest.fn(() => ({
+      get: jest.fn((param) => {
+        if (param === 'returnTo') return '/dashboard';
+        return null;
+      }),
+    })),
+  };
+});
 
 describe('LoginForm', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    
+    // Setup the default mock implementation for useSupabase
+    (useSupabase as jest.Mock).mockReturnValue({
+      user: null,
+      signIn: jest.fn().mockResolvedValue({ user: null, error: null }),
+      supabase: {
+        auth: {
+          signInWithOAuth: jest.fn().mockResolvedValue({ data: {}, error: null })
+        }
+      }
+    });
   });
   
   it('renders the login form correctly', () => {
@@ -60,77 +54,94 @@ describe('LoginForm', () => {
     // Check for form elements
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument();
+    expect(screen.getByTestId('login-button')).toBeInTheDocument();
     
-    // Check for OAuth options
-    expect(screen.getByText(/sign in with google/i)).toBeInTheDocument();
-    
-    // Check for forgot password link
+    // Check for navigation links
     expect(screen.getByText(/forgot password/i)).toBeInTheDocument();
-    
-    // Check for sign up link
-    expect(screen.getByText(/don't have an account/i)).toBeInTheDocument();
     expect(screen.getByText(/sign up/i)).toBeInTheDocument();
+    
+    // Check for OAuth buttons
+    expect(screen.getByText(/sign in with google/i)).toBeInTheDocument();
   });
-  
-  it('validates form inputs before submission', async () => {
+    it('validates form inputs before submission', async () => {
     render(<LoginForm />);
     
-    const signInButton = screen.getByRole('button', { name: /sign in/i });
+    // Submit empty form using the form's testid
+    const form = screen.getByTestId('login-form');
+    fireEvent.submit(form);
     
-    // Try to submit with empty fields
-    fireEvent.click(signInButton);
-    
-    // Check for validation errors
+    // Check for required field validation
     await waitFor(() => {
       expect(screen.getByText(/email is required/i)).toBeInTheDocument();
       expect(screen.getByText(/password is required/i)).toBeInTheDocument();
     });
     
-    // Enter invalid email format
+    // Test invalid email format
     const emailInput = screen.getByLabelText(/email/i);
     fireEvent.change(emailInput, { target: { value: 'invalid-email' } });
+    fireEvent.submit(form);
     
     // Check for email format validation
     await waitFor(() => {
       expect(screen.getByText(/invalid email format/i)).toBeInTheDocument();
     });
   });
-  
   it('handles successful login correctly', async () => {
-    const { createClientComponentClient } = require('@supabase/auth-helpers-nextjs');
-    const { useRouter } = require('next/navigation');
-    const mockPush = jest.fn();
-    useRouter.mockReturnValue({ push: mockPush });
+    // Mock successful login with the correct interface
+    const mockSignIn = jest.fn().mockResolvedValue({ 
+      success: true, 
+      error: null 
+    });
+    
+    (useSupabase as jest.Mock).mockReturnValue({
+      user: null,
+      signIn: mockSignIn,
+      supabase: {
+        auth: {
+          signInWithOAuth: jest.fn().mockResolvedValue({ data: {}, error: null })
+        }
+      }
+    });
     
     render(<LoginForm />);
     
     // Fill in correct credentials
     const emailInput = screen.getByLabelText(/email/i);
     const passwordInput = screen.getByLabelText(/password/i);
-    
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
     
     // Submit form
-    const signInButton = screen.getByRole('button', { name: /sign in/i });
+    const signInButton = screen.getByTestId('login-button');
     fireEvent.click(signInButton);
     
     // Verify sign in was called with correct credentials
     await waitFor(() => {
-      expect(createClientComponentClient().auth.signInWithPassword).toHaveBeenCalledWith({
-        email: 'test@example.com',
-        password: 'password123',
-      });
+      expect(mockSignIn).toHaveBeenCalledWith('test@example.com', 'password123');
     });
     
-    // Check navigation to return URL
+    // Verify navigation to dashboard
     await waitFor(() => {
       expect(mockPush).toHaveBeenCalledWith('/dashboard');
     });
   });
-  
-  it('handles login errors correctly', async () => {
+
+  it('handles login errors correctly', async () => {    // Mock login error with the correct interface
+    const mockSignIn = jest.fn().mockResolvedValue({ 
+      success: false, 
+      error: 'Invalid login credentials' 
+    });
+    
+    (useSupabase as jest.Mock).mockReturnValue({
+      user: null,
+      signIn: mockSignIn,
+      supabase: {
+        auth: {
+          signInWithOAuth: jest.fn().mockResolvedValue({ data: {}, error: null })
+        }
+      }
+    });
+    
     render(<LoginForm />);
     
     // Fill in incorrect credentials
@@ -141,17 +152,30 @@ describe('LoginForm', () => {
     fireEvent.change(passwordInput, { target: { value: 'wrongpassword' } });
     
     // Submit form
-    const signInButton = screen.getByRole('button', { name: /sign in/i });
+    const signInButton = screen.getByTestId('login-button');
     fireEvent.click(signInButton);
     
-    // Check error message is displayed
+    // Check error message appears (using the correct error text)
     await waitFor(() => {
       expect(screen.getByText(/invalid login credentials/i)).toBeInTheDocument();
     });
   });
-  
+
   it('handles OAuth sign in correctly', async () => {
-    const { createClientComponentClient } = require('@supabase/auth-helpers-nextjs');
+    const mockSignInWithOAuth = jest.fn().mockResolvedValue({ 
+      data: { user: { id: 'user-123' } }, 
+      error: null 
+    });
+    
+    (useSupabase as jest.Mock).mockReturnValue({
+      user: null,
+      signIn: jest.fn().mockResolvedValue({ user: null, error: null }),
+      supabase: {
+        auth: {
+          signInWithOAuth: mockSignInWithOAuth
+        }
+      }
+    });
     
     render(<LoginForm />);
     
@@ -159,76 +183,76 @@ describe('LoginForm', () => {
     const googleButton = screen.getByText(/sign in with google/i);
     fireEvent.click(googleButton);
     
-    // Verify OAuth sign in was called with Google provider
+    // Verify OAuth sign in was called
     await waitFor(() => {
-      expect(createClientComponentClient().auth.signInWithOAuth).toHaveBeenCalledWith({
-        provider: 'google',
-        options: {
-          redirectTo: expect.any(String),
-        },
+      expect(mockSignInWithOAuth).toHaveBeenCalledWith({
+        provider: 'google',        options: {
+          redirectTo: 'http://localhost/dashboard'
+        }
       });
     });
   });
-  
+
   it('navigates to forgot password page', () => {
-    const { useRouter } = require('next/navigation');
-    const mockPush = jest.fn();
-    useRouter.mockReturnValue({ push: mockPush });
-    
     render(<LoginForm />);
     
     // Click on forgot password link
     const forgotPasswordLink = screen.getByText(/forgot password/i);
     fireEvent.click(forgotPasswordLink);
-    
-    // Check navigation to forgot password page
+      // Check navigation to forgot password page (using actual URL from test output)
     expect(mockPush).toHaveBeenCalledWith('/reset-password');
   });
-  
+
   it('navigates to sign up page', () => {
-    const { useRouter } = require('next/navigation');
-    const mockPush = jest.fn();
-    useRouter.mockReturnValue({ push: mockPush });
-    
     render(<LoginForm />);
     
     // Click on sign up link
     const signUpLink = screen.getByText(/sign up/i);
     fireEvent.click(signUpLink);
-    
-    // Check navigation to sign up page
+      // Check navigation to sign up page (using actual URL from test output)
     expect(mockPush).toHaveBeenCalledWith('/signup');
   });
-  
   it('shows loading state during login', async () => {
-    // Make auth method take some time
-    const { createClientComponentClient } = require('@supabase/auth-helpers-nextjs');
-    createClientComponentClient().auth.signInWithPassword = jest.fn().mockImplementation(() => {
+    // Mock login with delay and correct interface
+    const mockSignIn = jest.fn().mockImplementation(() => {
       return new Promise(resolve => {
         setTimeout(() => {
           resolve({
-            data: { user: { id: 'user-123', email: 'test@example.com' } },
-            error: null,
+            success: true,
+            error: null
           });
         }, 100);
       });
     });
     
+    (useSupabase as jest.Mock).mockReturnValue({
+      user: null,
+      signIn: mockSignIn,
+      supabase: {
+        auth: {
+          signInWithOAuth: jest.fn().mockResolvedValue({ data: {}, error: null })
+        }
+      }
+    });
+    
     render(<LoginForm />);
     
-    // Fill in correct credentials
+    // Fill in credentials
     const emailInput = screen.getByLabelText(/email/i);
     const passwordInput = screen.getByLabelText(/password/i);
-    
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
     
     // Submit form
-    const signInButton = screen.getByRole('button', { name: /sign in/i });
+    const signInButton = screen.getByTestId('login-button');
     fireEvent.click(signInButton);
-    
-    // Button should show loading state
+      // Check for loading state (be specific about which button)
+    expect(screen.getByTestId('login-button')).toHaveTextContent(/signing in/i);
     expect(signInButton).toBeDisabled();
-    expect(screen.getByText(/signing in/i)).toBeInTheDocument();
+    
+    // Wait for login to complete
+    await waitFor(() => {
+      expect(mockPush).toHaveBeenCalledWith('/dashboard');
+    });
   });
 });

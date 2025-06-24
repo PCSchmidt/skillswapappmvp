@@ -30,7 +30,7 @@ interface OptimisticUpdateOptions<T> {
  * @param options Configuration options
  * @returns Optimistic update function
  */
-export function useOptimisticUpdate<T, P = any>(
+export function useOptimisticUpdate<T, P = unknown>(
   mutate: KeyedMutator<T>,
   options: OptimisticUpdateOptions<T> = {}
 ) {
@@ -54,7 +54,7 @@ export function useOptimisticUpdate<T, P = any>(
    */
   const optimisticUpdate = async (
     updateFn: (currentData: T | undefined) => T,
-    apiCall: (params?: P) => Promise<any>,
+    apiCall: (params?: P) => Promise<unknown>,
     params?: P,
   ) => {
     // Store the current data for potential rollback
@@ -80,9 +80,8 @@ export function useOptimisticUpdate<T, P = any>(
 
       // On success, revalidate to ensure our optimistic update matches server state
       await mutate();
-      
-      // Call success callback
-      if (onSuccess) onSuccess(result);
+        // Call success callback
+      if (onSuccess) onSuccess(result as T);
       
       return result;
     } catch (error) {

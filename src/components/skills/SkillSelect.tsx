@@ -20,7 +20,6 @@ interface SkillSelectProps {
 }
 
 const SkillSelect: React.FC<SkillSelectProps> = ({
-  userId,
   selectedSkills,
   onChange,
   skillType,

@@ -119,9 +119,9 @@ export default function RatingForm({
         onSuccess();
       }
       
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error submitting rating:', err);
-      setError(err.message || 'Failed to submit rating. Please try again.');
+      setError(err instanceof Error ? err.message : 'Failed to submit rating. Please try again.');
     } finally {
       setIsSubmitting(false);
     }

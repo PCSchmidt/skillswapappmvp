@@ -82,8 +82,7 @@ export default function TradesPage() {
         
         if (error) throw error;
         
-        setTrades(data || []);
-      } catch (err: any) {
+        setTrades(data || []);      } catch (err: unknown) {
         console.error('Error fetching trades:', err);
         setError('Failed to load trades');
       } finally {
@@ -106,19 +105,7 @@ export default function TradesPage() {
       month: 'short',
       day: 'numeric',
     });
-  };
-  
-  // Format time for display - handle null values
-  const formatTime = (dateString: string | null): string => {
-    if (!dateString) return 'Unknown time';
-    
-    const date = new Date(dateString);
-    return date.toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
-  
+  };  
   // Determine if user is the proposer
   const isProposer = (trade: Trade) => {
     return trade.proposer_id === user?.id;

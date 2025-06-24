@@ -121,9 +121,8 @@ describe('ConversationList', () => {
     // Check that all conversation items are rendered
     expect(screen.getByText('Web Development for Guitar Lessons')).toBeInTheDocument();
     expect(screen.getByText('Yoga Sessions for Cooking Classes')).toBeInTheDocument();
-    
-    // Check that avatars are shown
-    expect(screen.getAllByTestId('avatar-mock')).toHaveLength(2);
+      // Check that avatars are shown as images
+    expect(screen.getAllByRole('img')).toHaveLength(2);
     
     // Check that last messages are displayed
     expect(screen.getByText('That sounds great! When are you available?')).toBeInTheDocument();

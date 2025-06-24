@@ -13,7 +13,7 @@ export interface Memory {
   type: string; // 'preference', 'interaction', 'feedback', etc.
   content: string;
   embedding?: number[];
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   created_at: Date;
 }
 
@@ -81,7 +81,7 @@ export class MemoryBank {
   async store(params: {
     type: string;
     content: string;
-    metadata?: Record<string, any>;
+    metadata?: Record<string, unknown>;
     userId?: string;
   }): Promise<number> {
     try {
@@ -139,7 +139,7 @@ export class MemoryBank {
     limit?: number;
   }): Promise<Memory[]> {
     try {
-      const { query, type, userId, limit = this.options.maxResults } = params;
+      const { /* query, */ type, userId, limit = this.options.maxResults } = params;
       
       // Filter memories
       let filteredMemories = [...this.memories];

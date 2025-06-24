@@ -52,13 +52,12 @@ const RatingComponent = React.forwardRef<HTMLDivElement, RatingComponentProps>(
         <div
           key={index}
           className={cn('relative', { 'cursor-pointer': !readOnly })}
-          onClick={() => !readOnly && onRatingChange && onRatingChange(index)}
-          onMouseMove={(e) => {
+          onClick={() => !readOnly && onRatingChange && onRatingChange(index)}          onMouseMove={() => {
             if (!readOnly && onRatingChange) {
-              const { left, width } = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
-              const hoverX = e.clientX - left;
-              const newRating = hoverX > width / 2 ? index : index - 0.5;
               // Optional: provide visual feedback on hover before click
+              // const { left, width } = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
+              // const hoverX = e.clientX - left;
+              // const potentialRating = hoverX > width / 2 ? index : index - 0.5;
             }
           }}
           onMouseLeave={() => {

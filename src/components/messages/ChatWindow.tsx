@@ -5,7 +5,7 @@
  * combining the message list and composer.
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSupabase } from '@/contexts/SupabaseContext';
 import { Database } from '@/types/supabase';
 import MessageComposer from './MessageComposer';
@@ -31,9 +31,8 @@ export default function ChatWindow({ tradeId, otherUserId, otherUserName }: Chat
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  
-  // Fetch messages
-  const fetchMessages = async () => {
+    // Fetch messages
+  const fetchMessages = useCallback(async () => {
     if (!user) return;
     
     try {
@@ -48,27 +47,31 @@ export default function ChatWindow({ tradeId, otherUserId, otherUserName }: Chat
       
       if (error) throw error;
       
-      setMessages(data || []);
+      setMessages((data as MessageWithUser[]) || []);
       
       // Mark messages as read
       const messagesToUpdate = data?.filter(msg => 
         msg.receiver_id === user.id && !msg.is_read
-      ) || [];
-      
-      if (messagesToUpdate.length > 0) {
-        await supabase
-          .from('messages')
-          .update({ is_read: true })
-          .in('id', messagesToUpdate.map(msg => msg.id));
+      ) || [];      if (messagesToUpdate.length > 0) {
+        // Mark each message as read individually to avoid query chaining issues
+        for (const message of messagesToUpdate) {
+          const { error: updateError } = await supabase
+            .from('messages')
+            .update({ is_read: true })
+            .eq('id', message.id);
+          
+          if (updateError) {
+            console.error('Error marking message as read:', updateError);
+          }
+        }
       }
-      
-    } catch (err: any) {
+        } catch (err: unknown) {
       console.error('Error fetching messages:', err);
       setError('Failed to load messages');
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, supabase, tradeId]);
   
   // Initial load
   useEffect(() => {
@@ -115,7 +118,7 @@ export default function ChatWindow({ tradeId, otherUserId, otherUserName }: Chat
     return () => {
       subscription.unsubscribe();
     };
-  }, [supabase, tradeId, user]);
+  }, [supabase, tradeId, user, fetchMessages]);
   
   // Scroll to bottom when messages change
   useEffect(() => {

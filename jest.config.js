@@ -12,14 +12,17 @@ const customJestConfig = {
   testEnvironment: 'jest-environment-jsdom',
   testPathIgnorePatterns: ['<rootDir>/.next/'],
   transformIgnorePatterns: [
-    '/node_modules/(?!(joose|@supabase)/)', // Do not ignore joose or @supabase modules
+    '/node_modules/(?!(jose|@supabase)/)', // Do not ignore jose or @supabase modules
   ],
   moduleDirectories: ['node_modules', '<rootDir>/'],
   moduleNameMapper: {
     // Primary path alias
     '^@/(.*)$': '<rootDir>/src/$1',
-    // Alias for mocks directory
-    '^@mocks/(.*)$': '<rootDir>/__mocks__/$1',
+    // Alias for mocks directory (fix path)
+    '^@mocks/(.*)$': '<rootDir>/tests/mocks/$1',    // Supabase mocks (let Jest use the manual mock in __mocks__)
+    // '^@supabase/supabase-js$': '<rootDir>/__mocks__/supabaseMock.ts',
+    // '^@supabase/auth-helpers-nextjs$': '<rootDir>/__mocks__/supabaseMock.ts',
+    // '^@supabase/auth-helpers-react$': '<rootDir>/__mocks__/supabaseMock.ts',
     
     // Handle CSS imports (with CSS modules)
     '^.+\\.module\\.(css|sass|scss)$': 'identity-obj-proxy',

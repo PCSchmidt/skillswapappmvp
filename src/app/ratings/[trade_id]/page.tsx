@@ -141,8 +141,7 @@ export default function TradeRatingPage({ params }: { params: { trade_id: string
         if (!otherRatingError && otherRating) {
           setOtherUserRating(otherRating);
         }
-        
-      } catch (err: any) {
+          } catch (err: unknown) {
         console.error('Error fetching trade and ratings:', err);
         setError('Failed to load trade details');
       } finally {

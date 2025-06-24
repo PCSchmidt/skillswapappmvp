@@ -25,7 +25,7 @@ export type ScheduledNotification = {
   link?: string;
   scheduled_for: Date;
   created_at: Date;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   status: 'pending' | 'delivered' | 'cancelled' | 'failed';
 };
 

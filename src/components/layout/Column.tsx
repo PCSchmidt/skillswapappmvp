@@ -1,4 +1,4 @@
-import React, { HTMLAttributes, LiHTMLAttributes } from 'react';
+import React, { HTMLAttributes } from 'react';
 import { cn } from '@/lib/utils'; // Use cn for consistency
 
 type OrderValue = number | 'first' | 'last' | 'none';

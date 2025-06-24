@@ -15,17 +15,17 @@ import RatingsList from '@/components/ratings/RatingsList';
 import StarRating from '@/components/ratings/StarRating';
 import SkillCard from '@/components/skills/SkillCard';
 import { useSupabase } from '@/contexts/SupabaseContext';
+import { Database } from '@/types/supabase';
 
 export default function UserProfilePage({ params }: { params: { id: string } }) {
   const router = useRouter();
   const { supabase, user } = useSupabase();
-  
-  const [profile, setProfile] = useState<any>(null);
-  const [skills, setSkills] = useState<any[]>([]);
+    const [profile, setProfile] = useState<Database['public']['Tables']['profiles']['Row'] | null>(null);
+  const [skills, setSkills] = useState<Database['public']['Tables']['skills']['Row'][]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isOwnProfile, setIsOwnProfile] = useState(false);
-  const [ratings, setRatings] = useState<any[]>([]);
+  const [ratings, setRatings] = useState<Database['public']['Tables']['ratings']['Row'][]>([]);
   const [averageRating, setAverageRating] = useState<number>(0);
   
   // Filter states
@@ -71,7 +71,7 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
           
           if (skillsError) throw skillsError;
           
-          setSkills(skillsData || []);
+          setSkills((skillsData as Database['public']['Tables']['skills']['Row'][]) || []);
           
           // Fetch user's ratings
           const { data: ratingsData, error: ratingsError } = await supabase
@@ -87,15 +87,14 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
           
           if (ratingsError) throw ratingsError;
           
-          setRatings(ratingsData || []);
+          setRatings((ratingsData as Database['public']['Tables']['ratings']['Row'][]) || []);
           
           // Calculate average rating
           if (ratingsData && ratingsData.length > 0) {
             const sum = ratingsData.reduce((acc, rating) => acc + rating.rating_score, 0);
             setAverageRating(sum / ratingsData.length);
           }
-        }
-      } catch (err: any) {
+        }      } catch (err: unknown) {
         console.error('Error fetching profile:', err);
         setError('Failed to load user profile');
       } finally {
@@ -194,7 +193,7 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
               
               <div className="flex flex-wrap gap-2 mt-2">
                 <span className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full">
-                  Member since {new Date(profile.created_at).toLocaleDateString()}
+                  Member since {profile.created_at ? new Date(profile.created_at).toLocaleDateString() : 'Unknown'}
                 </span>
                 
                 {/* Show other badges */}

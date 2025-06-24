@@ -8,13 +8,10 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 
 export default function ResendVerification() {
-  const router = useRouter();
-  
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -55,10 +52,9 @@ export default function ResendVerification() {
       
       setSuccess(true);
       setEmail('');
-      
-    } catch (err: any) {
+        } catch (err: unknown) {
       console.error('Error resending verification email:', err);
-      setError(err.message || 'Failed to resend verification email');
+      setError(err instanceof Error ? err.message : 'Failed to resend verification email');
     } finally {
       setLoading(false);
     }

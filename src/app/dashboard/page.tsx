@@ -1,6 +1,5 @@
 'use client';
 
-import { Metadata } from 'next';
 import dynamic from 'next/dynamic';
 import React from 'react';
 import QuickActions, { commonActions } from '@/components/dashboard/QuickActions';

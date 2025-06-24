@@ -42,10 +42,9 @@ const Tabs: React.FC<TabsProps> = ({
   tabClassName = '',
   activeTabClassName = '',
   contentClassName = '',
-}) => {
-  // Filter out only Tab components from children
+}) => {  // Filter out only Tab components from children
   const tabs = React.Children.toArray(children).filter(
-    (child) => React.isValidElement(child) && (child.type as any)?.name === 'Tab'
+    (child) => React.isValidElement(child) && (child.type as React.ComponentType<unknown>)?.displayName === 'Tab'
   ) as React.ReactElement<TabProps>[];
 
   // Find the active tab content

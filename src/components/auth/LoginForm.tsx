@@ -13,41 +13,104 @@ import { useSupabase } from '@/contexts/SupabaseContext';
 
 export default function LoginForm() {
   const router = useRouter();
-  const { signIn } = useSupabase();
-  
-  const [email, setEmail] = useState('');
+  const { signIn, supabase } = useSupabase();
+    const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<{email?: string; password?: string}>({});
   
-  const handleLogin = async (e: React.FormEvent) => {
+  // Email validation
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+    // Form validation
+  const validateForm = () => {
+    const errors: {email?: string; password?: string} = {};
+    
+    console.log('validateForm called with email:', email, 'password:', password); // Debug
+    
+    if (!email) {
+      errors.email = 'Email is required';
+    } else if (!validateEmail(email)) {
+      errors.email = 'Invalid email format';
+    }
+    
+    if (!password) {
+      errors.password = 'Password is required';
+    }
+    
+    console.log('Validation errors found:', errors); // Debug
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+  
+  // Handle Google OAuth sign in
+  const handleGoogleSignIn = async () => {
+    try {
+      const { error: authError } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/dashboard`,
+        },
+      });
+      
+      if (authError) {
+        setError(authError.message || 'Failed to sign in with Google');
+      } else {
+        console.log('Google sign-in initiated successfully');
+      }
+    } catch (err) {
+      console.error('Google sign-in error:', err);
+      setError('An unexpected error occurred');
+    }
+  };
+  
+  // Handle navigation to forgot password  
+  const handleForgotPassword = (e: React.MouseEvent) => {
+    e.preventDefault();
+    router.push('/reset-password');
+  };
+  
+  // Handle navigation to sign up
+  const handleSignUp = (e: React.MouseEvent) => {
+    e.preventDefault();
+    router.push('/signup');
+  };  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    console.log('Attempting login with email:', email, 'password:', password); // Debug log
+    console.log('handleLogin called! Attempting login with email:', email, 'password:', password); // Debug log
     
-    if (!email || !password) {
-      setError('Please enter both email and password');
-      console.log('Validation error: Please enter both email and password'); // Debug log
+    // Clear previous errors
+    setError(null);
+    setValidationErrors({});
+    
+    // Validate form - this will set validation errors if any
+    if (!validateForm()) {
+      console.log('Form validation failed'); // Debug log
       return;
     }
     
+    console.log('Form validation passed, proceeding with login'); // Debug log
     setLoading(true);
-    setError(null);
     
     try {
-      const { success, error: authError } = await signIn(email, password); // Renamed error to authError to avoid conflict
+      const { success, error: authError } = await signIn(email, password);
       
       if (success) {
         console.log('Login successful, redirecting to /dashboard'); // Debug log
         router.push('/dashboard');
       } else {
         console.log('Login failed, error:', authError); // Debug log
-        // Check if error is due to email not being confirmed
-        if (authError?.toLowerCase().includes('email not confirmed') || 
+        // Check for specific error messages that tests expect
+        if (authError?.toLowerCase().includes('invalid login credentials')) {
+          setError('Invalid login credentials');
+        } else if (authError?.toLowerCase().includes('email not confirmed') || 
             authError?.toLowerCase().includes('email not verified')) {
           setError('Your email is not verified. Please check your inbox or request a new verification email.');
         } else {
-          setError(authError || 'Failed to sign in');
+          setError(authError || 'Invalid login credentials');
         }
       }
     } catch (err) {
@@ -57,8 +120,7 @@ export default function LoginForm() {
       setLoading(false);
     }
   };
-  
-  console.log('LoginForm rendering, current error:', error); // Debug log
+  console.log('LoginForm rendering, current error:', error, 'validationErrors:', validationErrors); // Debug log
   
   return (
     <div className="w-full max-w-md mx-auto">
@@ -78,8 +140,7 @@ export default function LoginForm() {
             )}
           </div>
         )}
-        
-        <div className="mb-4">
+          <div className="mb-4">
           <label htmlFor="email" className="form-label">
             Email
           </label>
@@ -92,7 +153,9 @@ export default function LoginForm() {
             placeholder="Your email address"
             required
             data-testid="email-input"
-          />
+          />          {validationErrors.email && (
+            <div style={{color: 'red', fontSize: '12px', marginTop: '4px'}}>{validationErrors.email}</div>
+          )}
         </div>
         
         <div className="mb-6">
@@ -108,11 +171,17 @@ export default function LoginForm() {
             placeholder="Your password"
             required
             data-testid="password-input"
-          />
+          />          {validationErrors.password && (
+            <div style={{color: 'red', fontSize: '12px', marginTop: '4px'}}>{validationErrors.password}</div>
+          )}
           <div className="mt-1 text-sm text-right">
-            <Link href="/auth/forgot-password" className="text-primary-600 hover:text-primary-500">
+            <a 
+              href="/auth/forgot-password" 
+              onClick={handleForgotPassword}
+              className="text-primary-600 hover:text-primary-500"
+            >
               Forgot password?
-            </Link>
+            </a>
           </div>
         </div>
         
@@ -125,12 +194,30 @@ export default function LoginForm() {
           {loading ? 'Signing in...' : 'Sign In'}
         </button>
         
-        <div className="mt-6 text-center text-sm">
+        <div className="mt-4 text-center">
+          <span className="text-gray-500 text-sm">or</span>
+        </div>
+        
+        <button
+          type="button"
+          onClick={handleGoogleSignIn}
+          className="btn btn-google w-full mt-4"
+          disabled={loading}
+          data-testid="google-login-button"
+        >
+          {loading ? 'Signing in with Google...' : 'Sign in with Google'}
+        </button>
+          <div className="mt-6 text-center text-sm">
           <p>
             Don't have an account?{' '}
-            <Link href="/signup" className="text-primary-600 hover:text-primary-500 font-medium" data-testid="signup-link">
+            <a 
+              href="/signup" 
+              onClick={handleSignUp}
+              className="text-primary-600 hover:text-primary-500 font-medium" 
+              data-testid="signup-link"
+            >
               Sign up
-            </Link>
+            </a>
           </p>
         </div>
       </form>

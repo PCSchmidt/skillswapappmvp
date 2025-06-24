@@ -9,8 +9,8 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
-import { supabase } from '@/lib/supabase';
 import { useSupabase } from '@/contexts/SupabaseContext';
+import { supabase } from '@/lib/supabase';
 
 export default function SignupForm() {
   const router = useRouter();

@@ -20,7 +20,7 @@ export { tradeStatusCompletedTemplate } from './tradeStatusCompletedTemplate';
 export { verificationTemplate } from './verificationTemplate';
 
 // Export types
-export type { EmailTemplateType, EmailTemplateData } from '@/types/email';
+export type { EmailTemplateType } from '@/types/email';
 
 // Template mapping function to get the right template based on notification type
 import { EmailTemplateType, EmailTemplateData } from '@/types/email';
@@ -38,7 +38,7 @@ import { welcomeTemplate } from './welcomeTemplate';
 /**
  * Get the appropriate email template function based on notification type
  */
-export const getTemplateForType = (type: EmailTemplateType): ((data: any) => string) => {
+export const getTemplateForType = (type: EmailTemplateType): ((data: EmailTemplateData) => string) => {
   switch (type) {
     case 'trade_proposal':
       return tradeProposalTemplate;

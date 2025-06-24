@@ -105,10 +105,9 @@ export const Empty: Story = {
     supabase: {
       from: () => ({
         select: () => ({
-          eq: () => ({
-            order: () => ({
-              then: (_onFulfilled: (value: { data: unknown[], error: unknown }) => unknown) => { // Used unknown[] and prefixed onFulfilled
-                return Promise.resolve({ data: [], error: null }).then(_onFulfilled);
+          eq: () => ({            order: () => ({
+              then: (onFulfilled: (value: { data: unknown[], error: unknown }) => unknown) => {
+                return Promise.resolve({ data: [], error: null }).then(onFulfilled);
               },
             }),
           }),
@@ -140,9 +139,8 @@ export const Loading: Story = {
     supabase: {
       from: () => ({
         select: () => ({
-          eq: () => ({
-            order: () => ({
-              then: (_onFulfilled: (value: { data: unknown[], error: unknown }) => unknown) => { // Used unknown[] and prefixed onFulfilled
+          eq: () => ({            order: () => ({
+              then: () => {
                 // Never resolve the promise to simulate loading
                 return new Promise(() => {}); 
               },
@@ -164,10 +162,9 @@ export const WithVariedNotifications: Story = {
     supabase: {
       from: () => ({
         select: () => ({
-          eq: () => ({
-            order: () => ({
-              then: (_onFulfilled: (value: { data: unknown[], error: unknown }) => unknown) => { // Used unknown[] and prefixed onFulfilled
-                return Promise.resolve({ data: mockNotifications, error: null }).then(_onFulfilled);
+          eq: () => ({            order: () => ({
+              then: (onFulfilled: (value: { data: unknown[], error: unknown }) => unknown) => {
+                return Promise.resolve({ data: mockNotifications, error: null }).then(onFulfilled);
               },
             }),
           }),

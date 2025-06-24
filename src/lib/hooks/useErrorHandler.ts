@@ -7,10 +7,10 @@ export type ErrorSeverity = 'info' | 'warning' | 'error' | 'critical';
 
 export interface ErrorOptions {
   severity?: ErrorSeverity;
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
   shouldReport?: boolean;
   userMessage?: string;
-  retry?: () => Promise<any>;
+  retry?: () => Promise<unknown>;
 }
 
 export interface ErrorState {
@@ -25,7 +25,7 @@ export interface ErrorHandler {
   errorState: ErrorState;
   handleError: (error: unknown, options?: ErrorOptions) => void;
   clearError: () => void;
-  retryLastOperation: () => Promise<any>;
+  retryLastOperation: () => Promise<unknown>;
 }
 
 const defaultErrorState: ErrorState = {
@@ -73,7 +73,7 @@ export function useErrorHandler(initialMessage?: string): ErrorHandler {
     ...defaultErrorState,
     message: initialMessage || null,
   });
-  const [retryFn, setRetryFn] = useState<(() => Promise<any>) | null>(null);
+  const [retryFn, setRetryFn] = useState<(() => Promise<unknown>) | null>(null);
 
   const handleError = useCallback((error: unknown, options: ErrorOptions = {}) => {
     const {

@@ -7,6 +7,8 @@
 
 import '@/styles/globals.css';
 import { Inter } from 'next/font/google';
+import Navbar from '@/components/navigation/Navbar';
+import { SupabaseProvider } from '@/contexts/SupabaseContext';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -18,10 +20,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div>
-          Hello from Layout!
-          {children}
-        </div>
+        <SupabaseProvider>
+          <div className="min-h-screen bg-gray-50">
+            <Navbar />
+            <main>
+              {children}
+            </main>
+          </div>
+        </SupabaseProvider>
       </body>
     </html>
   );

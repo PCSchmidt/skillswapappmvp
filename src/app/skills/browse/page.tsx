@@ -7,10 +7,31 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import SkillCard from '@/components/skills/SkillCard';
 import { useSupabase } from '@/contexts/SupabaseContext';
+
+// Define skill type based on database structure
+interface Skill {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  is_offering: boolean;
+  is_remote: boolean;
+  availability: string;
+  experience_level: string;
+  created_at: string;
+  user_id: string;
+  users?: {
+    id: string;
+    full_name: string;
+    profile_image_url?: string;
+    location_city?: string;
+    location_state?: string;
+  };
+}
 
 // Define filter state structure
 interface FilterState {
@@ -22,7 +43,6 @@ interface FilterState {
 }
 
 export default function BrowseSkillsPage() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const { supabase, user } = useSupabase();
   
@@ -35,7 +55,7 @@ export default function BrowseSkillsPage() {
     remote: searchParams.get('remote') === 'true',
   };
   
-  const [skills, setSkills] = useState<any[]>([]);
+  const [skills, setSkills] = useState<Skill[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<FilterState>(initialFilters);
@@ -106,8 +126,7 @@ export default function BrowseSkillsPage() {
           throw error;
         }
         
-        setSkills(data || []);
-      } catch (err: any) {
+        setSkills((data as Skill[]) || []);      } catch (err: unknown) {
         console.error('Error fetching skills:', err);
         setError('Failed to load skills. Please try again.');
       } finally {
@@ -133,9 +152,8 @@ export default function BrowseSkillsPage() {
     // Update URL without refreshing page
     window.history.pushState({}, '', url);
   }, [filters]);
-  
-  // Handle filter changes
-  const handleFilterChange = (name: keyof FilterState, value: any) => {
+    // Handle filter changes
+  const handleFilterChange = (name: keyof FilterState, value: FilterState[keyof FilterState]) => {
     setFilters(prev => ({ ...prev, [name]: value }));
   };
   

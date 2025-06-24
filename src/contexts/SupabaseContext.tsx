@@ -41,12 +41,12 @@ const createMockSupabaseClient = () => {
       return Promise.resolve({ data: [], error: null }).then(onFulfilled, onRejected);
     },
   };
-
   return {
     auth: {
       getSession: () => Promise.resolve({ data: { session: null }, error: null }),
       getUser: () => Promise.resolve({ data: { user: null }, error: null }),
       signInWithPassword: () => Promise.resolve({ data: {}, error: null }),
+      signInWithOAuth: () => Promise.resolve({ data: {}, error: null }),
       signUp: () => Promise.resolve({ data: {}, error: null }),
       signOut: () => Promise.resolve({ error: null }),
       onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
@@ -126,16 +126,8 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
   // Function to refresh user data from the database
   const refreshUser = useCallback(async () => {
     if (!user) return;
-    try {
-      // Check if email is confirmed in Supabase Auth
+    try {      // Check if email is confirmed in Supabase Auth
       const isEmailConfirmed = user.email_confirmed_at != null;
-      // Debug log to see the email confirmation status
-      console.log('User verification debug:', {
-        user_id: user.id,
-        email: user.email,
-        email_confirmed_at: user.email_confirmed_at,
-        isEmailConfirmed
-      });
       // Get the user's profile information from our database
       const { data, error } = await supabase
         .from('users')

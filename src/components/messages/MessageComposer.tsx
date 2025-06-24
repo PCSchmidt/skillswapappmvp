@@ -70,8 +70,7 @@ export default function MessageComposer({ tradeId, receiverId, onMessageSent }: 
         const fileExt = attachment.name.split('.').pop();
         const fileName = `${tradeId}/${Math.random().toString(36).substring(2)}.${fileExt}`;
         const filePath = `message-attachments/${fileName}`;
-        
-        const { data: fileData, error: fileError } = await supabase.storage
+          const { error: fileError } = await supabase.storage
           .from('attachments')
           .upload(filePath, attachment);
         

@@ -14,8 +14,7 @@ const Navbar = () => {
   const [notificationCount, setNotificationCount] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  
-  // Fetch unread notification count
+    // Fetch unread notification count
   useEffect(() => {
     if (!user) return;
     
@@ -27,16 +26,21 @@ const Navbar = () => {
           .eq('id', user.id)
           .single();
         
-        if (error) throw error;
+        if (error) {
+          console.warn('Unable to fetch notification count (table may not exist or no access):', error.message);
+          setNotificationCount(0);
+          return;
+        }
         
         if (data) {
           setNotificationCount(data.unread_notification_count || 0);
         }
       } catch (err) {
-        console.error('Error fetching notification count:', err);
+        console.warn('Error fetching notification count:', err);
+        setNotificationCount(0);
       }
     };
-    
+
     fetchNotificationCount();
     
     // Set up real-time subscription for notification count changes

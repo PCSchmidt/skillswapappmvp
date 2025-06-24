@@ -7,7 +7,6 @@
 
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
@@ -108,8 +107,7 @@ export default function TradeDetailPage({ params }: { params: { id: string } }) 
           }
         } else {
           setError('You do not have permission to view this trade');
-        }
-      } catch (err: any) {
+        }      } catch (err: unknown) {
         console.error('Error fetching trade:', err);
         setError('Failed to load trade details');
       } finally {
@@ -210,8 +208,7 @@ export default function TradeDetailPage({ params }: { params: { id: string } }) 
         scheduled_date: selectedDate ?? trade.scheduled_date
       });
       
-      setActionSuccess('Trade accepted successfully!');
-    } catch (err: any) {
+      setActionSuccess('Trade accepted successfully!');    } catch (err: unknown) {
       console.error('Error accepting trade:', err);
       setError('Failed to accept trade');
     } finally {
@@ -252,8 +249,7 @@ export default function TradeDetailPage({ params }: { params: { id: string } }) 
       });
       
       setShowCancellationForm(false);
-      setActionSuccess('Trade declined');
-    } catch (err: any) {
+      setActionSuccess('Trade declined');    } catch (err: unknown) {
       console.error('Error declining trade:', err);
       setError('Failed to decline trade');
     } finally {
@@ -294,8 +290,7 @@ export default function TradeDetailPage({ params }: { params: { id: string } }) 
       });
       
       setShowCancellationForm(false);
-      setActionSuccess('Trade cancelled');
-    } catch (err: any) {
+      setActionSuccess('Trade cancelled');    } catch (err: unknown) {
       console.error('Error cancelling trade:', err);
       setError('Failed to cancel trade');
     } finally {
@@ -332,8 +327,7 @@ export default function TradeDetailPage({ params }: { params: { id: string } }) 
         completed_at: new Date().toISOString()
       });
       
-      setActionSuccess('Trade marked as completed!');
-    } catch (err: any) {
+      setActionSuccess('Trade marked as completed!');    } catch (err: unknown) {
       console.error('Error completing trade:', err);
       setError('Failed to complete trade');
     } finally {
@@ -368,8 +362,7 @@ export default function TradeDetailPage({ params }: { params: { id: string } }) 
         updated_at: new Date().toISOString()
       });
       
-      setActionSuccess('Meeting date updated');
-    } catch (err: any) {
+      setActionSuccess('Meeting date updated');    } catch (err: unknown) {
       console.error('Error updating scheduled date:', err);
       setError('Failed to update meeting date');
     } finally {
@@ -520,9 +513,8 @@ export default function TradeDetailPage({ params }: { params: { id: string } }) 
             {showCancellationForm ? (
               renderCancellationForm()
             ) : (
-              <div className="flex justify-end gap-3 mb-6">
-                {/* Proposed state - receiver actions */}
-                {trade.status === 'proposed' && isReceiver() && (
+              <div className="flex justify-end gap-3 mb-6">                {/* Pending state - receiver actions */}
+                {trade.status === 'pending' && isReceiver() && (
                   <>
                     <button
                       onClick={() => setShowCancellationForm(true)}
@@ -540,9 +532,8 @@ export default function TradeDetailPage({ params }: { params: { id: string } }) 
                     </button>
                   </>
                 )}
-                
-                {/* Proposed state - proposer actions */}
-                {trade.status === 'proposed' && isProposer() && (
+                  {/* Pending state - proposer actions */}
+                {trade.status === 'pending' && isProposer() && (
                   <button
                     onClick={() => setShowCancellationForm(true)}
                     className="btn btn-outline-error"
@@ -608,23 +599,21 @@ export default function TradeDetailPage({ params }: { params: { id: string } }) 
                         In exchange for: <span className="font-medium">{trade.skill_requested?.title}</span>
                       </dd>
                     </div>
-                    
-                    <div>
+                      <div>
                       <dt className="text-sm font-medium text-gray-500">Duration</dt>
                       <dd className="mt-1 text-sm text-gray-900">
-                        {trade.proposed_hours} hour{trade.proposed_hours !== 1 ? 's' : ''}
+                        To be determined
                       </dd>
                     </div>
                     
                     <div>
                       <dt className="text-sm font-medium text-gray-500">Meeting Type</dt>
                       <dd className="mt-1 text-sm text-gray-900">
-                        {trade.location_type || 'Not specified'}
+                        To be determined
                       </dd>
                     </div>
-                    
-                    {/* Date selection for receiver on proposed trades */}
-                    {trade.status === 'proposed' && isReceiver() && proposedDates.length > 0 && (
+                      {/* Date selection for receiver on pending trades */}
+                    {trade.status === 'pending' && isReceiver() && proposedDates.length > 0 && (
                       <div className="sm:col-span-2">
                         <dt className="text-sm font-medium text-gray-500">Select a Meeting Date</dt>
                         <dd className="mt-2">

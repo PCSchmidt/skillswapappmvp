@@ -32,7 +32,7 @@ export type EmailAnalyticsData = {
   url?: string;           // For click events
   device?: string;        // Device info
   client?: string;        // Email client info
-  metadata?: Record<string, any>; // Additional event metadata
+  metadata?: Record<string, unknown>; // Additional event metadata
 };
 
 // Analytics summary report

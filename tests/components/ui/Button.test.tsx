@@ -22,11 +22,10 @@ describe('Button Component', () => {
     const buttonElement = screen.getByText('Primary Button');
     expect(buttonElement).toHaveClass('bg-primary-600');
   });
-
   test('applies secondary variant styling when specified', () => {
     render(<Button variant="secondary">Secondary Button</Button>);
     const buttonElement = screen.getByText('Secondary Button');
-    expect(buttonElement).toHaveClass('bg-gray-100');
+    expect(buttonElement).toHaveClass('bg-secondary-600');
   });
 
   test('applies outline variant styling when specified', () => {

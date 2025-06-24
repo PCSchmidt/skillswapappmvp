@@ -5,7 +5,7 @@
  * including email, push, and in-app notification settings.
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Container from '@/components/layout/Container';
 import Section from '@/components/layout/Section';
 import Alert from '@/components/ui/Alert';
@@ -45,19 +45,33 @@ const NotificationSettingsPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('general');
-  
-  // Notification preferences
+  // Notification preferences state
   const [preferences, setPreferences] = useState<NotificationPreference | null>(null);
   const [channelPrefs, setChannelPrefs] = useState<ChannelPreference | null>(null);
   
-  // Load user preferences
-  useEffect(() => {
-    if (user) {
-      loadPreferences();
-    }
-  }, [user]);
+  const createDefaultPreferences = useCallback((): NotificationPreference => ({
+    id: 'new',
+    user_id: user?.id || '',
+    notify_trade_proposal: true,
+    notify_trade_status_accepted: true,
+    notify_trade_status_declined: true,
+    notify_trade_status_cancelled: true,
+    notify_trade_status_completed: true,
+    notify_new_message: true,
+    notify_new_rating: true,
+    daily_digest: false,
+    weekly_digest: true,
+  }), [user]);
   
-  const loadPreferences = async () => {
+  const createDefaultChannelPreferences = useCallback((): ChannelPreference => ({
+    id: 'new',
+    user_id: user?.id || '',
+    email_enabled: true,
+    push_enabled: true,
+    in_app_enabled: true,
+  }), [user]);
+
+  const loadPreferences = useCallback(async () => {
     setLoading(true);
     setError(null);
     
@@ -84,35 +98,19 @@ const NotificationSettingsPage = () => {
       
       setPreferences(prefData || createDefaultPreferences());
       setChannelPrefs(channelData || createDefaultChannelPreferences());
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error loading preferences:', error);
       setError('Failed to load notification preferences. Please try again.');
     } finally {
       setLoading(false);
     }
-  };
-  
-  const createDefaultPreferences = (): NotificationPreference => ({
-    id: 'new',
-    user_id: user?.id || '',
-    notify_trade_proposal: true,
-    notify_trade_status_accepted: true,
-    notify_trade_status_declined: true,
-    notify_trade_status_cancelled: true,
-    notify_trade_status_completed: true,
-    notify_new_message: true,
-    notify_new_rating: true,
-    daily_digest: false,
-    weekly_digest: true,
-  });
-  
-  const createDefaultChannelPreferences = (): ChannelPreference => ({
-    id: 'new',
-    user_id: user?.id || '',
-    email_enabled: true,
-    push_enabled: true,
-    in_app_enabled: true,
-  });
+  }, [supabase, user, createDefaultPreferences, createDefaultChannelPreferences]);
+    // Load user preferences
+  useEffect(() => {
+    if (user) {
+      loadPreferences();
+    }
+  }, [user, loadPreferences]);
   
   const handleTogglePreference = (key: keyof NotificationPreference) => {
     if (!preferences) return;
@@ -158,9 +156,8 @@ const NotificationSettingsPage = () => {
       
       // Clear success message after 3 seconds
       setTimeout(() => {
-        setSuccess(null);
-      }, 3000);
-    } catch (error: any) {
+        setSuccess(null);      }, 3000);
+    } catch (error: unknown) {
       console.error('Error saving preferences:', error);
       setError('Failed to save your preferences. Please try again.');
     } finally {

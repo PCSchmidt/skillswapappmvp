@@ -71,13 +71,18 @@ export default function StarRating({
   
   return (
     <div 
-      className={`flex ${spacing} items-center`}
+      className={`flex ${spacing} items-center ${size}`}
       onMouseLeave={handleMouseLeave}
+      role="group"
+      aria-label={interactive ? `Rate ${maxRating} stars` : `${rating} out of ${maxRating} stars`}
     >
       {stars.map((star) => (
         <Star
           key={star}
+          index={star}
           filled={star <= displayRating}
+          halfFilled={star === Math.ceil(displayRating) && displayRating % 1 !== 0}
+          hovered={hoverRating > 0 && star <= hoverRating}
           size={starSize}
           color={color}
           interactive={interactive && !disabled}
@@ -90,33 +95,63 @@ export default function StarRating({
 }
 
 interface StarProps {
+  index: number;
   filled: boolean;
+  halfFilled: boolean;
   size: string;
   color: string;
   interactive: boolean;
+  hovered: boolean;
   onMouseEnter: () => void;
   onClick: () => void;
 }
 
 // Star component for rendering individual stars
-function Star({ filled, size, color, interactive, onMouseEnter, onClick }: StarProps) {
+function Star({ index, filled, halfFilled, size, color, interactive, hovered, onMouseEnter, onClick }: StarProps) {
   const cursorStyle = interactive ? 'cursor-pointer' : '';
   const fillColor = filled ? color : 'text-gray-300';
+  const hoverClass = hovered ? 'hover' : '';
   
-  return (
+  // Determine aria-label based on star state
+  const getAriaLabel = () => {
+    if (filled) return 'Full Star';
+    if (halfFilled) return 'Half Star';
+    return 'Empty Star';
+  };
+  
+  const StarElement = (
     <svg
-      className={`${size} ${fillColor} ${cursorStyle}`}
+      className={`${size} ${fillColor} ${cursorStyle} ${interactive ? '' : hoverClass}`}
       viewBox="0 0 24 24"
       fill={filled ? 'currentColor' : 'none'}
       stroke="currentColor"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      onMouseEnter={onMouseEnter}
-      onClick={onClick}
-      aria-hidden="true"
+      onMouseEnter={interactive ? onMouseEnter : undefined}
+      onClick={interactive ? onClick : undefined}
+      aria-hidden={interactive}
+      aria-label={!interactive ? getAriaLabel() : undefined}
+      data-testid={!interactive ? `star-${index}` : undefined}
     >
       <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
     </svg>
   );
+
+  if (interactive) {
+    return (
+      <button
+        type="button"
+        className={`border-none bg-transparent p-0 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded ${hoverClass}`}
+        onClick={onClick}
+        onMouseEnter={onMouseEnter}
+        aria-label={getAriaLabel()}
+        data-testid={`star-${index}`}
+      >
+        {StarElement}
+      </button>
+    );
+  }
+
+  return StarElement;
 }

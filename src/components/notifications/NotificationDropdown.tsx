@@ -6,7 +6,7 @@
  */
 
 import Link from 'next/link';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 
 import { useSupabase } from '@/contexts/SupabaseContext';
 import type { Notification } from '@/types/supabase';
@@ -26,16 +26,41 @@ export default function NotificationDropdown({
   const { supabase, user } = useSupabase();
   const dropdownRef = useRef<HTMLDivElement>(null);
   
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [notifications, setNotifications] = useState<Notification[]>([]);  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Fetch notifications
+  const fetchNotifications = useCallback(async () => {
+    if (!user) return;
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const { data, error } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(maxNotifications);
+      
+      if (error) throw error;
+      
+      setNotifications(data as Notification[]);
+    } catch (err: unknown) {
+      console.error('Error fetching notifications:', err);
+      setError('Failed to load notifications');
+    } finally {
+      setLoading(false);
+    }
+  }, [user, supabase, maxNotifications]);
   
   // Fetch notifications when the dropdown is opened
   useEffect(() => {
     if (isOpen && user) {
       fetchNotifications();
     }
-  }, [isOpen, user]);
+  }, [isOpen, user, fetchNotifications]);
   
   // Set up click outside listener to close dropdown
   useEffect(() => {
@@ -88,34 +113,7 @@ export default function NotificationDropdown({
     
     return () => {
       subscription.unsubscribe();
-    };
-  }, [user, supabase, maxNotifications]);
-  
-  // Fetch notifications
-  const fetchNotifications = async () => {
-    if (!user) return;
-    
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const { data, error } = await supabase
-        .from('notifications')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(maxNotifications);
-      
-      if (error) throw error;
-      
-      setNotifications(data as Notification[]);
-    } catch (err: unknown) {
-      console.error('Error fetching notifications:', err);
-      setError('Failed to load notifications');
-    } finally {
-      setLoading(false);
-    }
-  };
+    };  }, [user, supabase, maxNotifications]);
   
   // Mark all notifications as read
   const handleMarkAllAsRead = async () => {

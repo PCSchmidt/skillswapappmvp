@@ -75,8 +75,7 @@ export default function TradeMessagePage({ params }: { params: { trade_id: strin
           setTrade(data);
         } else {
           setError('You do not have permission to view this conversation');
-        }
-      } catch (err: any) {
+        }      } catch (err: unknown) {
         console.error('Error fetching trade:', err);
         setError('Failed to load conversation');
       } finally {

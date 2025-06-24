@@ -8,8 +8,7 @@
  * including options for immediate notifications, digests, quiet hours, and "do not disturb" modes.
  */
 
-import { format } from 'date-fns';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Alert from '@/components/ui/Alert';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
@@ -41,16 +40,8 @@ const FrequencySettings = () => {
   
   // Time picker states
   const [startTime, setStartTime] = useState('22:00');
-  const [endTime, setEndTime] = useState('07:00');
-  
-  // Load user preferences
-  useEffect(() => {
-    if (user) {
-      loadPreferences();
-    }
-  }, [user]);
-  
-  const loadPreferences = async () => {
+  const [endTime, setEndTime] = useState('07:00');  // Load user preferences
+  const loadPreferences = useCallback(async () => {
     setLoading(true);
     setError(null);
     
@@ -75,17 +66,22 @@ const FrequencySettings = () => {
       }
       
       if (prefs.quiet_hours_end) {
-        setEndTime(prefs.quiet_hours_end);
-      }
-    } catch (error: any) {
+        setEndTime(prefs.quiet_hours_end);      }
+    } catch (error: unknown) {
       console.error('Error loading frequency preferences:', error);
       setError('Failed to load notification frequency preferences. Please try again.');
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, supabase, createDefaultFrequencyPreferences]);
   
-  const createDefaultFrequencyPreferences = (): FrequencyPreference => ({
+  // Load preferences when user changes
+  useEffect(() => {
+    if (user) {
+      loadPreferences();
+    }
+  }, [user, loadPreferences]);
+    const createDefaultFrequencyPreferences = useCallback((): FrequencyPreference => ({
     id: 'new',
     user_id: user?.id || '',
     quiet_hours_enabled: false,
@@ -95,7 +91,7 @@ const FrequencySettings = () => {
     digest_frequency: 'daily',
     max_notifications_per_hour: 10,
     max_emails_per_day: 5,
-  });
+  }), [user?.id]);
   
   const handleTogglePreference = (key: keyof FrequencyPreference) => {
     if (!frequencyPrefs) return;
@@ -175,8 +171,7 @@ const FrequencySettings = () => {
       // Clear success message after 3 seconds
       setTimeout(() => {
         setSuccess(null);
-      }, 3000);
-    } catch (error: any) {
+      }, 3000);    } catch (error: unknown) {
       console.error('Error saving frequency preferences:', error);
       setError('Failed to save your frequency preferences. Please try again.');
     } finally {

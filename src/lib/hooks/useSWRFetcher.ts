@@ -24,9 +24,9 @@ const DEFAULT_FETCHER_OPTIONS = {
  */
 export class FetchError extends Error {
   status: number;
-  info: any;
+  info: unknown;
   
-  constructor(message: string, status: number, info?: any) {
+  constructor(message: string, status: number, info?: unknown) {
     super(message);
     this.name = 'FetchError';
     this.status = status;

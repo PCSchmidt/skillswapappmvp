@@ -68,8 +68,7 @@ export default function ProfileEditPage() {
           if (data.profile_image_url) {
             setImagePreview(data.profile_image_url);
           }
-        }
-      } catch (err: any) {
+        }      } catch (err: unknown) {
         console.error('Error fetching profile:', err);
         setError('Failed to load profile data');
       } finally {
@@ -134,8 +133,7 @@ export default function ProfileEditPage() {
         .from('user-content')
         .getPublicUrl(filePath);
       
-      return data.publicUrl;
-    } catch (err: any) {
+      return data.publicUrl;    } catch (err: unknown) {
       console.error('Error uploading image:', err);
       throw new Error('Failed to upload profile image');
     }
@@ -187,10 +185,9 @@ export default function ProfileEditPage() {
       setTimeout(() => {
         router.push(`/profile/${user.id}`);
       }, 1500);
-      
-    } catch (err: any) {
+        } catch (err: unknown) {
       console.error('Error updating profile:', err);
-      setError(err.message || 'Failed to update profile');
+      setError(err instanceof Error ? err.message : 'Failed to update profile');
     } finally {
       setSaving(false);
     }

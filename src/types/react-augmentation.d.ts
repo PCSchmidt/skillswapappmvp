@@ -25,7 +25,7 @@ declare namespace React {
   
   interface SetStateAction<S> {
     (prevState: S): S;
-    (prevState: any): any;
+    (prevState: unknown): unknown;
   }
 }
 
@@ -33,7 +33,7 @@ declare namespace React {
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      [elemName: string]: any;
+      [elemName: string]: Record<string, unknown>;
     }
   }
 }

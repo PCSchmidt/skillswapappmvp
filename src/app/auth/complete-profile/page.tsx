@@ -140,10 +140,9 @@ export default function CompleteProfile() {
       setTimeout(() => {
         router.push('/dashboard');
       }, 2000);
-      
-    } catch (err: any) {
+        } catch (err: unknown) {
       console.error('Error updating profile:', err);
-      setError(err.message || 'Failed to update profile');
+      setError(err instanceof Error ? err.message : 'Failed to update profile');
     } finally {
       setLoading(false);
     }
