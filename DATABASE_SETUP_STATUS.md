@@ -3,17 +3,20 @@
 ## Current Status ✅
 
 **Accessible Tables (3/5):**
+
 - ✅ `users` - Authentication table (managed by Supabase Auth)
-- ✅ `skills` - Skills catalog table 
+- ✅ `skills` - Skills catalog table
 - ✅ `messages` - User messaging table
 
 **Missing Tables (2/5):**
+
 - ❌ `user_skills` - Links users to their offered/wanted skills
 - ❌ `trade_proposals` - Skill exchange proposals between users
 
 ## Why Tables Can't Be Created Programmatically
 
 Even with the **supabase_admin** role (superuser with full permissions), the Supabase JavaScript client doesn't support:
+
 - Creating tables via RPC calls
 - Executing raw DDL SQL through the client
 - The `public.exec()` function is not available in the schema
@@ -21,6 +24,7 @@ Even with the **supabase_admin** role (superuser with full permissions), the Sup
 ## IMMEDIATE ACTION REQUIRED 🚨
 
 ### Step 1: Manual Table Creation
+
 **You must run this SQL in the Supabase SQL Editor:**
 
 **🔗 Direct Link:** https://supabase.com/dashboard/project/mdmydtumpwilynhdrtqp/sql
@@ -79,6 +83,7 @@ CREATE POLICY "Users can update trades involving them" ON trade_proposals
 ```
 
 ### Step 2: Verification Script
+
 After running the SQL, use this to verify:
 
 ```bash
@@ -86,6 +91,7 @@ node scripts/test-supabase-integration.mjs
 ```
 
 ### Step 3: Add Sample Data
+
 Once tables are created, we can add sample skills:
 
 ```bash
@@ -95,18 +101,21 @@ node scripts/add-sample-data.mjs
 ## Next Development Priorities 🎯
 
 **Phase 1: Core Skills Functionality (Current)**
+
 1. ✅ Complete database setup (manual SQL execution needed)
-2. 🔄 Implement Skills UI components 
+2. 🔄 Implement Skills UI components
 3. 🔄 Test User Skills CRUD operations
 4. 🔄 Integrate with existing APIs
 
 **Phase 2: User Journey Testing**
+
 1. Test registration → email verification → skill creation flow
 2. Test skill search and discovery
 3. Test messaging between users
 4. Test trade proposal creation and management
 
 **Phase 3: Polish & Production**
+
 1. Complete E2E test coverage
 2. Performance optimization
 3. Error handling improvements
@@ -122,6 +131,7 @@ node scripts/add-sample-data.mjs
 ## Waiting For ⏳
 
 **Database Setup Completion** - Once you run the SQL in Supabase dashboard, we can immediately continue with:
+
 - Skills UI development
 - Full user journey testing
 - E2E test completion

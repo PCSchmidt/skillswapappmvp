@@ -158,10 +158,12 @@ const Navbar = () => {
             SkillSwap
           </span>
         </Link>
-        
-        {/* Desktop Navigation */}        <nav className="hidden md:flex space-x-8">
+          {/* Desktop Navigation */}        <nav className="hidden md:flex space-x-8">
           <Link href="/discover" className="text-neutral-700 hover:text-primary-600 font-medium transition-colors">
             Discover
+          </Link>
+          <Link href="/demo" className="text-purple-600 hover:text-purple-700 font-medium transition-colors bg-purple-50 px-3 py-1 rounded-lg">
+            Demo Features
           </Link>
           <Link href="/how-it-works" className="text-neutral-700 hover:text-primary-600 font-medium transition-colors">
             How It Works
@@ -286,6 +288,13 @@ const Navbar = () => {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Discover
+              </Link>
+              <Link 
+                href="/demo" 
+                className="text-purple-600 hover:text-purple-700 font-medium transition-colors p-2 rounded bg-purple-50 hover:bg-purple-100"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Demo Features
               </Link>
               <Link 
                 href="/how-it-works" 

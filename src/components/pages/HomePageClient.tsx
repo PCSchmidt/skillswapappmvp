@@ -50,6 +50,34 @@ export default function HomePageClient() {
     <main>
       <HeroSection />
       <SkillCategories />
+      
+      {/* Demo Features Banner */}
+      <section className="py-12 bg-gradient-to-r from-purple-600 to-pink-600">
+        <div className="container mx-auto px-4 text-center">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl font-bold text-white mb-4">
+              🎭 Explore All Planned Features in Demo Mode
+            </h2>
+            <p className="text-xl text-purple-100 mb-8">
+              See the complete SkillSwap experience! Test both current functionality and 
+              planned premium features including payments, video calls, and more.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <a 
+                href="/demo"
+                className="bg-white text-purple-600 px-8 py-4 rounded-lg font-semibold hover:bg-purple-50 transition-colors inline-flex items-center gap-2"
+              >
+                <span>🚀</span>
+                Try Demo Features
+              </a>
+              <span className="text-purple-200 text-sm">
+                Perfect for testing • No payment required • Full feature preview
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+      
       <SkillInspiration />
       <HowItWorks />
       <TestimonialsCarousel />
