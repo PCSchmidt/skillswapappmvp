@@ -15,11 +15,12 @@ import { supabase } from '@/lib/supabase';
 export default function SignupForm() {
   const router = useRouter();
   const { signUp } = useSupabase();
-  
-  const [email, setEmail] = useState('');
+    const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [fullName, setFullName] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -213,28 +214,47 @@ export default function SignupForm() {
             </div>
           )}
         </div>
-        
-        <div className="mb-4">
+          <div className="mb-4">
           <label htmlFor="password" className="form-label">
             Password
-          </label>          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              validateField('password', e.target.value);
-              // Re-validate confirm password if it has been entered
-              if (confirmPassword) {
-                validateField('confirmPassword', confirmPassword);
-              }
-            }}
-            onBlur={(e) => validateField('password', e.target.value)}
-            className="form-input"
-            placeholder="Create a password"
-            required
-            data-testid="password-input"
-          />
+          </label>
+          <div className="relative">
+            <input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                validateField('password', e.target.value);
+                // Re-validate confirm password if it has been entered
+                if (confirmPassword) {
+                  validateField('confirmPassword', confirmPassword);
+                }
+              }}
+              onBlur={(e) => validateField('password', e.target.value)}
+              className="form-input pr-10"
+              placeholder="Create a password"
+              required
+              data-testid="password-input"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? (
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L6.342 6.342m7.536 7.536l3.536 3.536M9.878 9.878A3 3 0 109.88 9.88l4.242 4.242" />
+                </svg>
+              ) : (
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+              )}
+            </button>
+          </div>
           <div className="mt-1 text-xs text-gray-500">
             Password must be at least 8 characters long
           </div>
@@ -244,24 +264,43 @@ export default function SignupForm() {
             </div>
           )}
         </div>
-        
-        <div className="mb-6">
+          <div className="mb-6">
           <label htmlFor="confirmPassword" className="form-label">
             Confirm Password
-          </label>          <input
-            id="confirmPassword"
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => {
-              setConfirmPassword(e.target.value);
-              validateField('confirmPassword', e.target.value);
-            }}
-            onBlur={(e) => validateField('confirmPassword', e.target.value)}
-            className="form-input"
-            placeholder="Confirm your password"
-            required
-            data-testid="confirm-password-input"
-          />
+          </label>
+          <div className="relative">
+            <input
+              id="confirmPassword"
+              type={showConfirmPassword ? "text" : "password"}
+              value={confirmPassword}
+              onChange={(e) => {
+                setConfirmPassword(e.target.value);
+                validateField('confirmPassword', e.target.value);
+              }}
+              onBlur={(e) => validateField('confirmPassword', e.target.value)}
+              className="form-input pr-10"
+              placeholder="Confirm your password"
+              required
+              data-testid="confirm-password-input"
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+              aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+            >
+              {showConfirmPassword ? (
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L6.342 6.342m7.536 7.536l3.536 3.536M9.878 9.878A3 3 0 109.88 9.88l4.242 4.242" />
+                </svg>
+              ) : (
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+              )}
+            </button>
+          </div>
           {fieldErrors.confirmPassword && (
             <div className="mt-1 text-xs text-error-700" data-testid="confirm-password-error">
               {fieldErrors.confirmPassword}
