@@ -9,6 +9,7 @@
 import React, { useState, useEffect } from 'react';
 import { Skill } from '@/components/skills/SkillCard';
 import { useSupabase } from '@/contexts/SupabaseContext';
+import SkillSuggestions, { SkillSuggestionsInline } from '@/components/skills/SkillSuggestions';
 
 interface SkillFormProps {
   userId: string;
@@ -308,7 +309,6 @@ export default function SkillForm({
             </div>
           </div>
         </div>
-      
         <div>
           <label htmlFor="title" className="block text-sm font-medium text-gray-700">
             Title <span className="text-red-500">*</span>
@@ -325,6 +325,25 @@ export default function SkillForm({
             placeholder="E.g., JavaScript Development, Graphic Design, Spanish Tutoring"
           />
           {errors.title && <p className="mt-1 text-sm text-red-600">{errors.title}</p>}
+          
+          {/* Skill Suggestions */}
+          {!formData.title && (
+            <SkillSuggestions
+              selectedCategory={formData.category}
+              onSkillSelect={(skillName) => setFormData(prev => ({ ...prev, title: skillName }))}
+              mode="form"
+              className="mt-3"
+            />
+          )}
+          
+          {/* Inline suggestions for selected category */}
+          {formData.category && formData.title.length < 3 && (
+            <SkillSuggestionsInline
+              category={formData.category}
+              onSkillSelect={(skillName) => setFormData(prev => ({ ...prev, title: skillName }))}
+              maxItems={4}
+            />
+          )}
         </div>
         
         <div>

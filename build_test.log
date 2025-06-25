@@ -1,0 +1,77 @@
+
+> skillswap-mvp@0.1.0 build
+> next build
+
+   ▲ Next.js 14.0.2
+   - Environments: .env.local
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Skipping validation of types
+   Skipping linting
+   Collecting page data ...
+   Generating static pages (0/32) ...
+ ⚠ Entire page /auth/reset-password deopted into client-side rendering. https://nextjs.org/docs/messages/deopted-into-client-rendering /auth/reset-password
+ ⚠ Entire page /auth/verify deopted into client-side rendering. https://nextjs.org/docs/messages/deopted-into-client-rendering /auth/verify
+LoginForm rendering, current error: null validationErrors: {}
+   Generating static pages (8/32) 
+   Generating static pages (16/32) 
+ ⚠ Entire page /skills/browse deopted into client-side rendering. https://nextjs.org/docs/messages/deopted-into-client-rendering /skills/browse
+ ⚠ Entire page /search deopted into client-side rendering. https://nextjs.org/docs/messages/deopted-into-client-rendering /search
+   Generating static pages (24/32) 
+ ✓ Generating static pages (32/32) 
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                              Size     First Load JS
+┌ ○ /                                    8.95 kB         113 kB
+├ ○ /_not-found                          0 B                0 B
+├ ○ /about                               1.16 kB        93.6 kB
+├ ○ /api/health                          0 B                0 B
+├ ○ /api/robots                          0 B                0 B
+├ λ /api/sentry-example-api              0 B                0 B
+├ ○ /api/sitemap                         0 B                0 B
+├ λ /api/skills                          0 B                0 B
+├ λ /api/user-skills                     0 B                0 B
+├ ○ /auth/complete-profile               4.37 kB         136 kB
+├ ○ /auth/forgot-password                3.28 kB         135 kB
+├ ○ /auth/resend-verification            1.92 kB         133 kB
+├ ○ /auth/reset-password                 3.61 kB         143 kB
+├ ○ /auth/verify                         1.87 kB         133 kB
+├ ○ /dashboard                           5.41 kB        97.8 kB
+├ ○ /discover                            811 B          85.4 kB
+├ ○ /how-it-works                        1.16 kB        93.6 kB
+├ ○ /login                               4.24 kB         136 kB
+├ ○ /maintenance                         1.5 kB         91.3 kB
+├ ○ /matches                             5.07 kB        97.5 kB
+├ ○ /messages                            4.4 kB          141 kB
+├ λ /messages/[trade_id]                 6.03 kB         142 kB
+├ ○ /notifications                       2.09 kB         138 kB
+├ ○ /profile                             5.45 kB         150 kB
+├ λ /profile/[id]                        4.57 kB         153 kB
+├ ○ /profile/edit                        4.85 kB         135 kB
+├ λ /ratings/[trade_id]                  6.56 kB         143 kB
+├ ○ /search                              9.06 kB         156 kB
+├ ○ /sentry-example-page                 2.52 kB          95 kB
+├ ○ /settings/email-preferences          6.34 kB         131 kB
+├ ○ /signup                              4.78 kB         136 kB
+├ λ /skills/[id]                         6.48 kB         144 kB
+├ λ /skills/[id]/edit                    3.16 kB         131 kB
+├ ○ /skills/browse                       2.94 kB         146 kB
+├ ○ /skills/manage                       2.34 kB         146 kB
+├ ○ /skills/my-skills                    4.06 kB         139 kB
+├ ○ /skills/new                          2.51 kB         130 kB
+├ ○ /trades                              4.31 kB         136 kB
+└ λ /trades/[id]                         5.43 kB         137 kB
++ First Load JS shared by all            84.6 kB
+  ├ chunks/2472-5f5088a464921b9f.js      29.2 kB
+  ├ chunks/fd9d1056-134fba4500ef285b.js  53.3 kB
+  ├ chunks/main-app-e886110dc1bb017c.js  216 B
+  └ chunks/webpack-ec31184ef98e5cba.js   1.89 kB
+
+
+ƒ Middleware                             27.9 kB
+
+○  (Static)   prerendered as static content
+λ  (Dynamic)  server-rendered on demand using Node.js
+

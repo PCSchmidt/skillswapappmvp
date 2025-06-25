@@ -6,6 +6,7 @@ import CallToAction from '@/components/landing/CallToAction';
 import HeroSection from '@/components/landing/HeroSection';
 import HowItWorksSkeleton from '@/components/landing/skeletons/HowItWorksSkeleton';
 import SkillCategories from '@/components/skills/SkillCategories';
+import SkillInspiration from '@/components/skills/SkillInspiration';
 
 // Dynamic imports for heavier components
 const HowItWorks = dynamic(
@@ -49,6 +50,7 @@ export default function HomePageClient() {
     <main>
       <HeroSection />
       <SkillCategories />
+      <SkillInspiration />
       <HowItWorks />
       <TestimonialsCarousel />
       <CallToAction />

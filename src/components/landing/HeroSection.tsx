@@ -9,6 +9,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
+import SkillSearch from '@/components/skills/SkillSearch';
 
 interface HeroSectionProps {
   title?: string;
@@ -68,8 +69,7 @@ export default function HeroSection({
             <p className="text-xl mb-8 text-white/90 max-w-lg">
               {subtitle}
             </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-4">
               {ctaSecondaryText && ctaSecondaryLink && (
                 <Link 
                   href={ctaSecondaryLink} 
@@ -87,6 +87,24 @@ export default function HeroSection({
                   {ctaPrimaryText}
                 </Link>
               )}
+            </div>
+            
+            {/* Enhanced Search Section */}
+            <div className="mt-8">
+              <div className="text-center mb-4">
+                <p className="text-white/90 text-sm">
+                  Or explore what's available right now
+                </p>
+              </div>
+              <div className="max-w-md mx-auto">
+                <SkillSearch
+                  placeholder="Search for skills..."
+                  redirectOnSearch={true}
+                  className="w-full"
+                  showSuggestions={true}
+                  maxSuggestions={5}
+                />
+              </div>
             </div>
             
             {children && (
