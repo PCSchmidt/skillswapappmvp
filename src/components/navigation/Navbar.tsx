@@ -20,10 +20,11 @@ const Navbar = () => {
   useEffect(() => {
     setIsHydrated(true);
   }, []);
-
   // Fetch unread notification count
   useEffect(() => {
-    if (!user) return;
+    if (!user || !isHydrated) return;
+    
+    let isMounted = true;
     
     const fetchNotificationCount = async () => {
       try {
@@ -32,6 +33,8 @@ const Navbar = () => {
           .select('unread_notification_count')
           .eq('id', user.id)
           .single();
+        
+        if (!isMounted) return;
         
         if (error) {
           console.warn('Unable to fetch notification count (table may not exist or no access):', error.message);
@@ -43,12 +46,14 @@ const Navbar = () => {
           setNotificationCount(data.unread_notification_count || 0);
         }
       } catch (err) {
+        if (!isMounted) return;
         console.warn('Error fetching notification count:', err);
         setNotificationCount(0);
       }
     };
 
-    fetchNotificationCount();
+    // Debounce the fetch to prevent rapid calls
+    const timeoutId = setTimeout(fetchNotificationCount, 100);
     
     // Set up real-time subscription for notification count changes
     const subscription = supabase
@@ -59,6 +64,7 @@ const Navbar = () => {
         table: 'users',
         filter: `id=eq.${user.id}`
       }, (payload) => {
+        if (!isMounted) return;
         if (payload.new && payload.new.unread_notification_count !== undefined) {
           setNotificationCount(payload.new.unread_notification_count || 0);
         }
@@ -66,12 +72,14 @@ const Navbar = () => {
       .subscribe();
     
     return () => {
+      isMounted = false;
+      clearTimeout(timeoutId);
       // Only call removeChannel if subscription is a RealtimeChannel (has 'topic')
       if (subscription && 'topic' in subscription) {
         supabase.removeChannel(subscription);
       }
     };
-  }, [user, supabase]);
+  }, [user, supabase, isHydrated]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -81,10 +89,52 @@ const Navbar = () => {
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };
-
   if (!isHydrated) {
-    // Prevent rendering until hydrated to avoid flickering
-    return null;
+    // Show stable skeleton to prevent layout shift
+    return (
+      <header className="bg-white border-b border-neutral-200 sticky top-0 z-50 shadow-sm">
+        <Container size="xl" padding="sm" className="flex justify-between items-center">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-8 h-8 flex items-center justify-center">
+              <svg 
+                viewBox="0 0 40 40" 
+                xmlns="http://www.w3.org/2000/svg" 
+                className="w-full h-full"
+              >
+                <rect width="40" height="40" rx="8" fill="#4f46e5"/>
+                <rect x="10" y="10" width="20" height="4" rx="2" fill="white"/>
+                <rect x="10" y="18" width="20" height="4" rx="2" fill="white"/>
+                <rect x="10" y="26" width="20" height="4" rx="2" fill="white"/>
+              </svg>
+            </div>
+            <span className="font-heading font-bold text-xl md:text-2xl text-primary-600">
+              SkillSwap
+            </span>
+          </Link>
+          
+          {/* Desktop Navigation Skeleton */}
+          <nav className="hidden md:flex space-x-8">
+            <div className="animate-pulse h-6 w-16 bg-neutral-200 rounded"></div>
+            <div className="animate-pulse h-6 w-20 bg-neutral-200 rounded"></div>
+            <div className="animate-pulse h-6 w-14 bg-neutral-200 rounded"></div>
+          </nav>
+
+          {/* Mobile Menu Button */}
+          <div className="md:hidden">
+            <div className="animate-pulse h-10 w-10 bg-neutral-200 rounded"></div>
+          </div>
+          
+          {/* Desktop Auth Links Skeleton */}
+          <div className="hidden md:flex items-center space-x-5">
+            <div className="animate-pulse h-6 w-20 bg-neutral-200 rounded"></div>
+            <div className="animate-pulse h-6 w-16 bg-neutral-200 rounded"></div>
+            <div className="animate-pulse h-6 w-6 bg-neutral-200 rounded-full"></div>
+            <div className="animate-pulse h-6 w-16 bg-neutral-200 rounded"></div>
+            <div className="animate-pulse h-10 w-20 bg-neutral-200 rounded"></div>
+          </div>
+        </Container>
+      </header>
+    );
   }
 
   return (

@@ -154,13 +154,17 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
       console.error('Error refreshing user data:', error);
     }
   }, [user]);
-
   // Get the session on initial load
   useEffect(() => {
+    let isMounted = true;
+    
     const fetchSession = async () => {
       setIsLoading(true);
       try {
         const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!isMounted) return;
+        
         setSession(session);
         setUser(session?.user || null);
         // If user is logged in, get their profile data
@@ -170,25 +174,39 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
       } catch (error) {
         console.error('Error fetching session:', error);
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
+    
     fetchSession();
+    
     // Set up the auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event: AuthChangeEvent, session: Session | null) => {
-        setSession(session);
-        setUser(session?.user || null);
-        if (session?.user) {
-          await refreshUser();
-        } else {
-          setIsVerified(false);
-        }
-        setIsLoading(false);
+        if (!isMounted) return;
+        
+        // Debounce state updates to prevent flickering
+        setTimeout(() => {
+          if (!isMounted) return;
+          
+          setSession(session);
+          setUser(session?.user || null);
+          
+          if (session?.user) {
+            refreshUser();
+          } else {
+            setIsVerified(false);
+          }
+          setIsLoading(false);
+        }, 50);
       }
     );
+    
     // Clean up subscription
     return () => {
+      isMounted = false;
       subscription.unsubscribe();
     };
   }, [refreshUser]);
