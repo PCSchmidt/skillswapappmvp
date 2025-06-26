@@ -47,25 +47,10 @@ export default function LoginForm() {
     return Object.keys(errors).length === 0;
   };
   
-  // Handle Google OAuth sign in
+  // Handle Google OAuth sign in - temporarily disabled
   const handleGoogleSignIn = async () => {
-    try {
-      const { error: authError } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/dashboard`,
-        },
-      });
-      
-      if (authError) {
-        setError(authError.message || 'Failed to sign in with Google');
-      } else {
-        console.log('Google sign-in initiated successfully');
-      }
-    } catch (err) {
-      console.error('Google sign-in error:', err);
-      setError('An unexpected error occurred');
-    }
+    // Show message about using regular signup instead
+    setError('Future Enhancement - Google sign-in is not yet available. Please use the regular email and password option to sign up or sign in.');
   };
   
   // Handle navigation to forgot password  
@@ -225,7 +210,7 @@ export default function LoginForm() {
           disabled={loading}
           data-testid="google-login-button"
         >
-          {loading ? 'Signing in with Google...' : 'Sign in with Google'}
+          Sign in with Google (Coming Soon)
         </button>
           <div className="mt-6 text-center text-sm">
           <p>
