@@ -13,7 +13,7 @@ import { useSupabase } from '@/contexts/SupabaseContext';
 
 export default function LoginForm() {
   const router = useRouter();
-  const { signIn, supabase } = useSupabase();
+  const { signIn } = useSupabase();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -30,8 +30,6 @@ export default function LoginForm() {
   const validateForm = () => {
     const errors: {email?: string; password?: string} = {};
     
-    console.log('validateForm called with email:', email, 'password:', password); // Debug
-    
     if (!email) {
       errors.email = 'Email is required';
     } else if (!validateEmail(email)) {
@@ -42,7 +40,6 @@ export default function LoginForm() {
       errors.password = 'Password is required';
     }
     
-    console.log('Validation errors found:', errors); // Debug
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -66,29 +63,23 @@ export default function LoginForm() {
   };  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    console.log('handleLogin called! Attempting login with email:', email, 'password:', password); // Debug log
-    
     // Clear previous errors
     setError(null);
     setValidationErrors({});
     
     // Validate form - this will set validation errors if any
     if (!validateForm()) {
-      console.log('Form validation failed'); // Debug log
       return;
     }
     
-    console.log('Form validation passed, proceeding with login'); // Debug log
     setLoading(true);
     
     try {
       const { success, error: authError } = await signIn(email, password);
       
       if (success) {
-        console.log('Login successful, redirecting to /dashboard'); // Debug log
         router.push('/dashboard');
       } else {
-        console.log('Login failed, error:', authError); // Debug log
         // Check for specific error messages that tests expect
         if (authError?.toLowerCase().includes('invalid login credentials')) {
           setError('Invalid login credentials');
@@ -106,7 +97,6 @@ export default function LoginForm() {
       setLoading(false);
     }
   };
-  console.log('LoginForm rendering, current error:', error, 'validationErrors:', validationErrors); // Debug log
   
   return (
     <div className="w-full max-w-md mx-auto">
@@ -127,15 +117,13 @@ export default function LoginForm() {
           </div>
         )}
           <div className="mb-4">
-          <label htmlFor="email" className="form-label">
-            Email
-          </label>
+          <label htmlFor="email" className="block mb-2 text-sm font-bold text-gray-700">Email</label>
           <input
-            id="email"
             type="email"
+            id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="form-input"
+            className="w-full p-2 border rounded"
             placeholder="Your email address"
             required
             data-testid="email-input"
@@ -144,16 +132,14 @@ export default function LoginForm() {
           )}
         </div>
           <div className="mb-6">
-          <label htmlFor="password" className="form-label">
-            Password
-          </label>
+          <label htmlFor="password" className="block mb-2 text-sm font-bold text-gray-700">Password</label>
           <div className="relative">
             <input
               id="password"
               type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="form-input pr-10"
+              className="w-full p-2 border rounded pr-10"
               placeholder="Your password"
               required
               data-testid="password-input"

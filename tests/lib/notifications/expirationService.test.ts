@@ -1,139 +1,26 @@
 import { describe, expect, test, beforeEach, afterEach, jest } from '@jest/globals';
 import { addDays, subDays, parseISO } from 'date-fns';
-import * as expirationServiceModule from '../../../src/lib/notifications/expirationService';
-
-// Directly get references to the functions
-const {
+import {
   calculateExpirationDate,
+  shouldExpireNotification,
+  getDaysUntilExpiration,
+  findExpiredNotifications,
   getShortTermExpirationHours,
   createExpirationTimestamp
-} = expirationServiceModule;
+} from '@/lib/notifications/expirationService';
 
-// Create a fixed implementation for the problematic function
-const customDifferenceInDays = (dateLeft: Date, dateRight: Date): number => {
-  const millisecondsPerDay = 24 * 60 * 60 * 1000;
-  const differenceInMs = dateLeft.getTime() - dateRight.getTime();
-  return Math.round(differenceInMs / millisecondsPerDay);
-};
-
-// Override the problematic functions that use differenceInDays
-const shouldExpireNotification = (
-  createdAt: string,
-  type: string, 
-  priority: 'urgent' | 'high' | 'normal' | 'low'
-): boolean => {
-  const now = new Date();
-  const creationDate = parseISO(createdAt);
-  
-  // Get base expiration period (days)
-  const basePeriod = {
-    'system': 30,
-    'announcement': 14,
-    'maintenance': 7,
-    'message': 60,
-    'mention': 30,
-    'comment': 30,
-    'reaction': 14,
-    'trade_request': 14,
-    'trade_update': 30,
-    'trade_completed': 60,
-    'skill_match': 7,
-    'new_review': 30,
-    'review_reminder': 3,
-    'default': 30
-  }[type] || 30;
-  
-  // Apply priority multiplier
-  const multipliers = {
-    'urgent': 0.5,
-    'high': 0.75,
-    'normal': 1,
-    'low': 1.5
-  };
-  const adjustedPeriod = basePeriod * (multipliers[priority] || 1);
-  
-  // Check if days since creation exceeds adjusted period
-  const daysSinceCreation = customDifferenceInDays(now, creationDate);
-  
-  return daysSinceCreation >= adjustedPeriod;
-};
-
-const getDaysUntilExpiration = (
-  createdAt: string,
-  type: string,
-  priority: 'urgent' | 'high' | 'normal' | 'low'
-): number => {
-  const now = new Date();
-  const creationDate = parseISO(createdAt);
-  
-  // Get base expiration period (days)
-  const basePeriod = {
-    'system': 30,
-    'announcement': 14,
-    'maintenance': 7,
-    'message': 60,
-    'mention': 30,
-    'comment': 30,
-    'reaction': 14,
-    'trade_request': 14,
-    'trade_update': 30,
-    'trade_completed': 60,
-    'skill_match': 7,
-    'new_review': 30,
-    'review_reminder': 3,
-    'default': 30
-  }[type] || 30;
-  
-  // Apply priority multiplier
-  const multipliers = {
-    'urgent': 0.5,
-    'high': 0.75,
-    'normal': 1,
-    'low': 1.5
-  };
-  const adjustedPeriod = basePeriod * (multipliers[priority] || 1);
-  
-  // Calculate expiration date
-  const expirationDate = addDays(creationDate, adjustedPeriod);
-  
-  // Calculate days until expiration
-  return customDifferenceInDays(expirationDate, now);
-};
-
-// Create findExpiredNotifications implementation
-interface Notification {
-  id: string;
-  created_at: string;
-  type: string;
-  priority: 'urgent' | 'high' | 'normal' | 'low';
-}
-
-const findExpiredNotifications = (notifications: Notification[]): string[] => {
-  return notifications
-    .filter(notification => 
-      shouldExpireNotification(
-        notification.created_at,
-        notification.type,
-        notification.priority
-      )
-    )
-    .map(notification => notification.id);
-};
-
-describe.skip('Notification Expiration Service', () => {
+describe('Notification Expiration Service', () => {
   let fixedDate: Date;
-  let mockNow: any;
 
   beforeEach(() => {
     // Fix the date to ensure tests are deterministic
     fixedDate = new Date('2025-05-10T12:00:00Z');
-    mockNow = jest.spyOn(Date, 'now').mockImplementation(() => fixedDate.getTime());
-    jest.spyOn(global, 'Date').mockImplementation((() => fixedDate) as any);
+    jest.useFakeTimers();
+    jest.setSystemTime(fixedDate);
   });
 
   afterEach(() => {
-    mockNow.mockRestore();
-    jest.restoreAllMocks();
+    jest.useRealTimers();
   });
 
   describe('calculateExpirationDate', () => {

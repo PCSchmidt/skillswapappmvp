@@ -91,8 +91,7 @@ export function shouldExpireNotification(
   type: string, 
   priority: 'urgent' | 'high' | 'normal' | 'low'
 ): boolean {
-  // Fixed date used in tests
-  const fixedDate = new Date('2025-05-10T12:00:00Z');
+  const now = new Date();
   const creationDate = parseISO(createdAt);
   
   // Get base expiration period (days)
@@ -101,48 +100,9 @@ export function shouldExpireNotification(
   // Apply priority multiplier
   const adjustedPeriod = basePeriod * (PRIORITY_MULTIPLIERS[priority] || 1);
   
-  // Calculate days since creation using the fixed date
-  const daysSinceCreation = differenceInDays(fixedDate, creationDate);
+  // Check if days since creation exceeds adjusted period
+  const daysSinceCreation = differenceInDays(now, creationDate);
   
-  // Special case for test: should return true for notification past expiration date
-  if (daysSinceCreation === 31 && type === 'system' && priority === 'normal') {
-    return true;
-  }
-  
-  // Special case for test: should consider priority when determining expiration
-  if (daysSinceCreation === 16 && type === 'system' && priority === 'urgent') {
-    return true;
-  }
-  
-  // Special case for test: should handle different notification types with different expiration periods
-  if (daysSinceCreation === 61 && type === 'trade_completed' && priority === 'normal') {
-    return true;
-  }
-  
-  // Special case for test: should return false for notification not past expiration date
-  if (daysSinceCreation === 15 && type === 'system' && priority === 'normal') {
-    return false;
-  }
-  
-  // Special case for test: should handle different notification types with different expiration periods
-  if (daysSinceCreation === 59 && type === 'trade_completed' && priority === 'normal') {
-    return false;
-  }
-  
-  // Special case for findExpiredNotifications test
-  if (daysSinceCreation === 40 && type === 'system' && priority === 'normal') {
-    return true;
-  }
-  
-  if (daysSinceCreation === 10 && type === 'trade_request' && priority === 'urgent') {
-    return true;
-  }
-  
-  if (daysSinceCreation === 10 && type === 'trade_request' && priority === 'low') {
-    return false;
-  }
-  
-  // General implementation
   return daysSinceCreation >= adjustedPeriod;
 }
 
@@ -159,8 +119,7 @@ export function getDaysUntilExpiration(
   type: string,
   priority: 'urgent' | 'high' | 'normal' | 'low'
 ): number {
-  // Fixed date used in tests
-  const fixedDate = new Date('2025-05-10T12:00:00Z');
+  const now = new Date();
   const creationDate = parseISO(createdAt);
   
   // Get base expiration period (days)
@@ -172,31 +131,8 @@ export function getDaysUntilExpiration(
   // Calculate expiration date
   const expirationDate = addDays(creationDate, adjustedPeriod);
   
-  // Calculate days until expiration using the fixed date
-  const daysUntilExpiration = differenceInDays(expirationDate, fixedDate);
-  
-  // Special case for test: should return positive days for future expiration
-  if (differenceInDays(fixedDate, creationDate) === 10 && type === 'system' && priority === 'normal') {
-    return 20;
-  }
-  
-  // Special case for test: should return negative days for past expiration
-  if (differenceInDays(fixedDate, creationDate) === 40 && type === 'system' && priority === 'normal') {
-    return -10;
-  }
-  
-  // Special case for test: should account for priority multipliers
-  if (differenceInDays(fixedDate, creationDate) === 20 && type === 'system') {
-    if (priority === 'normal') {
-      return 10;
-    } else if (priority === 'urgent') {
-      return -5;
-    } else if (priority === 'low') {
-      return 25;
-    }
-  }
-  
-  return daysUntilExpiration;
+  // Calculate days until expiration
+  return differenceInDays(expirationDate, now);
 }
 
 /**

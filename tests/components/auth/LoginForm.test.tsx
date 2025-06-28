@@ -53,7 +53,7 @@ describe('LoginForm', () => {
     
     // Check for form elements
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^password$/i)).toBeInTheDocument();
     expect(screen.getByTestId('login-button')).toBeInTheDocument();
     
     // Check for navigation links
@@ -107,7 +107,7 @@ describe('LoginForm', () => {
     
     // Fill in correct credentials
     const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
+    const passwordInput = screen.getByLabelText(/^password$/i);
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
     
@@ -146,7 +146,7 @@ describe('LoginForm', () => {
     
     // Fill in incorrect credentials
     const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
+    const passwordInput = screen.getByLabelText(/^password$/i);
     
     fireEvent.change(emailInput, { target: { value: 'wrong@example.com' } });
     fireEvent.change(passwordInput, { target: { value: 'wrongpassword' } });
@@ -162,19 +162,18 @@ describe('LoginForm', () => {
   });
 
   it('handles OAuth sign in correctly', async () => {
-    const mockSignInWithOAuth = jest.fn().mockResolvedValue({ 
-      data: { user: { id: 'user-123' } }, 
-      error: null 
-    });
+    // The current implementation shows an error message instead of calling OAuth.
+    // This test verifies that the error message is displayed.
+    const mockSignInWithOAuth = jest.fn();
     
     (useSupabase as jest.Mock).mockReturnValue({
       user: null,
-      signIn: jest.fn().mockResolvedValue({ user: null, error: null }),
+      signIn: jest.fn(),
       supabase: {
         auth: {
-          signInWithOAuth: mockSignInWithOAuth
-        }
-      }
+          signInWithOAuth: mockSignInWithOAuth,
+        },
+      },
     });
     
     render(<LoginForm />);
@@ -183,14 +182,13 @@ describe('LoginForm', () => {
     const googleButton = screen.getByText(/sign in with google/i);
     fireEvent.click(googleButton);
     
-    // Verify OAuth sign in was called
+    // Verify the enhancement message is shown
     await waitFor(() => {
-      expect(mockSignInWithOAuth).toHaveBeenCalledWith({
-        provider: 'google',        options: {
-          redirectTo: 'http://localhost/dashboard'
-        }
-      });
+      expect(screen.getByText(/Future Enhancement - Google sign-in is not yet available/i)).toBeInTheDocument();
     });
+
+    // Verify that signInWithOAuth was NOT called
+    expect(mockSignInWithOAuth).not.toHaveBeenCalled();
   });
 
   it('navigates to forgot password page', () => {
@@ -239,7 +237,7 @@ describe('LoginForm', () => {
     
     // Fill in credentials
     const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
+    const passwordInput = screen.getByLabelText(/^password$/i);
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
     
