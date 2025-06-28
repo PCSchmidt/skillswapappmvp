@@ -2,6 +2,8 @@
 
 import dynamic from 'next/dynamic';
 import React from 'react';
+import DashboardOnboarding from '@/components/dashboard/DashboardOnboarding';
+import EngagementActions from '@/components/dashboard/EngagementActions';
 import QuickActions, { commonActions } from '@/components/dashboard/QuickActions';
 import ActivityFeedSkeleton from '@/components/dashboard/skeletons/ActivityFeedSkeleton';
 import ExchangeStatusSkeleton from '@/components/dashboard/skeletons/ExchangeStatusSkeleton';
@@ -29,6 +31,84 @@ const RecommendationPanel = dynamic(
 );
 
 export default function DashboardPage() {
+  // Demo data for onboarding
+  const onboardingSteps = [
+    {
+      id: 'profile',
+      title: 'Complete Your Profile',
+      description: 'Add a photo, bio, and location to make a great first impression',
+      action: 'Complete Profile',
+      href: '/profile/edit',
+      completed: false,
+      icon: '👤'
+    },
+    {
+      id: 'skills',
+      title: 'Add Your Skills',
+      description: 'Tell others what you can teach and what you want to learn',
+      action: 'Add Skills',
+      href: '/skills/my-skills',
+      completed: true,
+      icon: '🎯'
+    },
+    {
+      id: 'explore',
+      title: 'Discover Skills',
+      description: 'Browse available skills and find interesting people to connect with',
+      action: 'Start Exploring',
+      href: '/discover',
+      completed: true,
+      icon: '🔍'
+    },
+    {
+      id: 'connect',
+      title: 'Make Your First Connection',
+      description: 'Send a message or propose a skill swap to get started',
+      action: 'Find Matches',
+      href: '/matches',
+      completed: false,
+      icon: '🤝'
+    }
+  ];
+  
+  const completedOnboardingSteps = onboardingSteps.filter(step => step.completed).length;
+  const isNewUser = completedOnboardingSteps < 3;
+  
+  // Demo data for engagement actions
+  const engagementActions = [
+    {
+      id: 'new-matches',
+      title: 'You have 3 new potential matches!',
+      description: 'People interested in your skills and offering skills you want to learn.',
+      action: 'View Matches',
+      href: '/matches',
+      icon: '🎯',
+      color: 'bg-green-100',
+      urgency: 'high' as const,
+      badge: 'New'
+    },
+    {
+      id: 'complete-profile',
+      title: 'Boost your visibility',
+      description: 'Complete your profile to get 3x more connection requests.',
+      action: 'Complete Profile',
+      href: '/profile/edit',
+      icon: '✨',
+      color: 'bg-blue-100',
+      urgency: 'medium' as const
+    },
+    {
+      id: 'demo-features',
+      title: 'Try Premium Features',
+      description: 'Experience video calls, payments, and AI matching in our demo environment.',
+      action: 'Enter Demo',
+      href: '/demo',
+      icon: '🎭',
+      color: 'bg-purple-100',
+      urgency: 'low' as const,
+      badge: 'Demo'
+    }
+  ];
   // Demo data for statistics
   const stats = [
     { label: "Active Exchanges", value: 3, to: "/exchanges?status=active" },
@@ -168,6 +248,16 @@ export default function DashboardPage() {
             </p>
           </div>
           
+          {/* Onboarding for new users */}
+          {isNewUser && (
+            <DashboardOnboarding
+              steps={onboardingSteps}
+              completedSteps={completedOnboardingSteps}
+              totalSteps={onboardingSteps.length}
+              className="mb-8"
+            />
+          )}
+          
           {/* Stats section */}
           <Grid columns={4} gap="sm">
             {stats.map((stat, index) => (
@@ -204,6 +294,12 @@ export default function DashboardPage() {
             
             {/* Sidebar - 1/3 width */}
             <div>
+              {/* Engagement Actions */}
+              <EngagementActions 
+                actions={engagementActions}
+                className="mb-8"
+              />
+              
               {/* Recommendations Panel */}
               <RecommendationPanel 
                 recommendations={recommendations}

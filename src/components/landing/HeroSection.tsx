@@ -69,24 +69,46 @@ export default function HeroSection({
             <p className="text-xl mb-8 text-white/90 max-w-lg">
               {subtitle}
             </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-              {ctaSecondaryText && ctaSecondaryLink && (
-                <Link 
-                  href={ctaSecondaryLink} 
-                  className="btn-outline border-white text-white hover:bg-white/20 focus:bg-white/30 px-6 py-3 text-center"
-                >
-                  {ctaSecondaryText}
-                </Link>
-              )}
+            
+            {/* Enhanced CTA Section with user journey guidance */}
+            <div className="mb-8">
+              <div className="flex flex-col sm:flex-row gap-4 mb-4">
                 {ctaPrimaryText && ctaPrimaryLink && (
-                <Link 
-                  href={ctaPrimaryLink} 
-                  className="btn bg-accent-yellow-500 hover:bg-accent-yellow-600 text-neutral-900 font-semibold px-6 py-3 shadow-lg hover:shadow-xl transition-all text-center"
-                  data-testid="signup-button"
-                >
-                  {ctaPrimaryText}
-                </Link>
-              )}
+                  <Link 
+                    href={ctaPrimaryLink} 
+                    className="btn bg-accent-yellow-500 hover:bg-accent-yellow-600 text-neutral-900 font-semibold px-8 py-4 shadow-lg hover:shadow-xl transition-all text-center text-lg inline-flex items-center justify-center gap-2"
+                    data-testid="signup-button"
+                  >
+                    <span>🚀</span>
+                    {ctaPrimaryText}
+                  </Link>
+                )}
+                {ctaSecondaryText && ctaSecondaryLink && (
+                  <Link 
+                    href={ctaSecondaryLink} 
+                    className="btn-outline border-white text-white hover:bg-white/20 focus:bg-white/30 px-6 py-4 text-center inline-flex items-center justify-center gap-2"
+                  >
+                    <span>🔍</span>
+                    {ctaSecondaryText}
+                  </Link>
+                )}
+              </div>
+              
+              {/* Quick start flow indicators */}
+              <div className="text-white/80 text-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="w-6 h-6 bg-accent-yellow-500 text-neutral-900 rounded-full flex items-center justify-center text-xs font-bold">1</span>
+                  <span>Sign up in 30 seconds</span>
+                </div>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="w-6 h-6 bg-accent-yellow-500 text-neutral-900 rounded-full flex items-center justify-center text-xs font-bold">2</span>
+                  <span>Add your skills & interests</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-6 h-6 bg-accent-yellow-500 text-neutral-900 rounded-full flex items-center justify-center text-xs font-bold">3</span>
+                  <span>Start connecting with others</span>
+                </div>
+              </div>
             </div>
             
             {/* Enhanced Search Section */}

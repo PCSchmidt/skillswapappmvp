@@ -158,16 +158,34 @@ const Navbar = () => {
             SkillSwap
           </span>
         </Link>
-          {/* Desktop Navigation */}        <nav className="hidden md:flex space-x-8">
-          <Link href="/discover" className="text-neutral-700 hover:text-primary-600 font-medium transition-colors">
-            Discover
+          {/* Desktop Navigation */}
+        <nav className="hidden md:flex items-center space-x-8">
+          <Link href="/discovery" className="text-neutral-700 hover:text-primary-600 font-medium transition-colors relative group">
+            <span>Discover Skills</span>
+            <span className="absolute -top-1 -right-1 bg-gradient-to-r from-primary-500 to-secondary-500 text-white text-xs px-1.5 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+              New!
+            </span>
           </Link>
-          <Link href="/demo" className="text-purple-600 hover:text-purple-700 font-medium transition-colors bg-purple-50 px-3 py-1 rounded-lg">
+          {!user && (
+            <Link href="/how-it-works" className="text-neutral-700 hover:text-primary-600 font-medium transition-colors">
+              How It Works
+            </Link>
+          )}
+          <Link href="/demo" className="text-purple-600 hover:text-purple-700 font-medium transition-colors bg-purple-50 px-3 py-1 rounded-lg inline-flex items-center gap-1">
+            <span>🎭</span>
             Demo Features
           </Link>
-          <Link href="/how-it-works" className="text-neutral-700 hover:text-primary-600 font-medium transition-colors">
-            How It Works
-          </Link>
+          {user && (
+            <>
+              <Link href="/skills/my-skills" className="text-neutral-700 hover:text-primary-600 font-medium transition-colors">
+                My Skills
+              </Link>
+              <Link href="/matches" className="text-neutral-700 hover:text-primary-600 font-medium transition-colors relative">
+                Matches
+                <span className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full"></span>
+              </Link>
+            </>
+          )}
           <Link href="/about" className="text-neutral-700 hover:text-primary-600 font-medium transition-colors">
             About
           </Link>
@@ -268,9 +286,10 @@ const Navbar = () => {
               </Link>
               <Link 
                 href="/signup" 
-                className="btn-primary"
+                className="btn-primary inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold px-6 py-2.5 rounded-lg shadow-sm hover:shadow-md transition-all"
               >
-                Sign Up
+                <span>🚀</span>
+                Get Started Free
               </Link>
             </>
           )}
@@ -283,11 +302,14 @@ const Navbar = () => {
         )}>
           <Container size="xl" padding="sm" className="py-4 flex flex-col space-y-4">            <nav className="flex flex-col space-y-3">
               <Link 
-                href="/discover" 
-                className="text-neutral-700 hover:text-primary-600 font-medium transition-colors p-2 rounded hover:bg-neutral-50"
+                href="/discovery" 
+                className="text-neutral-700 hover:text-primary-600 font-medium transition-colors p-2 rounded hover:bg-neutral-50 flex items-center justify-between"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Discover
+                <span>Discover Skills</span>
+                <span className="bg-gradient-to-r from-primary-500 to-secondary-500 text-white text-xs px-2 py-1 rounded-full">
+                  New!
+                </span>
               </Link>
               <Link 
                 href="/demo" 
