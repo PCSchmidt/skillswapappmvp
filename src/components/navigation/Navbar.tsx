@@ -20,7 +20,7 @@ const Navbar = () => {
   useEffect(() => {
     setIsHydrated(true);
   }, []);
-  // Fetch unread notification count
+  // Fetch unread notification count with configurable real-time/polling
   useEffect(() => {
     if (!user || !isHydrated) return;
     
@@ -52,31 +52,48 @@ const Navbar = () => {
       }
     };
 
-    // Debounce the fetch to prevent rapid calls
-    const timeoutId = setTimeout(fetchNotificationCount, 100);
+    // Initial fetch
+    fetchNotificationCount();
     
-    // Set up real-time subscription for notification count changes
-    const subscription = supabase
-      .channel('user-notification-count')
-      .on('postgres_changes', {
-        event: 'UPDATE',
-        schema: 'public',
-        table: 'users',
-        filter: `id=eq.${user.id}`
-      }, (payload) => {
-        if (!isMounted) return;
-        if (payload.new && payload.new.unread_notification_count !== undefined) {
-          setNotificationCount(payload.new.unread_notification_count || 0);
+    // Check if real-time is enabled (optimized for bandwidth usage)
+    const realtimeEnabled = process.env.NEXT_PUBLIC_ENABLE_REALTIME === 'true';
+    
+    let subscription: unknown = null;
+    let pollingInterval: NodeJS.Timeout | null = null;
+    
+    if (realtimeEnabled) {
+      // Real-time subscription (higher bandwidth usage)
+      subscription = supabase
+        .channel('user-notification-count')
+        .on('postgres_changes', {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'users',
+          filter: `id=eq.${user.id}`
+        }, (payload) => {
+          if (!isMounted) return;
+          if (payload.new && payload.new.unread_notification_count !== undefined) {
+            setNotificationCount(payload.new.unread_notification_count || 0);
+          }
+        })
+        .subscribe();
+    } else {
+      // Polling fallback (bandwidth optimized for free tier)
+      pollingInterval = setInterval(() => {
+        if (isMounted) {
+          fetchNotificationCount();
         }
-      })
-      .subscribe();
+      }, 30000); // Poll every 30 seconds
+    }
     
     return () => {
       isMounted = false;
-      clearTimeout(timeoutId);
-      // Only call removeChannel if subscription is a RealtimeChannel (has 'topic')
-      if (subscription && 'topic' in subscription) {
-        supabase.removeChannel(subscription);
+      if (pollingInterval) {
+        clearInterval(pollingInterval);
+      }
+      if (subscription && typeof subscription === 'object' && subscription !== null && 'topic' in subscription) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        supabase.removeChannel(subscription as any);
       }
     };
   }, [user, supabase, isHydrated]);

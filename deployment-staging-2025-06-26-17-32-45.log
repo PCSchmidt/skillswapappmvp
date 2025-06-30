@@ -1,0 +1,24 @@
+[2025-06-26T17:32:45.318Z] INFO: Checking for uncommitted changes...
+[2025-06-26T17:32:45.318Z] COMMAND: git status --porcelain
+[2025-06-26T17:32:45.406Z] SUCCESS: Git working directory is clean
+[2025-06-26T17:32:45.409Z] INFO: 
+Installing dependencies...
+[2025-06-26T17:32:45.409Z] COMMAND: yarn install --frozen-lockfile
+[2025-06-26T17:32:52.358Z] ERROR: Command failed: yarn install --frozen-lockfile
+[2025-06-26T17:32:52.359Z] ERROR: Command failed: yarn install --frozen-lockfile
+[2025-06-26T17:32:52.360Z] INFO: 
+Updating environment variables for staging...
+[2025-06-26T17:32:52.360Z] COMMAND: npm run update-env:staging
+[2025-06-26T17:46:06.824Z] INFO: 
+Validating dependencies...
+[2025-06-26T17:46:06.825Z] COMMAND: npm run validate-deps
+[2025-06-26T17:46:42.980Z] INFO: 
+Verifying build...
+[2025-06-26T17:46:42.980Z] COMMAND: npm run prebuild:verify
+[2025-06-26T17:47:28.053Z] INFO: 
+Running tests...
+[2025-06-26T17:47:28.054Z] COMMAND: npm test
+[2025-06-26T17:47:51.998Z] ERROR: Command failed: npm test
+[2025-06-26T17:47:51.998Z] ERROR: Command failed: npm test
+[2025-06-26T17:49:26.172Z] INFO: 
+Deploying to staging...
