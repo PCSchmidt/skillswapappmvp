@@ -9,13 +9,15 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
+import ToastContainer from '@/components/ui/ToastContainer';
 import { useSupabase } from '@/contexts/SupabaseContext';
-import { supabase } from '@/lib/supabase';
+import { useToast } from '@/hooks/useToast';
 
 export default function SignupForm() {
   const router = useRouter();
-  const { signUp } = useSupabase();
-    const [email, setEmail] = useState('');
+  const { signUp, supabase } = useSupabase();
+  const { toasts, success: showSuccess, error: showError, removeToast } = useToast();
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [fullName, setFullName] = useState('');
@@ -128,7 +130,10 @@ export default function SignupForm() {
           console.error('Error getting user or updating profile:', profileError);
         }
         
+        // Show success notification
+        showSuccess('Account created successfully! Please check your email for verification.');
         setSuccessMessage('Your account has been created. Please check your email for verification.');
+        
         // Clear form
         setEmail('');
         setPassword('');
@@ -140,10 +145,12 @@ export default function SignupForm() {
           router.push('/login');
         }, 3000);
       } else {
+        showError(error || 'Failed to create account');
         setError(error || 'Failed to create account');
       }
     } catch (err) {
       console.error('Signup error:', err);
+      showError('An unexpected error occurred');
       setError('An unexpected error occurred');
     } finally {
       setLoading(false);
@@ -152,6 +159,7 @@ export default function SignupForm() {
   
   return (
     <div className="w-full max-w-md mx-auto">
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
       <form onSubmit={handleSignup} className="bg-white p-8 shadow-md rounded-lg" data-testid="signup-form">
         <h2 className="text-2xl font-bold mb-6 text-gray-800">Create an account</h2>
         
