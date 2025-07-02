@@ -10,8 +10,8 @@ import type { Database } from '@/types/supabase';
 let cachedClient: ReturnType<typeof createBrowserClient<Database>> | null = null;
 
 // Initialize the Supabase client
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 /**
  * Get a cached Supabase client to avoid creating multiple instances
@@ -19,9 +19,19 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 export const getCachedClient = () => {
   if (cachedClient) return cachedClient;
   
-  cachedClient = supabaseUrl && supabaseAnonKey
+  // Validate environment variables
+  if (!supabaseUrl || !supabaseAnonKey) {
+    if (typeof window !== 'undefined') {
+      console.warn('Supabase environment variables missing for cached client.');
+    }
+  }
+  
+  cachedClient = (supabaseUrl && supabaseAnonKey)
     ? createBrowserClient<Database>(supabaseUrl, supabaseAnonKey)
-    : createBrowserClient<Database>('https://example.supabase.co', 'mock-anon-key-for-development');
+    : createBrowserClient<Database>(
+        'https://localhost-fallback.supabase.co', 
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZhbGxiYWNrIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NDk3Njk2MDAsImV4cCI6MTk2NTM0NTYwMH0.mock-key-for-development'
+      );
     
   return cachedClient;
 };

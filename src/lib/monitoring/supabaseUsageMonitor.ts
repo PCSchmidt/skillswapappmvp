@@ -32,13 +32,20 @@ class SupabaseUsageMonitor {
    * Track a database query
    */
   trackQuery(operation: string, estimatedResponseSize = 1024) {
-    this.resetIfNeeded();
-    this.metrics.queries++;
-    this.metrics.dataTransferred += estimatedResponseSize;
-    this.saveMetrics();
-    
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`[Supabase Monitor] ${operation} - Queries: ${this.metrics.queries}, Data: ${this.formatBytes(this.metrics.dataTransferred)}`);
+    try {
+      this.resetIfNeeded();
+      this.metrics.queries++;
+      this.metrics.dataTransferred += estimatedResponseSize;
+      this.saveMetrics();
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`[Supabase Monitor] ${operation} - Queries: ${this.metrics.queries}, Data: ${this.formatBytes(this.metrics.dataTransferred)}`);
+      }
+    } catch (error) {
+      // Silently handle monitoring errors to prevent app disruption
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Supabase monitoring error:', error);
+      }
     }
   }
 
@@ -46,14 +53,20 @@ class SupabaseUsageMonitor {
    * Track real-time connection
    */
   trackRealtimeConnection() {
-    this.resetIfNeeded();
-    this.metrics.realtimeConnections++;
-    // Real-time connections typically use more bandwidth
-    this.metrics.dataTransferred += 5120; // Estimate 5KB per connection
-    this.saveMetrics();
-    
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`[Supabase Monitor] Real-time connection - Total: ${this.metrics.realtimeConnections}`);
+    try {
+      this.resetIfNeeded();
+      this.metrics.realtimeConnections++;
+      // Real-time connections typically use more bandwidth
+      this.metrics.dataTransferred += 5120; // Estimate 5KB per connection
+      this.saveMetrics();
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`[Supabase Monitor] Real-time connection - Total: ${this.metrics.realtimeConnections}`);
+      }
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Supabase monitoring error:', error);
+      }
     }
   }
 

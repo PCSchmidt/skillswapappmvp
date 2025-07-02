@@ -7,10 +7,17 @@
 
 import '@/styles/globals.css';
 import { Inter } from 'next/font/google';
+import ErrorBoundary from '@/components/error/ErrorBoundary';
 import Navbar from '@/components/navigation/Navbar';
 import { SupabaseProvider } from '@/contexts/SupabaseContext';
+import { useErrorHandler } from '@/lib/error/clientErrorHandler';
 
 const inter = Inter({ subsets: ['latin'] });
+
+function ClientErrorInitializer() {
+  useErrorHandler(); // Initialize global error handling
+  return null;
+}
 
 export default function RootLayout({
   children,
@@ -20,14 +27,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <SupabaseProvider>
-          <div className="min-h-screen bg-gray-50">
-            <Navbar />
-            <main>
-              {children}
-            </main>
-          </div>
-        </SupabaseProvider>
+        <ErrorBoundary>
+          <SupabaseProvider>
+            <ClientErrorInitializer />
+            <div className="min-h-screen bg-gray-50">
+              <Navbar />
+              <main>
+                {children}
+              </main>
+            </div>
+          </SupabaseProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );
