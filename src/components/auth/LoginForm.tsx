@@ -82,17 +82,21 @@ export default function LoginForm() {
       } else {
         // Check for specific error messages that tests expect
         if (authError?.toLowerCase().includes('invalid login credentials')) {
-          setError('Invalid login credentials');
+          const errorMsg = 'Invalid login credentials';
+          setError(errorMsg);
         } else if (authError?.toLowerCase().includes('email not confirmed') || 
             authError?.toLowerCase().includes('email not verified')) {
-          setError('Your email is not verified. Please check your inbox or request a new verification email.');
+          const errorMsg = 'Your email is not verified. Please check your inbox or request a new verification email.';
+          setError(errorMsg);
         } else {
-          setError(authError || 'Invalid login credentials');
+          const errorMsg = authError || 'Invalid login credentials';
+          setError(errorMsg);
         }
       }
     } catch (err) {
       console.error('Login error:', err);
-      setError('An unexpected error occurred');
+      const errorMsg = 'An unexpected error occurred';
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }

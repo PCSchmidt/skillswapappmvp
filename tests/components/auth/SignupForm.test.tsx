@@ -11,10 +11,34 @@ import SignupForm from '@/components/auth/SignupForm';
 
 // Mock the SupabaseContext
 const mockSignUp = jest.fn();
+const mockSupabase = {
+  auth: {
+    getUser: jest.fn().mockResolvedValue({
+      data: { user: { id: 'test-user-id' } },
+    }),
+  },
+  from: jest.fn(() => ({
+    upsert: jest.fn().mockResolvedValue({ error: null }),
+  })),
+};
+
 jest.mock('@/contexts/SupabaseContext', () => ({
   useSupabase: () => ({
     signUp: mockSignUp,
+    supabase: mockSupabase,
   }),
+}));
+
+// Mock the toast hook
+const mockToast = {
+  toasts: [],
+  success: jest.fn(),
+  error: jest.fn(), 
+  removeToast: jest.fn(),
+};
+
+jest.mock('@/hooks/useToast', () => ({
+  useToast: () => mockToast,
 }));
 
 // Mock next/navigation
@@ -25,24 +49,12 @@ jest.mock('next/navigation', () => ({
   }),
 }));
 
-// Mock the Supabase client used in the component
-jest.mock('@/lib/supabase', () => ({
-  supabase: {
-    auth: {
-      getUser: jest.fn().mockResolvedValue({
-        data: { user: { id: 'test-user-id' } },
-      }),
-    },
-    from: jest.fn(() => ({
-      upsert: jest.fn().mockResolvedValue({ error: null }),
-    })),
-  },
-}));
-
 describe('SignupForm', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockSignUp.mockResolvedValue({ success: true, error: null });
+    mockToast.success.mockClear();
+    mockToast.error.mockClear();
   });
 
   it('renders the signup form correctly', () => {
