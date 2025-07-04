@@ -50,7 +50,7 @@ export default function ChatWindow({ tradeId, otherUserId, otherUserName }: Chat
       setMessages((data as MessageWithUser[]) || []);
       
       // Mark messages as read
-      const messagesToUpdate = data?.filter(msg => 
+      const messagesToUpdate = (data as MessageWithUser[])?.filter((msg: MessageWithUser) => 
         msg.receiver_id === user.id && !msg.is_read
       ) || [];      if (messagesToUpdate.length > 0) {
         // Mark each message as read individually to avoid query chaining issues

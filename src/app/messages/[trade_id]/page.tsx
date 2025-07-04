@@ -35,13 +35,23 @@ type TradeWithUsers = Database['public']['Tables']['trades']['Row'] & {
   } | null;
 };
 
-export default function TradeMessagePage({ params }: { params: { trade_id: string } }) {
+export default function TradeMessagePage({ params }: { params: Promise<{ trade_id: string }> }) {
   const router = useRouter();
   const { supabase, user, isLoading } = useSupabase();
   
   const [trade, setTrade] = useState<TradeWithUsers | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [tradeId, setTradeId] = useState<string | null>(null);
+  
+  // Extract params
+  useEffect(() => {
+    const getParams = async () => {
+      const resolvedParams = await params;
+      setTradeId(resolvedParams.trade_id);
+    };
+    getParams();
+  }, [params]);
   
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -53,7 +63,7 @@ export default function TradeMessagePage({ params }: { params: { trade_id: strin
   // Fetch trade data
   useEffect(() => {
     const fetchTrade = async () => {
-      if (!user) return;
+      if (!user || !tradeId) return;
       
       try {
         const { data, error } = await supabase
@@ -65,7 +75,7 @@ export default function TradeMessagePage({ params }: { params: { trade_id: strin
             skill_offered:skill_offered_id(id, title),
             skill_requested:skill_requested_id(id, title)
           `)
-          .eq('id', params.trade_id)
+          .eq('id', tradeId)
           .single();
         
         if (error) throw error;
@@ -86,7 +96,7 @@ export default function TradeMessagePage({ params }: { params: { trade_id: strin
     if (user) {
       fetchTrade();
     }
-  }, [params.trade_id, supabase, user]);
+  }, [tradeId, supabase, user]);
   
   // Determine the other user
   const getOtherUser = () => {

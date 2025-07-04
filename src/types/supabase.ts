@@ -317,7 +317,9 @@ export interface Database {
           id: string;
           trade_id: string;
           sender_id: string;
+          receiver_id: string;
           content: string;
+          is_read: boolean;
           created_at: string;
           // Add other fields as needed
         };
@@ -325,14 +327,18 @@ export interface Database {
           id: string;
           trade_id: string;
           sender_id: string;
+          receiver_id: string;
           content: string;
+          is_read: boolean;
           created_at: string;
         }, 'id' | 'created_at'>;
         Update: Partial<Omit<{
           id: string;
           trade_id: string;
           sender_id: string;
+          receiver_id: string;
           content: string;
+          is_read: boolean;
           created_at: string;
         }, 'id' | 'sender_id' | 'created_at'>>;
       };

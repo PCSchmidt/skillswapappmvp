@@ -14,7 +14,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 // Function to create a mock Supabase client for Storybook
 const createMockSupabaseClient = () => {
   const mockQueryBuilder = {
-    select: (_columns: string) => mockQueryBuilder, // eslint-disable-line @typescript-eslint/no-unused-vars
+    select: (_columns?: string) => mockQueryBuilder, // eslint-disable-line @typescript-eslint/no-unused-vars
     eq: (_column: string, _value: unknown) => mockQueryBuilder, // eslint-disable-line @typescript-eslint/no-unused-vars
     order: (_column: string, _options: { ascending: boolean }) => mockQueryBuilder, // eslint-disable-line @typescript-eslint/no-unused-vars
     limit: (_count: number) => mockQueryBuilder, // eslint-disable-line @typescript-eslint/no-unused-vars
@@ -23,10 +23,38 @@ const createMockSupabaseClient = () => {
     single: () => Promise.resolve({ data: null, error: null }),
     count: () => Promise.resolve({ count: 0, error: null }),
     update: (_data: unknown) => ({ // eslint-disable-line @typescript-eslint/no-unused-vars
-      eq: (_column: string, _value: unknown) => Promise.resolve({ // eslint-disable-line @typescript-eslint/no-unused-vars
+      eq: (_column: string, _value: unknown) => ({ // eslint-disable-line @typescript-eslint/no-unused-vars
+        eq: (_column: string, _value: unknown) => ({ // eslint-disable-line @typescript-eslint/no-unused-vars
+          eq: (_column: string, _value: unknown) => Promise.resolve({ // eslint-disable-line @typescript-eslint/no-unused-vars
+            data: null,
+            error: null,
+          }),
+          in: (_column: string, _values: unknown[]) => Promise.resolve({ // eslint-disable-line @typescript-eslint/no-unused-vars
+            data: null,
+            error: null,
+          }),
+          single: () => Promise.resolve({ data: null, error: null }),
+          then: (onFulfilled?: (value: { data: unknown; error: null }) => unknown) => {
+            return Promise.resolve({ data: null, error: null }).then(onFulfilled);
+          }
+        }),
+        in: (_column: string, _values: unknown[]) => Promise.resolve({ // eslint-disable-line @typescript-eslint/no-unused-vars
+          data: null,
+          error: null,
+        }),
+        single: () => Promise.resolve({ data: null, error: null }),
+        then: (onFulfilled?: (value: { data: unknown; error: null }) => unknown) => {
+          return Promise.resolve({ data: null, error: null }).then(onFulfilled);
+        }
+      }),
+      in: (_column: string, _values: unknown[]) => Promise.resolve({ // eslint-disable-line @typescript-eslint/no-unused-vars
         data: null,
         error: null,
       }),
+      single: () => Promise.resolve({ data: null, error: null }),
+      then: (onFulfilled?: (value: { data: unknown; error: null }) => unknown) => {
+        return Promise.resolve({ data: null, error: null }).then(onFulfilled);
+      }
     }),
     delete: () => mockQueryBuilder,
     insert: (_data: unknown) => mockQueryBuilder, // eslint-disable-line @typescript-eslint/no-unused-vars

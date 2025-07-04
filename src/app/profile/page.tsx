@@ -16,6 +16,7 @@ import ProfileHeader, { User as ProfileUser } from '@/components/profile/Profile
 import ProfileTabs from '@/components/profile/ProfileTabs';
 import { Skill } from '@/components/skills/SkillCard';
 import { useSupabase } from '@/contexts/SupabaseContext';
+import { Skill as SupabaseSkill } from '@/types/supabase';
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -67,8 +68,8 @@ export default function ProfilePage() {
 
         // Separate offered and requested skills
         if (skillsData) {
-          setOfferedSkills(skillsData.filter(skill => skill.is_offering));
-          setRequestedSkills(skillsData.filter(skill => !skill.is_offering));
+          setOfferedSkills(skillsData.filter((skill: SupabaseSkill) => skill.is_offering));
+          setRequestedSkills(skillsData.filter((skill: SupabaseSkill) => !skill.is_offering));
         }
       } catch (error) {
         console.error('Error loading user data:', error);
@@ -134,8 +135,8 @@ export default function ProfilePage() {
 
       // Separate offered and requested skills
       if (data) {
-        setOfferedSkills(data.filter(skill => skill.is_offering));
-        setRequestedSkills(data.filter(skill => !skill.is_offering));
+        setOfferedSkills(data.filter((skill: SupabaseSkill) => skill.is_offering));
+        setRequestedSkills(data.filter((skill: SupabaseSkill) => !skill.is_offering));
       }
 
       setNotification({

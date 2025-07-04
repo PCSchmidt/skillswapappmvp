@@ -47,9 +47,10 @@ type ExtendedTrade = Database['public']['Tables']['trades']['Row'] & {
   notes?: string | null;
   scheduled_date?: string | null;
   proposed_schedule?: string | null;
+  completed_at?: string | null;
 };
 
-export default function TradeDetailPage({ params }: { params: { id: string } }) {
+export default function TradeDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const { supabase, user, isLoading } = useSupabase();
   
@@ -61,6 +62,16 @@ export default function TradeDetailPage({ params }: { params: { id: string } }) 
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [cancellationReason, setCancellationReason] = useState<string>('');
   const [showCancellationForm, setShowCancellationForm] = useState(false);
+  const [tradeId, setTradeId] = useState<string | null>(null);
+  
+  // Extract params
+  useEffect(() => {
+    const getParams = async () => {
+      const resolvedParams = await params;
+      setTradeId(resolvedParams.id);
+    };
+    getParams();
+  }, [params]);
   
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -72,7 +83,7 @@ export default function TradeDetailPage({ params }: { params: { id: string } }) 
   // Fetch trade data
   useEffect(() => {
     const fetchTrade = async () => {
-      if (!user) return;
+      if (!user || !tradeId) return;
       
       try {
         const { data, error } = await supabase
@@ -84,7 +95,7 @@ export default function TradeDetailPage({ params }: { params: { id: string } }) 
             proposer:proposer_id(id, full_name, profile_image_url, location_city, location_state),
             receiver:receiver_id(id, full_name, profile_image_url, location_city, location_state)
           `)
-          .eq('id', params.id)
+          .eq('id', tradeId)
           .single();
         
         if (error) throw error;
@@ -119,7 +130,7 @@ export default function TradeDetailPage({ params }: { params: { id: string } }) 
     if (user) {
       fetchTrade();
     }
-  }, [params.id, supabase, user]);
+  }, [tradeId, supabase, user]);
   
   // Helper function: Check if user is the proposer
   const isProposer = () => {
@@ -189,7 +200,7 @@ export default function TradeDetailPage({ params }: { params: { id: string } }) 
     setActionSuccess(null);
     
     try {
-      const { error } = await supabase
+      const updateQuery = supabase
         .from('trades')
         .update({
           status: 'accepted',
@@ -199,6 +210,8 @@ export default function TradeDetailPage({ params }: { params: { id: string } }) 
         .eq('id', trade.id)
         .eq('receiver_id', user.id)
         .eq('status', 'proposed');
+        
+      const { error } = await updateQuery;
       
       if (error) throw error;
       

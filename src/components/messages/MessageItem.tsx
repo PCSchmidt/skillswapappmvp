@@ -15,6 +15,8 @@ type MessageWithUser = Database['public']['Tables']['messages']['Row'] & {
     full_name: string | null;
     profile_image_url: string | null;
   } | null;
+  attachment_url?: string | null;
+  attachment_type?: string | null;
 };
 
 interface MessageItemProps {

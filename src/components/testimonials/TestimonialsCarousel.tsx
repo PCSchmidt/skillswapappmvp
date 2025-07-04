@@ -169,7 +169,7 @@ export default function TestimonialsCarousel({
                 <div className="relative w-16 h-16 rounded-full overflow-hidden mr-4">
                   {testimonials[activeIndex].userImageUrl ? (
                     <Image
-                      src={testimonials[activeIndex].userImageUrl}
+                      src={testimonials[activeIndex].userImageUrl || '/placeholder-avatar.png'}
                       alt={testimonials[activeIndex].userName}
                       fill
                       className="object-cover"

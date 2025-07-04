@@ -132,7 +132,7 @@ describe('SignupForm', () => {
     
     // Check for success message
     await waitFor(() => {
-      expect(screen.getByText(/your account has been created/i)).toBeInTheDocument();
+      expect(screen.getByText(/account created successfully/i)).toBeInTheDocument();
     });
   });
 

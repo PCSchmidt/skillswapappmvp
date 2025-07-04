@@ -161,10 +161,10 @@ export default function WelcomeNew({ user, profile, onComplete }: WelcomeNewProp
             </div>
             
             <div className="flex justify-center gap-4">
-              <Button onClick={handleNext} variant="primary" size="large">
+              <Button onClick={handleNext} variant="primary" size="lg">
                 Get Started
               </Button>
-              <Button onClick={() => router.push('/dashboard')} variant="outline" size="large">
+              <Button onClick={() => router.push('/dashboard')} variant="outline" size="lg">
                 Skip Tour
               </Button>
             </div>
@@ -243,7 +243,7 @@ export default function WelcomeNew({ user, profile, onComplete }: WelcomeNewProp
                 <Button 
                   onClick={handleProfileSave} 
                   variant="primary"
-                  loading={loading}
+                  isLoading={loading}
                   disabled={!profileData.full_name.trim()}
                 >
                   Continue
@@ -322,7 +322,7 @@ export default function WelcomeNew({ user, profile, onComplete }: WelcomeNewProp
               </div>
             </div>
             
-            <Button onClick={handleFinish} variant="primary" size="large">
+            <Button onClick={handleFinish} variant="primary" size="lg">
               Go to Dashboard
             </Button>
           </div>

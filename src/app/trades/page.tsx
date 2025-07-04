@@ -36,6 +36,8 @@ type Trade = Database['public']['Tables']['trades']['Row'] & {
     full_name: string | null;
     profile_image_url: string | null;
   } | null;
+  proposed_hours?: number;
+  location_type?: string;
 };
 
 export default function TradesPage() {
@@ -82,7 +84,7 @@ export default function TradesPage() {
         
         if (error) throw error;
         
-        setTrades(data || []);      } catch (err: unknown) {
+        setTrades((data as Trade[]) || []);      } catch (err: unknown) {
         console.error('Error fetching trades:', err);
         setError('Failed to load trades');
       } finally {

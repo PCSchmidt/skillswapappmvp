@@ -39,19 +39,40 @@ const createMockClient = () => {
     insert: () => mockQueryBuilder,
     update: () => mockQueryBuilder,
     delete: () => mockQueryBuilder,
-    then: () => Promise.resolve({ data: [], error: null })
+    then: (onFulfilled?: (result: { data: never[]; error: { message: string } | null }) => unknown) => {
+      const result = { data: [], error: { message: 'Demo mode - no database connection' } };
+      return onFulfilled ? Promise.resolve(onFulfilled(result)) : Promise.resolve(result);
+    }
+  };
+
+  const demoUser = {
+    id: 'demo-user-id',
+    email: 'demo@skillswap.com',
+    user_metadata: { full_name: 'Demo User' },
+    app_metadata: {},
+    aud: 'authenticated',
+    created_at: new Date().toISOString(),
+  };
+
+  const demoSession = {
+    user: demoUser,
+    access_token: 'demo-token',
+    refresh_token: 'demo-refresh-token',
+    expires_in: 3600,
+    token_type: 'bearer',
   };
 
   return {
     auth: {
-      getSession: () => Promise.resolve({ data: { session: null }, error: null }),
-      getUser: () => Promise.resolve({ data: { user: null }, error: null }),
-      signInWithPassword: () => Promise.resolve({ data: {}, error: { message: 'Demo mode - authentication disabled' } }),
-      signInWithOAuth: () => Promise.resolve({ data: {}, error: { message: 'Demo mode - authentication disabled' } }),
-      signUp: () => Promise.resolve({ data: {}, error: { message: 'Demo mode - authentication disabled' } }),
+      getSession: () => Promise.resolve({ data: { session: demoSession }, error: null }),
+      getUser: () => Promise.resolve({ data: { user: demoUser }, error: null }),
+      signInWithPassword: () => Promise.resolve({ data: { user: demoUser, session: demoSession }, error: null }),
+      signInWithOAuth: () => Promise.resolve({ data: { user: demoUser, session: demoSession }, error: null }),
+      signUp: () => Promise.resolve({ data: { user: demoUser, session: demoSession }, error: null }),
       signOut: () => Promise.resolve({ error: null }),
       onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
       resetPasswordForEmail: () => Promise.resolve({ error: { message: 'Demo mode - email features disabled' } }),
+      verifyOtp: () => Promise.resolve({ data: { user: demoUser, session: demoSession }, error: null }),
     },
     from: () => mockQueryBuilder,
     storage: {
@@ -74,7 +95,7 @@ const createMockClient = () => {
 // Create client with proper error handling
 export const supabaseClient = hasValidConfig
   ? createBrowserClient<Database>(supabaseUrl!, supabaseAnonKey!)
-  : createMockClient() as any;
+  : createMockClient() as unknown as ReturnType<typeof createBrowserClient>;
 
 // Export a default client for compatibility
 export default supabaseClient;

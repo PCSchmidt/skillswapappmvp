@@ -101,6 +101,7 @@ export const PaymentMock = ({ amount = 25, onMockPayment }) => {
       plannedDate="Q3 2025"
       icon={CreditCard}
       color="orange"
+      mockAction={handleMockPayment}
     >
       <div className="space-y-4">
         <div className="flex justify-between items-center p-3 bg-white rounded border">
@@ -170,6 +171,7 @@ export const VideoCallMock = ({ onScheduleCall }) => {
       plannedDate="Q3 2025"
       icon={Video}
       color="blue"
+      mockAction={handleScheduleCall}
     >
       <div className="space-y-4">
         <div className="flex items-center gap-4 p-3 bg-white rounded border">
@@ -205,7 +207,12 @@ export const VideoCallMock = ({ onScheduleCall }) => {
 
 // SMS Notifications Mock
 export const SMSNotificationMock = ({ message, phoneNumber }) => {
-  const [notifications, setNotifications] = useState([]);
+  const [notifications, setNotifications] = useState<Array<{
+    id: number;
+    message: string;
+    timestamp: Date;
+    phone: string;
+  }>>([]);
 
   const addMockNotification = (msg) => {
     const notification = {
@@ -224,6 +231,7 @@ export const SMSNotificationMock = ({ message, phoneNumber }) => {
       plannedDate="Q4 2025"
       icon={MessageSquare}
       color="green"
+      mockAction={addMockNotification}
     >
       <div className="space-y-4">
         <button 
@@ -273,6 +281,7 @@ export const TrustSafetyMock = ({ userRating = 4.8, isVerified = false }) => {
       plannedDate="Q3 2025"
       icon={Shield}
       color="blue"
+      mockAction={handleMockVerification}
     >
       <div className="space-y-4">
         <div className="flex items-center justify-between p-3 bg-white rounded border">
@@ -334,6 +343,10 @@ export const AnalyticsMock = () => {
     avgRating: 4.8
   };
 
+  const mockRefreshAnalytics = () => {
+    console.log('Mock: Refreshing analytics data...');
+  };
+
   return (
     <MockFeature
       title="Advanced Analytics"
@@ -341,6 +354,7 @@ export const AnalyticsMock = () => {
       plannedDate="Q4 2025"
       icon={DollarSign}
       color="amber"
+      mockAction={mockRefreshAnalytics}
     >
       <div className="grid grid-cols-2 gap-4">
         <div className="text-center p-3 bg-white rounded border">

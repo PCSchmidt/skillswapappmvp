@@ -52,7 +52,7 @@ type RatingWithDetails = Database['public']['Tables']['ratings']['Row'] & {
   } | null;
 };
 
-export default function TradeRatingPage({ params }: { params: { trade_id: string } }) {
+export default function TradeRatingPage({ params }: { params: Promise<{ trade_id: string }> }) {
   const router = useRouter();
   const { supabase, user, isLoading } = useSupabase();
   
@@ -62,6 +62,16 @@ export default function TradeRatingPage({ params }: { params: { trade_id: string
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [ratingSubmitted, setRatingSubmitted] = useState(false);
+  const [tradeId, setTradeId] = useState<string | null>(null);
+  
+  // Extract params
+  useEffect(() => {
+    const getParams = async () => {
+      const resolvedParams = await params;
+      setTradeId(resolvedParams.trade_id);
+    };
+    getParams();
+  }, [params]);
   
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -73,7 +83,7 @@ export default function TradeRatingPage({ params }: { params: { trade_id: string
   // Fetch trade data and existing ratings
   useEffect(() => {
     const fetchTradeAndRatings = async () => {
-      if (!user) return;
+      if (!user || !tradeId) return;
       
       try {
         // Step 1: Fetch trade details
@@ -86,7 +96,7 @@ export default function TradeRatingPage({ params }: { params: { trade_id: string
             skill_offered:skill_offered_id(id, title, category),
             skill_requested:skill_requested_id(id, title, category)
           `)
-          .eq('id', params.trade_id)
+          .eq('id', tradeId)
           .single();
         
         if (tradeError) throw tradeError;
@@ -115,7 +125,7 @@ export default function TradeRatingPage({ params }: { params: { trade_id: string
             rater:rater_id(id, full_name, profile_image_url),
             skill:skill_id(id, title, category)
           `)
-          .eq('trade_id', params.trade_id)
+          .eq('trade_id', tradeId)
           .eq('rater_id', user.id)
           .single();
         
@@ -134,7 +144,7 @@ export default function TradeRatingPage({ params }: { params: { trade_id: string
             rater:rater_id(id, full_name, profile_image_url),
             skill:skill_id(id, title, category)
           `)
-          .eq('trade_id', params.trade_id)
+          .eq('trade_id', tradeId)
           .eq('rater_id', otherUserId)
           .single();
         
@@ -152,7 +162,7 @@ export default function TradeRatingPage({ params }: { params: { trade_id: string
     if (user) {
       fetchTradeAndRatings();
     }
-  }, [params.trade_id, supabase, user]);
+  }, [tradeId, supabase, user]);
   
   // Handle rating submission success
   const handleRatingSuccess = () => {

@@ -264,7 +264,7 @@ export default function WelcomeBack({ user, profile }: WelcomeBackProps) {
                       <h3 className="font-medium text-gray-900">{tip.title}</h3>
                       <p className="text-sm text-gray-600 mb-3">{tip.description}</p>
                       <Link href={tip.href}>
-                        <Button variant="outline" size="small">
+                        <Button variant="outline" size="sm">
                           {tip.action}
                         </Button>
                       </Link>
@@ -369,7 +369,7 @@ export default function WelcomeBack({ user, profile }: WelcomeBackProps) {
                 {userSkills.length > 4 && (
                   <div className="text-center mt-4">
                     <Link href="/skills/my-skills">
-                      <Button variant="outline" size="small">
+                      <Button variant="outline" size="sm">
                         View All {userSkills.length} Skills
                       </Button>
                     </Link>
@@ -405,7 +405,7 @@ export default function WelcomeBack({ user, profile }: WelcomeBackProps) {
                   Complete your profile to help others find and connect with you.
                 </p>
                 <Link href="/profile">
-                  <Button variant="outline" size="small">
+                  <Button variant="outline" size="sm">
                     Complete Profile
                   </Button>
                 </Link>

@@ -146,7 +146,7 @@ function RatingItem({ rating, showRater, compact }: RatingItemProps) {
                   {person?.full_name || 'Anonymous User'}
                 </p>
               )}
-              <StarRating rating={rating.rating_score} size={compact ? 'sm' : 'md'} />
+              <StarRating rating={rating.rating} size={compact ? 'sm' : 'md'} />
               <span className="ml-2 text-sm text-gray-500">
                 {formattedDate}
               </span>
@@ -159,9 +159,9 @@ function RatingItem({ rating, showRater, compact }: RatingItemProps) {
             )}
           </div>
           
-          {rating.review_text && (
+          {rating.comment && (
             <p className={`${compact ? 'text-sm mt-1' : 'mt-2'} text-gray-700 whitespace-pre-line line-clamp-3`}>
-              {rating.review_text}
+              {rating.comment}
             </p>
           )}
         </div>

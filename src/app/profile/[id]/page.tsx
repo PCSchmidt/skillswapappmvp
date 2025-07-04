@@ -17,7 +17,7 @@ import SkillCard from '@/components/skills/SkillCard';
 import { useSupabase } from '@/contexts/SupabaseContext';
 import { Database } from '@/types/supabase';
 
-export default function UserProfilePage({ params }: { params: { id: string } }) {
+export default function UserProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const { supabase, user } = useSupabase();
     const [profile, setProfile] = useState<Database['public']['Tables']['profiles']['Row'] | null>(null);
@@ -27,19 +27,31 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
   const [isOwnProfile, setIsOwnProfile] = useState(false);
   const [ratings, setRatings] = useState<Database['public']['Tables']['ratings']['Row'][]>([]);
   const [averageRating, setAverageRating] = useState<number>(0);
+  const [profileId, setProfileId] = useState<string | null>(null);
   
   // Filter states
   const [activeTab, setActiveTab] = useState<'offering' | 'seeking'>('offering');
   
+  // Extract params
+  useEffect(() => {
+    const getParams = async () => {
+      const resolvedParams = await params;
+      setProfileId(resolvedParams.id);
+    };
+    getParams();
+  }, [params]);
+  
   // Fetch user profile and skills on initial load
   useEffect(() => {
     const fetchUserProfile = async () => {
+      if (!profileId) return;
+      
       try {
         // Fetch user profile
         const { data: profileData, error: profileError } = await supabase
           .from('users')
           .select('*')
-          .eq('id', params.id)
+          .eq('id', profileId)
           .single();
         
         if (profileError) throw profileError;
@@ -65,7 +77,7 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
                 location_state
               )
             `)
-            .eq('user_id', params.id)
+            .eq('user_id', profileId)
             .eq('is_active', true)
             .order('created_at', { ascending: false });
           
@@ -81,7 +93,7 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
               rater:rater_id(id, full_name, profile_image_url),
               skill:skill_id(id, title, category)
             `)
-            .eq('ratee_id', params.id)
+            .eq('ratee_id', profileId)
             .eq('is_public', true)
             .order('created_at', { ascending: false });
           
@@ -102,7 +114,7 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
     };
     
     fetchUserProfile();
-  }, [params.id, supabase, user]);
+  }, [profileId, supabase, user]);
   
   // Filter skills based on active tab
   const filteredSkills = skills.filter(skill => 

@@ -47,7 +47,7 @@ const MessageComposer: React.FC<MessageComposerProps> = ({ tradeId, onSend }) =>
           trade_id: tradeId,
           sender_id: user.id,
         })
-        .select()
+        .select('*')
         .single();
 
       if (insertError) {

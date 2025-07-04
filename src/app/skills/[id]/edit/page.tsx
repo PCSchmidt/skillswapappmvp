@@ -13,7 +13,7 @@ import SkillForm from '@/components/skills/SkillForm';
 import { useSupabase } from '@/contexts/SupabaseContext';
 import { Database } from '@/types/supabase';
 
-export default function EditSkillPage({ params }: { params: { id: string } }) {
+export default function EditSkillPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const { supabase, user, isLoading } = useSupabase();
   
@@ -21,6 +21,16 @@ export default function EditSkillPage({ params }: { params: { id: string } }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [unauthorized, setUnauthorized] = useState(false);
+  const [skillId, setSkillId] = useState<string | null>(null);
+  
+  // Extract params
+  useEffect(() => {
+    const getParams = async () => {
+      const resolvedParams = await params;
+      setSkillId(resolvedParams.id);
+    };
+    getParams();
+  }, [params]);
   
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -32,13 +42,13 @@ export default function EditSkillPage({ params }: { params: { id: string } }) {
   // Fetch skill data on initial load
   useEffect(() => {
     const fetchSkill = async () => {
-      if (!user) return;
+      if (!user || !skillId) return;
       
       try {
         const { data, error } = await supabase
           .from('skills')
           .select('*')
-          .eq('id', params.id)
+          .eq('id', skillId)
           .single();
         
         if (error) {
@@ -81,18 +91,18 @@ export default function EditSkillPage({ params }: { params: { id: string } }) {
     if (user) {
       fetchSkill();
     }
-  }, [params.id, supabase, user]);
+  }, [skillId, supabase, user]);
     // Handle successful edit
   const handleSuccess = () => {
     // Navigate back to the skill detail page
     setTimeout(() => {
-      router.push(`/skills/${params.id}`);
+      router.push(`/skills/${skillId}`);
     }, 1500);
   };
 
   // Handle cancel
   const handleCancel = () => {
-    router.push(`/skills/${params.id}`);
+    router.push(`/skills/${skillId}`);
   };
   
   // Show loading state

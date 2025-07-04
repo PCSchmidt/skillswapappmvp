@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import { useSupabase } from '@/contexts/SupabaseContext';
+import { Skill } from '@/types/supabase';
 
 interface FilterOption {
   id: string;
@@ -76,7 +77,7 @@ export default function SkillFilters({
         // Process data to get unique categories with counts
         const categoryMap = new Map<string, number>();
         
-        data.forEach(skill => {
+        (data as Skill[])?.forEach((skill: Skill) => {
           if (skill.category) {
             const count = categoryMap.get(skill.category) || 0;
             categoryMap.set(skill.category, count + 1);
