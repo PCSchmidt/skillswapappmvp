@@ -20,13 +20,21 @@ const Navbar = () => {
   useEffect(() => {
     setIsHydrated(true);
   }, []);
-  // Fetch unread notification count with configurable real-time/polling
+  // Fetch unread notification count with aggressive rate limiting to prevent shaking
   useEffect(() => {
     if (!user || !isHydrated) return;
     
     let isMounted = true;
+    let lastFetchTime = 0;
+    const FETCH_COOLDOWN = 300000; // 5 minutes minimum between fetches
     
     const fetchNotificationCount = async () => {
+      const now = Date.now();
+      if (now - lastFetchTime < FETCH_COOLDOWN) {
+        return; // Skip if too soon since last fetch
+      }
+      lastFetchTime = now;
+      
       try {
         const { data, error } = await supabase
           .from('users')
@@ -37,66 +45,37 @@ const Navbar = () => {
         if (!isMounted) return;
         
         if (error) {
-          console.warn('Unable to fetch notification count (table may not exist or no access):', error.message);
+          // Silently fail for demo mode or missing tables
           setNotificationCount(0);
           return;
         }
         
-        if (data) {
+        if (data && data.unread_notification_count !== notificationCount) {
+          // Only update if count actually changed to prevent unnecessary re-renders
           setNotificationCount(data.unread_notification_count || 0);
         }
       } catch (err) {
         if (!isMounted) return;
-        console.warn('Error fetching notification count:', err);
+        // Silently fail to prevent console spam
         setNotificationCount(0);
       }
     };
 
-    // Initial fetch
-    fetchNotificationCount();
+    // Initial fetch with longer delay to prevent rapid mounting/unmounting
+    const initialFetchTimeout = setTimeout(() => {
+      if (isMounted) {
+        fetchNotificationCount();
+      }
+    }, 3000);
     
-    // Check if real-time is enabled (optimized for bandwidth usage)
-    const realtimeEnabled = process.env.NEXT_PUBLIC_ENABLE_REALTIME === 'true';
-    
-    let subscription: unknown = null;
-    let pollingInterval: NodeJS.Timeout | null = null;
-    
-    if (realtimeEnabled) {
-      // Real-time subscription (higher bandwidth usage)
-      subscription = supabase
-        .channel('user-notification-count')
-        .on('postgres_changes', {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'users',
-          filter: `id=eq.${user.id}`
-        }, (payload) => {
-          if (!isMounted) return;
-          if (payload.new && payload.new.unread_notification_count !== undefined) {
-            setNotificationCount(payload.new.unread_notification_count || 0);
-          }
-        })
-        .subscribe();
-    } else {
-      // Polling fallback (bandwidth optimized for free tier)
-      pollingInterval = setInterval(() => {
-        if (isMounted) {
-          fetchNotificationCount();
-        }
-      }, 30000); // Poll every 30 seconds
-    }
+    // DISABLE polling entirely to prevent shaking - use manual refresh only
+    // Users can refresh notifications manually if needed
     
     return () => {
       isMounted = false;
-      if (pollingInterval) {
-        clearInterval(pollingInterval);
-      }
-      if (subscription && typeof subscription === 'object' && subscription !== null && 'topic' in subscription) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        supabase.removeChannel(subscription as any);
-      }
+      clearTimeout(initialFetchTimeout);
     };
-  }, [user, supabase, isHydrated]);
+  }, [user?.id, isHydrated]); // Simplified dependencies
 
   const handleSignOut = async () => {
     await signOut();
@@ -109,8 +88,8 @@ const Navbar = () => {
   if (!isHydrated) {
     // Show stable skeleton to prevent layout shift
     return (
-      <header className="bg-white border-b border-neutral-200 sticky top-0 z-50 shadow-sm">
-        <Container size="xl" padding="sm" className="flex justify-between items-center">
+      <header className="bg-white border-b border-neutral-200 sticky top-0 z-50 shadow-sm h-16">
+        <Container size="xl" padding="sm" className="flex justify-between items-center h-full">
           <Link href="/" className="flex items-center gap-2">
             <div className="w-8 h-8 flex items-center justify-center">
               <svg 
@@ -155,8 +134,8 @@ const Navbar = () => {
   }
 
   return (
-    <header className="bg-white border-b border-neutral-200 sticky top-0 z-50 shadow-sm">
-      <Container size="xl" padding="sm" className="flex justify-between items-center">
+    <header className="bg-white border-b border-neutral-200 sticky top-0 z-50 shadow-sm h-16">
+      <Container size="xl" padding="sm" className="flex justify-between items-center h-full">
         <Link href="/" className="flex items-center gap-2">
           {/* Logo SVG Icon for brand identity */}
           <div className="w-8 h-8 flex items-center justify-center">
@@ -230,12 +209,13 @@ const Navbar = () => {
         </div>        {/* Desktop Authentication Links */}
         <div className="hidden md:flex items-center space-x-5">
           {!isHydrated || isLoading ? (
+            // Stable skeleton that matches the actual content dimensions
             <div className="flex items-center space-x-5">
               <div className="animate-pulse h-6 w-20 bg-neutral-200 rounded"></div>
               <div className="animate-pulse h-6 w-16 bg-neutral-200 rounded"></div>
               <div className="animate-pulse h-6 w-6 bg-neutral-200 rounded-full"></div>
               <div className="animate-pulse h-6 w-16 bg-neutral-200 rounded"></div>
-              <div className="animate-pulse h-10 w-20 bg-neutral-200 rounded"></div>
+              <div className="animate-pulse h-9 w-20 bg-neutral-200 rounded"></div>
             </div>
           ) : user ? (
             <>              <Link 

@@ -254,11 +254,17 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
 
   // Cache for API quota conservation
   const lastRefreshTime = useRef<number>(0);
-  const REFRESH_COOLDOWN = 30000; // 30 seconds minimum between refreshes
+  const REFRESH_COOLDOWN = 60000; // 1 minute minimum between refreshes
+  const isRefreshing = useRef<boolean>(false);
   
   // Function to refresh user data from the database
   const refreshUser = useCallback(async () => {
     if (!user || !isClient) {
+      return;
+    }
+    
+    // Prevent concurrent refresh calls
+    if (isRefreshing.current) {
       return;
     }
     
@@ -278,6 +284,8 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
       setIsVerified(isEmailConfirmed);
       return;
     }
+    
+    isRefreshing.current = true;
     lastRefreshTime.current = now;
     
     try {
@@ -293,6 +301,8 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
       console.warn('Error refreshing user data:', error);
       const isEmailConfirmed = user.email_confirmed_at != null;
       setIsVerified(isEmailConfirmed);
+    } finally {
+      isRefreshing.current = false;
     }
   }, [user, isClient]);
 
@@ -326,25 +336,30 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
     
     fetchSession();
     
-    // Set up the auth state listener
+    // Set up the auth state listener with aggressive debouncing to prevent shaking
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event: AuthChangeEvent, session: Session | null) => {
         if (!isMounted) return;
         
-        // Debounce state updates to prevent flickering
+        // Aggressive debouncing to prevent rapid state changes that cause shaking
         setTimeout(() => {
           if (!isMounted) return;
           
-          setSession(session);
-          setUser(session?.user || null);
-          
-          if (session?.user) {
-            refreshUser();
-          } else {
-            setIsVerified(false);
+          // Only update state if it actually changed to prevent unnecessary re-renders
+          if (session?.user?.id !== user?.id) {
+            setSession(session);
+            setUser(session?.user || null);
+            
+            // Only refresh user for significant events, not token refreshes
+            if (session?.user && event === 'SIGNED_IN') {
+              refreshUser();
+            } else if (!session) {
+              setIsVerified(false);
+            }
           }
+          
           setIsLoading(false);
-        }, 50);
+        }, 500); // Increased debounce delay to 500ms to prevent shaking
       }
     );
     
@@ -353,7 +368,7 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
       isMounted = false;
       subscription.unsubscribe();
     };
-  }, [refreshUser, isClient]);
+  }, [refreshUser, isClient, user?.id]);
 
   // Sign in with email and password
   const signIn = async (email: string, password: string) => {
