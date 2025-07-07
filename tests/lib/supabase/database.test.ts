@@ -72,7 +72,7 @@ describe('Database Interactions', () => {
 
     test('should fetch a user profile successfully', async () => {
       const { data, error } = await supabaseClient
-        .from('profiles')
+        .from('users')
         .select('*')
         .eq('id', 'user-123')
         .single();
@@ -86,7 +86,7 @@ describe('Database Interactions', () => {
       const updates = { bio: 'Senior software developer' };
       
       const { data, error } = await supabaseClient
-        .from('profiles')
+        .from('users')
         .update(updates)
         .eq('id', 'user-123')
         .select();

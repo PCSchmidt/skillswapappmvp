@@ -41,7 +41,7 @@ export default function ProfilePage() {
       try {
         // Fetch profile
         const { data: profileData, error: profileError } = await supabase
-          .from('profiles')
+          .from('users')
           .select('*')
           .eq('id', user.id)
           .single();
@@ -90,7 +90,7 @@ export default function ProfilePage() {
   //     setLoading(true);
       
   //     const { error } = await supabase
-  //       .from('profiles')
+  //       .from('users')
   //       .update(updatedProfile)
   //       .eq('id', user!.id);
 

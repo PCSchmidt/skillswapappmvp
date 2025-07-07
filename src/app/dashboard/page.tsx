@@ -4,7 +4,9 @@ import dynamic from 'next/dynamic';
 import React from 'react';
 import DashboardOnboarding from '@/components/dashboard/DashboardOnboarding';
 import EngagementActions from '@/components/dashboard/EngagementActions';
+import ProfileCompletion from '@/components/dashboard/ProfileCompletion';
 import QuickActions, { commonActions } from '@/components/dashboard/QuickActions';
+import UserVerificationStatus from '@/components/dashboard/UserVerificationStatus';
 import ActivityFeedSkeleton from '@/components/dashboard/skeletons/ActivityFeedSkeleton';
 import ExchangeStatusSkeleton from '@/components/dashboard/skeletons/ExchangeStatusSkeleton';
 import RecommendationPanelSkeleton from '@/components/dashboard/skeletons/RecommendationPanelSkeleton';
@@ -257,6 +259,12 @@ export default function DashboardPage() {
               className="mb-8"
             />
           )}
+
+          {/* User verification and profile completion status */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <UserVerificationStatus />
+            <ProfileCompletion />
+          </div>
           
           {/* Stats section */}
           <Grid columns={4} gap="sm">

@@ -10,6 +10,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { useSupabase } from '@/contexts/SupabaseContext';
+import { emailService } from '@/lib/email/emailService';
+import PasswordStrengthIndicator from './PasswordStrengthIndicator';
 
 export default function SignupForm() {
   const router = useRouter();
@@ -41,9 +43,20 @@ export default function SignupForm() {
   
   const validatePassword = (password: string) => {
     if (!password) return 'Password is required';
-    if (password.length < 8) return 'Password must be at least 8 characters long';
-    if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
-      return 'Password must contain at least one uppercase letter, one lowercase letter, and one number';
+    if (password.length < 12) return 'Password must be at least 12 characters long';
+    if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/.test(password)) {
+      return 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)';
+    }
+    if (/(.)\1{2,}/.test(password)) {
+      return 'Password cannot contain more than 2 consecutive identical characters';
+    }
+    if (/^(.{1,2})\1+$/.test(password)) {
+      return 'Password cannot be a simple repeated pattern';
+    }
+    // Check for common weak passwords
+    const commonPasswords = ['password', '123456', 'qwerty', 'abc123', 'password123', 'admin', 'welcome'];
+    if (commonPasswords.some(common => password.toLowerCase().includes(common))) {
+      return 'Password contains common words that make it vulnerable';
     }
     return '';
   };
@@ -92,8 +105,8 @@ export default function SignupForm() {
       return;
     }
     
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters long');
+    if (password.length < 12) {
+      setError('Password must be at least 12 characters long');
       return;
     }
     
@@ -104,31 +117,58 @@ export default function SignupForm() {
       const { success, error } = await signUp(email, password);
       
       if (success) {
-        // After successful signup, update the user's profile
+        // After successful signup, try to update the user's profile
         try {
           const { data: { user } } = await supabase.auth.getUser();
           
           if (user) {
-            const { error: profileError } = await supabase
-              .from('users')
-              .upsert({
-                id: user.id,
-                email: email,
-                full_name: fullName,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-              });
+            try {
+              const { error: userUpdateError } = await supabase
+                .from('users')
+                .upsert({
+                  id: user.id,
+                  email: email,
+                  full_name: fullName,
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
+                });
+              
+              if (userUpdateError) {
+                console.warn('Could not update user record:', userUpdateError);
+                // This is non-critical for signup - user account is still created
+              } else {
+                console.log('User profile data saved successfully');
+              }
+            } catch (userUpsertError) {
+              console.warn('User table update failed:', userUpsertError);
+              // Non-critical error - signup can continue without user profile update
+            }
             
-            if (profileError) {
-              console.error('Error updating user profile:', profileError);
+            // Send welcome email
+            try {
+              const welcomeEmailResult = await emailService.sendEmail('welcome', {
+                recipientName: fullName,
+                recipientEmail: email,
+                verificationLink: undefined // Supabase handles verification emails separately
+              });
+              
+              if (!welcomeEmailResult.success) {
+                console.error('Failed to send welcome email:', welcomeEmailResult.error);
+                // Don't fail the signup process if email fails
+              } else {
+                console.log('Welcome email sent successfully');
+              }
+            } catch (emailError) {
+              console.error('Error sending welcome email:', emailError);
+              // Don't fail the signup process if email fails
             }
           }
-        } catch (profileError) {
-          console.error('Error getting user or updating profile:', profileError);
+        } catch (userProfileError) {
+          console.error('Error getting user or updating user profile:', userProfileError);
         }
         
         // Show success message
-        setSuccessMessage('Account created successfully! Please check your email for verification.');
+        setSuccessMessage('Account created successfully! Please check your email for verification and welcome information.');
         
         // Clear form
         setEmail('');
@@ -256,9 +296,7 @@ export default function SignupForm() {
               )}
             </button>
           </div>
-          <div className="mt-1 text-xs text-gray-500">
-            Password must be at least 8 characters long
-          </div>
+          <PasswordStrengthIndicator password={password} className="mt-2" />
           {fieldErrors.password && (
             <div className="mt-1 text-xs text-error-700" data-testid="password-error">
               {fieldErrors.password}

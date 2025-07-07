@@ -8,8 +8,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import React from 'react';
-import SkillSearch from '@/components/skills/SkillSearch';
+import React, { useState, useEffect } from 'react';
 
 interface HeroSectionProps {
   title?: string;
@@ -36,6 +35,12 @@ export default function HeroSection({
   trustBadge = true,
   children
 }: HeroSectionProps) {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   // Replace newline characters with <br /> for line breaks in title
   const formattedTitle = title.split('\n').map((line, i) => (
     <React.Fragment key={i}>
@@ -111,23 +116,24 @@ export default function HeroSection({
               </div>
             </div>
             
-            {/* Enhanced Search Section */}
-            <div className="mt-8">
-              <div className="text-center mb-4">
-                <p className="text-white/90 text-sm">
-                  Or explore what's available right now
-                </p>
+            {/* Enhanced Search Section - Simplified to prevent hydration issues */}
+            {isClient && (
+              <div className="mt-8">
+                <div className="text-center mb-4">
+                  <p className="text-white/90 text-sm">
+                    Or explore what's available right now
+                  </p>
+                </div>
+                <div className="max-w-md mx-auto">
+                  <Link 
+                    href="/skills/browse"
+                    className="block w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-accent-yellow-500 focus:border-transparent hover:bg-white/20 transition-all text-center"
+                  >
+                    🔍 Browse All Skills
+                  </Link>
+                </div>
               </div>
-              <div className="max-w-md mx-auto">
-                <SkillSearch
-                  placeholder="Search for skills..."
-                  redirectOnSearch={true}
-                  className="w-full"
-                  showSuggestions={true}
-                  maxSuggestions={5}
-                />
-              </div>
-            </div>
+            )}
             
             {children && (
               <div className="mt-6">{children}</div>

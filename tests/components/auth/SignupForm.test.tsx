@@ -92,12 +92,12 @@ describe('SignupForm', () => {
     fireEvent.click(signUpButton);
       // Check for password length validation
     await waitFor(() => {
-      expect(screen.getByTestId('auth-error')).toHaveTextContent(/password must be at least 8 characters long/i);
+      expect(screen.getByTestId('auth-error')).toHaveTextContent(/password must be at least 12 characters long/i);
     });
     
     // Now test password mismatch validation
-    fireEvent.change(passwordInput, { target: { value: 'password123' } });
-    fireEvent.change(confirmPasswordInput, { target: { value: 'different123' } });
+    fireEvent.change(passwordInput, { target: { value: 'Password123!@#ABC' } });
+    fireEvent.change(confirmPasswordInput, { target: { value: 'DifferentPass123!@#' } });
     fireEvent.click(signUpButton);
       // Check validation errors for password mismatch
     await waitFor(() => {
@@ -116,8 +116,8 @@ describe('SignupForm', () => {
     
     fireEvent.change(nameInput, { target: { value: 'John Doe' } });
     fireEvent.change(emailInput, { target: { value: 'new@example.com' } });
-    fireEvent.change(passwordInput, { target: { value: 'password123' } });
-    fireEvent.change(confirmPasswordInput, { target: { value: 'password123' } });
+    fireEvent.change(passwordInput, { target: { value: 'SecurePassword123!@#' } });
+    fireEvent.change(confirmPasswordInput, { target: { value: 'SecurePassword123!@#' } });
     
     // Submit form
     const signUpButton = screen.getByRole('button', { name: /create account/i });
@@ -127,7 +127,7 @@ describe('SignupForm', () => {
     
     // Verify signUp was called with correct data
     await waitFor(() => {
-      expect(mockSignUp).toHaveBeenCalledWith('new@example.com', 'password123');
+      expect(mockSignUp).toHaveBeenCalledWith('new@example.com', 'SecurePassword123!@#');
     });
     
     // Check for success message
@@ -149,8 +149,8 @@ describe('SignupForm', () => {
     
     fireEvent.change(nameInput, { target: { value: 'John Doe' } });
     fireEvent.change(emailInput, { target: { value: 'exists@example.com' } });
-    fireEvent.change(passwordInput, { target: { value: 'password123' } });
-    fireEvent.change(confirmPasswordInput, { target: { value: 'password123' } });
+    fireEvent.change(passwordInput, { target: { value: 'SecurePassword123!@#' } });
+    fireEvent.change(confirmPasswordInput, { target: { value: 'SecurePassword123!@#' } });
     
     // Submit form
     const signUpButton = screen.getByRole('button', { name: /create account/i });
@@ -192,8 +192,8 @@ describe('SignupForm', () => {
     
     fireEvent.change(nameInput, { target: { value: 'John Doe' } });
     fireEvent.change(emailInput, { target: { value: 'new@example.com' } });
-    fireEvent.change(passwordInput, { target: { value: 'password123' } });
-    fireEvent.change(confirmPasswordInput, { target: { value: 'password123' } });
+    fireEvent.change(passwordInput, { target: { value: 'SecurePassword123!@#' } });
+    fireEvent.change(confirmPasswordInput, { target: { value: 'SecurePassword123!@#' } });
     
     // Submit form
     const signUpButton = screen.getByRole('button', { name: /create account/i });

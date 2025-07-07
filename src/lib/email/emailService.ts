@@ -80,7 +80,7 @@ export class EmailService {
 
       // Get user details for email
       const { data: user, error: userError } = await this.supabase
-        .from('profiles')
+        .from('users')
         .select('email, full_name')
         .eq('id', userId)
         .single();

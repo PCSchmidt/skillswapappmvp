@@ -17,7 +17,21 @@ import QuickActions from '@/components/dashboard/QuickActions';
 import RecommendationPanel from '@/components/dashboard/RecommendationPanel';
 import StatCard from '@/components/dashboard/StatCard';
 import Button from '@/components/ui/Button';
-import { useSupabase } from '@/contexts/SupabaseContext';
+import { useOptimizedData } from '@/lib/hooks/useOptimizedData';
+
+// Helper function to calculate profile completeness
+function calculateProfileCompleteness(profile: UserProfile | null): number {
+  if (!profile) return 0;
+  
+  const profileFields = [
+    profile.full_name,
+    profile.bio,
+    profile.location_city,
+    profile.location_state,
+  ];
+  const completedFields = profileFields.filter(field => field && field.trim()).length;
+  return Math.round((completedFields / profileFields.length) * 100);
+}
 
 interface UserProfile {
   id: string;
@@ -50,14 +64,23 @@ interface WelcomeBackProps {
 
 interface UserSkill {
   id: string;
+  title: string;
+  description: string;
+  category: string;
   skill_type: 'offered' | 'wanted';
-  proficiency_level: string;
-  skills?: {
-    id: string;
-    title: string;
-    category: string;
-    description: string;
-  } | null;
+  experience_level: string;
+  created_at?: string;
+}
+
+interface UserTrade {
+  id: string;
+  status: 'proposed' | 'accepted' | 'completed' | 'cancelled';
+  created_at: string;
+}
+
+interface UserMessage {
+  id: string;
+  created_at: string;
 }
 
 interface ActivityItem {
@@ -70,18 +93,43 @@ interface ActivityItem {
 }
 
 export default function WelcomeBack({ user, profile }: WelcomeBackProps) {
-  const { supabase } = useSupabase();
-  const [stats, setStats] = useState<UserStats>({
-    skillsOffered: 0,
-    skillsWanted: 0,
-    activeExchanges: 0,
-    unreadMessages: 0,
-    completedExchanges: 0,
-    profileCompleteness: 0,
-  });
   const [loading, setLoading] = useState(true);
-  const [userSkills, setUserSkills] = useState<UserSkill[]>([]);
   const [recentActivity, setRecentActivity] = useState<ActivityItem[]>([]);
+
+  // Use optimized data hooks to reduce API calls
+  const { data: userSkills = [] } = useOptimizedData<UserSkill[]>({
+    table: 'user_skills',
+    select: 'id, title, description, category, skill_type, experience_level',
+    filters: { user_id: user.id },
+    enabled: !!user.id,
+    cacheKey: `user_skills_${user.id}`
+  });
+
+  const { data: userTrades = [] } = useOptimizedData<UserTrade[]>({
+    table: 'trades', 
+    select: 'id, status, created_at',
+    filters: { user_id: user.id },
+    enabled: !!user.id,
+    cacheKey: `user_trades_${user.id}`
+  });
+
+  const { data: unreadMessages = [] } = useOptimizedData<UserMessage[]>({
+    table: 'messages',
+    select: 'id, created_at',
+    filters: { receiver_id: user.id, is_read: false },
+    enabled: !!user.id,
+    cacheKey: `unread_messages_${user.id}`
+  });
+
+  // Calculate stats from the fetched data
+  const stats: UserStats = {
+    skillsOffered: userSkills.filter(s => s.skill_type === 'offered').length,
+    skillsWanted: userSkills.filter(s => s.skill_type === 'wanted').length,
+    activeExchanges: userTrades.filter(t => ['proposed', 'accepted'].includes(t.status)).length,
+    unreadMessages: unreadMessages.length,
+    completedExchanges: userTrades.filter(t => t.status === 'completed').length,
+    profileCompleteness: calculateProfileCompleteness(profile),
+  };
 
   const fetchDashboardData = useCallback(async () => {
     try {

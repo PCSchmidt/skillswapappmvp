@@ -9,7 +9,92 @@
 
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Session, User, AuthChangeEvent } from '@supabase/supabase-js';
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
+
+// Check if we have valid Supabase configuration
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const hasValidConfig = supabaseUrl && supabaseAnonKey && 
+  supabaseUrl.includes('supabase.co') && 
+  supabaseAnonKey.length > 50;
+
+// Simple cache for demo mode data
+const demoDataCache = new Map();
+
+// Demo data generator for testing
+const generateDemoData = (type: string, userId?: string) => {
+  const cacheKey = `${type}_${userId || 'default'}`;
+  if (demoDataCache.has(cacheKey)) {
+    return demoDataCache.get(cacheKey);
+  }
+
+  let demoData;
+  switch (type) {
+    case 'user_profile':
+      demoData = {
+        id: userId || 'demo-user-id',
+        full_name: 'Demo User',
+        bio: 'This is a demo user profile for testing purposes.',
+        location_city: 'Demo City',
+        location_state: 'Demo State',
+        location_country: 'Demo Country',
+        created_at: new Date().toISOString()
+      };
+      break;
+    case 'user_skills':
+      demoData = [
+        {
+          id: 'demo-skill-1',
+          user_id: userId || 'demo-user-id',
+          title: 'JavaScript Programming',
+          description: 'Expert in modern JavaScript frameworks',
+          category: 'Technology',
+          skill_type: 'offered',
+          experience_level: 'expert',
+          created_at: new Date().toISOString()
+        },
+        {
+          id: 'demo-skill-2', 
+          user_id: userId || 'demo-user-id',
+          title: 'Guitar Lessons',
+          description: 'Looking to learn acoustic guitar',
+          category: 'Music',
+          skill_type: 'wanted',
+          experience_level: 'beginner',
+          created_at: new Date().toISOString()
+        }
+      ];
+      break;
+    case 'trades':
+      demoData = [
+        {
+          id: 'demo-trade-1',
+          proposer_id: userId || 'demo-user-id',
+          receiver_id: 'demo-other-user',
+          status: 'proposed',
+          created_at: new Date().toISOString()
+        }
+      ];
+      break;
+    case 'messages':
+      demoData = [
+        {
+          id: 'demo-message-1',
+          sender_id: 'demo-other-user',
+          receiver_id: userId || 'demo-user-id',
+          content: 'Hi! I\'m interested in your JavaScript skills.',
+          is_read: false,
+          created_at: new Date().toISOString()
+        }
+      ];
+      break;
+    default:
+      demoData = [];
+  }
+
+  demoDataCache.set(cacheKey, demoData);
+  return demoData;
+};
 
 // Function to create a mock Supabase client for Storybook
 const createMockSupabaseClient = () => {
@@ -103,7 +188,17 @@ const createMockSupabaseClient = () => {
 };
 
 // Determine which Supabase client to use
-const supabase = process.env.STORYBOOK ? createMockSupabaseClient() : createClientComponentClient();
+const supabase = (process.env.STORYBOOK || !hasValidConfig) ? createMockSupabaseClient() : createClientComponentClient();
+
+// Log demo mode warning if no valid config
+if (!hasValidConfig && typeof window !== 'undefined') {
+  console.warn(
+    '🔧 Supabase configuration missing - running in demo mode.',
+    '\nTo enable full functionality, set these environment variables:',
+    '\n- NEXT_PUBLIC_SUPABASE_URL',
+    '\n- NEXT_PUBLIC_SUPABASE_ANON_KEY'
+  );
+}
 
 type SupabaseContextType = {
   supabase: typeof supabase;
@@ -150,40 +245,61 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isVerified, setIsVerified] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
+  // Check if we're on the client side
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Cache for API quota conservation
+  const lastRefreshTime = useRef<number>(0);
+  const REFRESH_COOLDOWN = 30000; // 30 seconds minimum between refreshes
+  
   // Function to refresh user data from the database
   const refreshUser = useCallback(async () => {
-    if (!user) return;
-    try {      // Check if email is confirmed in Supabase Auth
-      const isEmailConfirmed = user.email_confirmed_at != null;
-      // Get the user's profile information from our database
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-      if (data && !error) {
-        // If email is confirmed in Supabase Auth but not in our database, update our database
-        if (isEmailConfirmed && !data.is_verified) {
-          await supabase
-            .from('users')
-            .update({ is_verified: true })
-            .eq('id', user.id);
-          setIsVerified(true);
-        } else {
-          // Otherwise use whichever verification status is true (either source)
-          setIsVerified(isEmailConfirmed || data.is_verified || false);
-        }
-      } else {
-        // If we can't get the user profile data, at least use the Supabase Auth status
-        setIsVerified(isEmailConfirmed);
-      }
-    } catch (error) {
-      console.error('Error refreshing user data:', error);
+    if (!user || !isClient) {
+      return;
     }
-  }, [user]);
-  // Get the session on initial load
+    
+    // In demo mode, use demo data instead of making API calls
+    if (!hasValidConfig) {
+      console.log('📍 Demo mode: Using mock user data to avoid API calls');
+      const isEmailConfirmed = user.email_confirmed_at != null;
+      setIsVerified(isEmailConfirmed);
+      return;
+    }
+    
+    // Rate limiting for API quota conservation
+    const now = Date.now();
+    if (now - lastRefreshTime.current < REFRESH_COOLDOWN) {
+      console.log('🔧 Skipping refresh (rate limited to conserve API quota)');
+      const isEmailConfirmed = user.email_confirmed_at != null;
+      setIsVerified(isEmailConfirmed);
+      return;
+    }
+    lastRefreshTime.current = now;
+    
+    try {
+      // Check email confirmation status from auth (no API call needed)
+      const isEmailConfirmed = user.email_confirmed_at != null;
+      
+      // Only verify database record existence for critical operations
+      // Skip database calls for basic auth verification to conserve quota
+      console.log('💡 Using auth status to conserve API quota');
+      setIsVerified(isEmailConfirmed);
+      
+    } catch (error) {
+      console.warn('Error refreshing user data:', error);
+      const isEmailConfirmed = user.email_confirmed_at != null;
+      setIsVerified(isEmailConfirmed);
+    }
+  }, [user, isClient]);
+
+  // Get the session on initial load - only on client side
   useEffect(() => {
+    if (!isClient) return;
+    
     let isMounted = true;
     
     const fetchSession = async () => {
@@ -237,7 +353,7 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
       isMounted = false;
       subscription.unsubscribe();
     };
-  }, [refreshUser]);
+  }, [refreshUser, isClient]);
 
   // Sign in with email and password
   const signIn = async (email: string, password: string) => {

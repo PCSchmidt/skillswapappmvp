@@ -66,8 +66,8 @@ export default function SkillDetailsPage() {
 
         // Fetch owner profile data
         const { data: ownerData, error: ownerError } = await supabase
-          .from('profiles')
-          .select('id, full_name, username, avatar_url, bio, location, social_links')
+          .from('users')
+          .select('id, full_name, profile_image_url, bio, location_city, location_state')
           .eq('id', skillData.user_id)
           .single();
 
