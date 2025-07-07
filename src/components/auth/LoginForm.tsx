@@ -53,7 +53,7 @@ export default function LoginForm() {
   // Handle navigation to forgot password  
   const handleForgotPassword = (e: React.MouseEvent) => {
     e.preventDefault();
-    router.push('/reset-password');
+    router.push('/auth/forgot-password');
   };
   
   // Handle navigation to sign up

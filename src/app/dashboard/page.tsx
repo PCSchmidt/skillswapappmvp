@@ -6,11 +6,11 @@ import DashboardOnboarding from '@/components/dashboard/DashboardOnboarding';
 import EngagementActions from '@/components/dashboard/EngagementActions';
 import ProfileCompletion from '@/components/dashboard/ProfileCompletion';
 import QuickActions, { commonActions } from '@/components/dashboard/QuickActions';
-import UserVerificationStatus from '@/components/dashboard/UserVerificationStatus';
 import ActivityFeedSkeleton from '@/components/dashboard/skeletons/ActivityFeedSkeleton';
 import ExchangeStatusSkeleton from '@/components/dashboard/skeletons/ExchangeStatusSkeleton';
 import RecommendationPanelSkeleton from '@/components/dashboard/skeletons/RecommendationPanelSkeleton';
 import StatCard from '@/components/dashboard/StatCard';
+import UserVerificationStatus from '@/components/dashboard/UserVerificationStatus';
 import { Container } from '@/components/layout/Container';
 import Grid from '@/components/layout/Grid';
 import Section from '@/components/layout/Section';
@@ -33,6 +33,15 @@ const RecommendationPanel = dynamic(
 );
 
 export default function DashboardPage() {
+  // For immediate stability, disable heavy components temporarily
+  const [enableHeavyComponents, setEnableHeavyComponents] = React.useState(false);
+  
+  // Enable heavy components after initial render to prevent shaking
+  React.useEffect(() => {
+    const timer = setTimeout(() => setEnableHeavyComponents(true), 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
   // Demo data for onboarding
   const onboardingSteps = [
     {
@@ -263,7 +272,17 @@ export default function DashboardPage() {
           {/* User verification and profile completion status */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <UserVerificationStatus />
-            <ProfileCompletion />
+            {enableHeavyComponents ? (
+              <ProfileCompletion />
+            ) : (
+              <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <div className="animate-pulse">
+                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
+                  <div className="h-3 bg-gray-200 rounded w-1/2 mb-2"></div>
+                  <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+                </div>
+              </div>
+            )}
           </div>
           
           {/* Stats section */}

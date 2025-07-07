@@ -30,9 +30,21 @@ export default function ProfileCompletion({ className = '' }: ProfileCompletionP
   const [profileData, setProfileData] = useState<Profile | null>(null);
   const [skills, setSkills] = useState<Skill[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Add aggressive rate limiting to prevent rapid API calls
+  const lastFetchTime = React.useRef<number>(0);
+  const RATE_LIMIT_MS = 30000; // Only fetch once every 30 seconds
 
   const fetchProfileData = useCallback(async () => {
     if (!user) return;
+    
+    // Aggressive rate limiting to prevent rapid calls
+    const now = Date.now();
+    if (now - lastFetchTime.current < RATE_LIMIT_MS) {
+      console.log('ProfileCompletion: Skipping fetch due to rate limiting');
+      return;
+    }
+    lastFetchTime.current = now;
 
     try {
       setLoading(true);
@@ -67,7 +79,7 @@ export default function ProfileCompletion({ className = '' }: ProfileCompletionP
       });
 
       // Try to fetch user skills - handle gracefully if table doesn't exist
-      let skills = [];
+      let skills: Skill[] = [];
       try {
         const { data: userSkills, error: skillsError } = await supabase
           .from('skills')
@@ -100,10 +112,10 @@ export default function ProfileCompletion({ className = '' }: ProfileCompletionP
     } finally {
       setLoading(false);
     }
-  }, [user, supabase]);
+  }, [user?.id]); // Only depend on user ID, not the entire user object
 
   useEffect(() => {
-    if (user && user.id) {
+    if (user?.id) {
       fetchProfileData();
     } else {
       // No user or incomplete user data - set to not loading with empty data
@@ -111,7 +123,7 @@ export default function ProfileCompletion({ className = '' }: ProfileCompletionP
       setProfileData(null);
       setSkills([]);
     }
-  }, [user, fetchProfileData]);
+  }, [user?.id, fetchProfileData]); // Only depend on user ID and the memoized function
 
   const getCompletionItems = (): ProfileCompletionItem[] => {
     if (!profileData) return [];
