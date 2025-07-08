@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import Link from 'next/link';
 import { Container } from '@/components/layout/Container';
 
 export const metadata: Metadata = {
@@ -154,18 +155,18 @@ export default function HowItWorksPage() {
               Join our community and start exchanging skills today.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a
+              <Link
                 href="/signup"
                 className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 transition-colors"
               >
                 Join SkillSwap
-              </a>
-              <a
-                href="/search"
+              </Link>
+              <Link
+                href="/skills/browse"
                 className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors"
               >
                 Browse Skills
-              </a>
+              </Link>
             </div>
           </div>
         </div>

@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import Link from 'next/link';
 import { Container } from '@/components/layout/Container';
 
 export const metadata: Metadata = {
@@ -143,12 +144,12 @@ export default function AboutPage() {
                   We're building something special together. Every day, our community grows stronger as more people 
                   discover the joy of sharing knowledge and learning from each other.
                 </p>
-                <a
+                <Link
                   href="/signup"
                   className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 transition-colors"
                 >
                   Join Our Community
-                </a>
+                </Link>
               </div>
             </div>
           </div>
@@ -162,18 +163,18 @@ export default function AboutPage() {
               Have questions or want to learn more? We'd love to hear from you.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a
+              <Link
                 href="mailto:hello@skillswap.com"
                 className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors"
               >
                 Contact Us
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/how-it-works"
                 className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-primary-600 bg-primary-50 hover:bg-primary-100 transition-colors"
               >
                 Learn How It Works
-              </a>
+              </Link>
             </div>
           </div>
         </div>
