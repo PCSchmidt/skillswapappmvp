@@ -54,14 +54,32 @@ export default function ResetPassword() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate input
+    // Validate input with same requirements as signup
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
     }
     
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters long');
+    // Use same validation as signup form
+    if (password.length < 12) {
+      setError('Password must be at least 12 characters long');
+      return;
+    }
+    
+    if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/.test(password)) {
+      setError('Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)');
+      return;
+    }
+    
+    if (/(.)\1{2,}/.test(password)) {
+      setError('Password cannot contain more than 2 consecutive identical characters');
+      return;
+    }
+    
+    // Check for common weak passwords
+    const commonPasswords = ['password', '123456', 'qwerty', 'abc123', 'password123', 'admin', 'welcome'];
+    if (commonPasswords.some(common => password.toLowerCase().includes(common))) {
+      setError('Password contains common words that make it vulnerable');
       return;
     }
     
