@@ -112,7 +112,7 @@ export default function ProfileCompletion({ className = '' }: ProfileCompletionP
     } finally {
       setLoading(false);
     }
-  }, [user?.id]); // Only depend on user ID, not the entire user object
+  }, [user, supabase]); // Include all dependencies
 
   useEffect(() => {
     if (user?.id) {

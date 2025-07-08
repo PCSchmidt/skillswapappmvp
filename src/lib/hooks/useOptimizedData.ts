@@ -98,6 +98,7 @@ interface UseOptimizedDataOptions {
   dependencies?: unknown[];
   enabled?: boolean;
   cacheKey?: string;
+  customFetcher?: (supabase: any) => Promise<any>;
 }
 
 export function useOptimizedData<T = unknown>({
@@ -106,7 +107,8 @@ export function useOptimizedData<T = unknown>({
   filters = {},
   dependencies = [],
   enabled = true,
-  cacheKey
+  cacheKey,
+  customFetcher
 }: UseOptimizedDataOptions) {
   const { supabase, user } = useSupabase();
   const [data, setData] = useState<T | null>(null);
@@ -166,20 +168,29 @@ export function useOptimizedData<T = unknown>({
       setError(null);
 
       try {
-        // Build query
-        let query = supabase.from(table).select(select);
-        
-        // Apply filters
-        Object.entries(filters).forEach(([key, value]) => {
-          if (value !== undefined && value !== null) {
-            query = query.eq(key, value);
+        let result;
+
+        if (customFetcher) {
+          // Use custom fetcher for batched queries
+          result = await customFetcher(supabase);
+        } else {
+          // Build standard query
+          let query = supabase.from(table).select(select);
+          
+          // Apply filters
+          Object.entries(filters).forEach(([key, value]) => {
+            if (value !== undefined && value !== null) {
+              query = query.eq(key, value);
+            }
+          });
+
+          const { data: queryResult, error: queryError } = await query;
+
+          if (queryError) {
+            throw queryError;
           }
-        });
 
-        const { data: result, error: queryError } = await query;
-
-        if (queryError) {
-          throw queryError;
+          result = queryResult;
         }
 
         // Cache successful result
