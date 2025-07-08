@@ -64,14 +64,44 @@
   html {
     @apply text-neutral-900 scroll-smooth;
     font-family: theme('fontFamily.body');
+    /* Prevent font swap layout shifts */
+    font-display: swap;
   }
 
   body {
     @apply bg-neutral-50 text-neutral-900 antialiased;
+    /* Prevent content shifts during hydration */
+    min-height: 100vh;
+    position: relative;
   }
 
+  /* Prevent CLS (Cumulative Layout Shift) */
+  * {
+    box-sizing: border-box;
+  }
+
+  /* Stabilize navbar height to prevent shifts */
+  header {
+    min-height: 4rem;
+  }
+
+  /* Prevent font loading shifts */
+  .font-heading,
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading font-semibold text-neutral-900;
+    /* Ensure consistent line height */
+    line-height: 1.2;
+  }
+
+  /* Prevent image layout shifts */
+  img {
+    height: auto;
+    max-width: 100%;
+  }
+
+  /* Smooth transitions without causing layout shifts */
+  .transition-all {
+    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
   }
 
   h1 {

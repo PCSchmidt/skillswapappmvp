@@ -263,6 +263,11 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
       return;
     }
     
+    // Skip refreshing on landing page to prevent API calls and shaking
+    if (typeof window !== 'undefined' && window.location.pathname === '/') {
+      return;
+    }
+    
     // Prevent concurrent refresh calls
     if (isRefreshing.current) {
       return;
@@ -306,13 +311,19 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
     }
   }, [user, isClient]);
 
-  // Get the session on initial load - only on client side
+  // Get the session on initial load - only on client side with reduced delays for landing page
   useEffect(() => {
     if (!isClient) return;
     
     let isMounted = true;
     
     const fetchSession = async () => {
+      // Skip session loading on landing page to prevent API calls and delays
+      if (typeof window !== 'undefined' && window.location.pathname === '/') {
+        setIsLoading(false);
+        return;
+      }
+      
       setIsLoading(true);
       try {
         const { data: { session } } = await supabase.auth.getSession();
@@ -341,7 +352,9 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
       async (event: AuthChangeEvent, session: Session | null) => {
         if (!isMounted) return;
         
-        // Aggressive debouncing to prevent rapid state changes that cause shaking
+        // Reduced debouncing for landing page to improve performance
+        const debounceDelay = typeof window !== 'undefined' && window.location.pathname === '/' ? 100 : 500;
+        
         setTimeout(() => {
           if (!isMounted) return;
           
@@ -359,7 +372,7 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
           }
           
           setIsLoading(false);
-        }, 500); // Increased debounce delay to 500ms to prevent shaking
+        }, debounceDelay);
       }
     );
     

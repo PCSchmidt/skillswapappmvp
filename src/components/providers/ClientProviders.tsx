@@ -21,9 +21,8 @@ export default function ClientProviders({ children }: ClientProvidersProps) {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    // Delay hydration slightly to prevent rapid layout shifts
-    const timer = setTimeout(() => setIsClient(true), 100);
-    return () => clearTimeout(timer);
+    // Immediate hydration to reduce layout shifts
+    setIsClient(true);
   }, []);
 
   // Show a stable loading state during hydration to prevent mismatches and shaking
@@ -35,16 +34,16 @@ export default function ClientProviders({ children }: ClientProvidersProps) {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-primary-600 rounded-lg"></div>
-              <div className="w-24 h-6 bg-gray-200 rounded animate-pulse"></div>
+              <div className="font-bold text-xl text-primary-600">SkillSwap</div>
             </div>
             <div className="hidden md:flex space-x-8">
-              <div className="w-20 h-4 bg-gray-200 rounded animate-pulse"></div>
-              <div className="w-16 h-4 bg-gray-200 rounded animate-pulse"></div>
-              <div className="w-12 h-4 bg-gray-200 rounded animate-pulse"></div>
+              <div className="w-20 h-4 bg-transparent"></div>
+              <div className="w-16 h-4 bg-transparent"></div>
+              <div className="w-12 h-4 bg-transparent"></div>
             </div>
             <div className="flex items-center space-x-4">
-              <div className="w-16 h-4 bg-gray-200 rounded animate-pulse"></div>
-              <div className="w-20 h-8 bg-gray-200 rounded animate-pulse"></div>
+              <div className="w-16 h-4 bg-transparent"></div>
+              <div className="w-20 h-8 bg-transparent"></div>
             </div>
           </div>
         </div>

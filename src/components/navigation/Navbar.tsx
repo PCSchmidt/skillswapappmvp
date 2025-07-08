@@ -20,9 +20,15 @@ const Navbar = () => {
   useEffect(() => {
     setIsHydrated(true);
   }, []);
-  // Fetch unread notification count with aggressive rate limiting to prevent shaking
+
+  // Fetch unread notification count ONLY on authenticated pages, not landing page
   useEffect(() => {
     if (!user || !isHydrated) return;
+    
+    // Skip API calls on landing page to prevent shaking
+    if (typeof window !== 'undefined' && window.location.pathname === '/') {
+      return;
+    }
     
     let isMounted = true;
     let lastFetchTime = 0;
@@ -66,10 +72,7 @@ const Navbar = () => {
       if (isMounted) {
         fetchNotificationCount();
       }
-    }, 3000);
-    
-    // DISABLE polling entirely to prevent shaking - use manual refresh only
-    // Users can refresh notifications manually if needed
+    }, 5000); // Increased delay for landing page stability
     
     return () => {
       isMounted = false;
@@ -86,7 +89,7 @@ const Navbar = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };
   if (!isHydrated) {
-    // Show stable skeleton to prevent layout shift
+    // Show stable skeleton to prevent layout shift - no animations to reduce shaking
     return (
       <header className="bg-white border-b border-neutral-200 sticky top-0 z-50 shadow-sm h-16">
         <Container size="xl" padding="sm" className="flex justify-between items-center h-full">
@@ -108,25 +111,46 @@ const Navbar = () => {
             </span>
           </Link>
           
-          {/* Desktop Navigation Skeleton */}
+          {/* Desktop Navigation - show actual content immediately */}
           <nav className="hidden md:flex space-x-8">
-            <div className="animate-pulse h-6 w-16 bg-neutral-200 rounded"></div>
-            <div className="animate-pulse h-6 w-20 bg-neutral-200 rounded"></div>
-            <div className="animate-pulse h-6 w-14 bg-neutral-200 rounded"></div>
+            <Link href="/discovery" className="text-neutral-700 hover:text-primary-600 font-medium transition-colors">
+              Discover Skills
+            </Link>
+            <Link href="/how-it-works" className="text-neutral-700 hover:text-primary-600 font-medium transition-colors">
+              How It Works
+            </Link>
+            <Link href="/about" className="text-neutral-700 hover:text-primary-600 font-medium transition-colors">
+              About
+            </Link>
           </nav>
 
           {/* Mobile Menu Button */}
           <div className="md:hidden">
-            <div className="animate-pulse h-10 w-10 bg-neutral-200 rounded"></div>
+            <button 
+              type="button" 
+              className="p-2 rounded-md text-neutral-700 hover:text-primary-600 hover:bg-neutral-100"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
           </div>
           
-          {/* Desktop Auth Links Skeleton */}
+          {/* Desktop Auth Links - show actual content immediately */}
           <div className="hidden md:flex items-center space-x-5">
-            <div className="animate-pulse h-6 w-20 bg-neutral-200 rounded"></div>
-            <div className="animate-pulse h-6 w-16 bg-neutral-200 rounded"></div>
-            <div className="animate-pulse h-6 w-6 bg-neutral-200 rounded-full"></div>
-            <div className="animate-pulse h-6 w-16 bg-neutral-200 rounded"></div>
-            <div className="animate-pulse h-10 w-20 bg-neutral-200 rounded"></div>
+            <Link 
+              href="/login" 
+              className="font-medium text-neutral-700 hover:text-primary-600 transition-colors"
+            >
+              Login
+            </Link>
+            <Link 
+              href="/signup" 
+              className="btn-primary inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold px-6 py-2.5 rounded-lg shadow-sm hover:shadow-md transition-all"
+            >
+              <span>🚀</span>
+              Get Started Free
+            </Link>
           </div>
         </Container>
       </header>
@@ -208,16 +232,23 @@ const Navbar = () => {
           </button>
         </div>        {/* Desktop Authentication Links */}
         <div className="hidden md:flex items-center space-x-5">
-          {!isHydrated || isLoading ? (
-            // Stable skeleton that matches the actual content dimensions
-            <div className="flex items-center space-x-5">
-              <div className="animate-pulse h-6 w-20 bg-neutral-200 rounded"></div>
-              <div className="animate-pulse h-6 w-16 bg-neutral-200 rounded"></div>
-              <div className="animate-pulse h-6 w-6 bg-neutral-200 rounded-full"></div>
-              <div className="animate-pulse h-6 w-16 bg-neutral-200 rounded"></div>
-              <div className="animate-pulse h-9 w-20 bg-neutral-200 rounded"></div>
-            </div>
-          ) : user ? (
+          {!user ? (
+            <>
+              <Link 
+                href="/login" 
+                className="font-medium text-neutral-700 hover:text-primary-600 transition-colors"
+              >
+                Login
+              </Link>
+              <Link 
+                href="/signup" 
+                className="btn-primary inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold px-6 py-2.5 rounded-lg shadow-sm hover:shadow-md transition-all"
+              >
+                <span>🚀</span>
+                Get Started Free
+              </Link>
+            </>
+          ) : (
             <>              <Link 
                 href="/dashboard" 
                 className="text-neutral-700 hover:text-primary-600 font-medium transition-colors"
@@ -272,22 +303,6 @@ const Navbar = () => {
               >
                 Sign Out
               </button>
-            </>
-          ) : (
-            <>
-              <Link 
-                href="/login" 
-                className="font-medium text-neutral-700 hover:text-primary-600 transition-colors"
-              >
-                Login
-              </Link>
-              <Link 
-                href="/signup" 
-                className="btn-primary inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold px-6 py-2.5 rounded-lg shadow-sm hover:shadow-md transition-all"
-              >
-                <span>🚀</span>
-                Get Started Free
-              </Link>
             </>
           )}
         </div>
