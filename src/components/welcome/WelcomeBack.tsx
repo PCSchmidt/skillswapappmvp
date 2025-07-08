@@ -13,8 +13,6 @@ import { User } from '@supabase/supabase-js';
 import Link from 'next/link';
 import React, { useState, useEffect, useCallback } from 'react';
 import ActivityFeed from '@/components/dashboard/ActivityFeed';
-import QuickActions from '@/components/dashboard/QuickActions';
-import RecommendationPanel from '@/components/dashboard/RecommendationPanel';
 import StatCard from '@/components/dashboard/StatCard';
 import Button from '@/components/ui/Button';
 import { useOptimizedData } from '@/lib/hooks/useOptimizedData';
@@ -41,11 +39,6 @@ interface UserProfile {
   location_state?: string | null;
   location_country?: string | null;
   created_at?: string;
-}
-
-interface WelcomeBackProps {
-  user: User;
-  profile: UserProfile | null;
 }
 
 interface UserStats {
@@ -85,15 +78,24 @@ interface UserMessage {
 
 interface ActivityItem {
   id: string;
-  type: string;
+  type: 'message' | 'request' | 'status' | 'review' | 'match';
   title: string;
   description: string;
   timestamp: string;
   time: string;
+  content: string;
+  read: boolean;
+}
+
+interface QuickTip {
+  icon: string;
+  title: string;
+  description: string;
+  action: string;
+  href: string;
 }
 
 export default function WelcomeBack({ user, profile }: WelcomeBackProps) {
-  const [loading, setLoading] = useState(true);
   const [recentActivity, setRecentActivity] = useState<ActivityItem[]>([]);
   const [stats, setStats] = useState<UserStats>({
     skillsOffered: 0,
@@ -106,7 +108,7 @@ export default function WelcomeBack({ user, profile }: WelcomeBackProps) {
 
   // CRITICAL FIX: Use a single batched API call instead of 3 separate calls
   // This prevents API rate limiting and page shaking issues
-  const { data: dashboardData, loading: dataLoading } = useOptimizedData<{
+  const { data: dashboardData } = useOptimizedData<{
     userSkills: UserSkill[];
     userTrades: UserTrade[];
     unreadMessages: UserMessage[];
@@ -152,37 +154,40 @@ export default function WelcomeBack({ user, profile }: WelcomeBackProps) {
         profileCompleteness: calculateProfileCompleteness(profile),
       };
       setStats(newStats);
-      setLoading(false);
     }
   }, [dashboardData, profile]);
 
-  // Convert dashboard data to display format for activity feed
+  // Convert data to activity items
   const convertToActivities = useCallback((data: typeof dashboardData): ActivityItem[] => {
     if (!data) return [];
     
     const activities: ActivityItem[] = [];
     
-    // Add recent skills as activities
-    data.userSkills.slice(0, 3).forEach(skill => {
+    // Add skill activities
+    data.userSkills.forEach(skill => {
       activities.push({
         id: `skill-${skill.id}`,
-        type: 'skill_added',
-        title: `Added ${skill.skill_type} skill`,
-        description: skill.title,
+        type: 'status',
+        title: `${skill.skill_type === 'offered' ? 'Offering' : 'Learning'} ${skill.title}`,
+        description: skill.description || '',
         timestamp: skill.created_at || new Date().toISOString(),
-        time: 'recently'
+        time: 'recently',
+        content: skill.description || '',
+        read: true
       });
     });
     
-    // Add recent trades as activities
-    data.userTrades.slice(0, 2).forEach(trade => {
+    // Add trade activities
+    data.userTrades.forEach(trade => {
       activities.push({
         id: `trade-${trade.id}`,
-        type: 'trade_activity',
+        type: 'request',
         title: `Trade ${trade.status}`,
         description: 'Skill exchange activity',
         timestamp: trade.created_at,
-        time: 'recently'
+        time: 'recently',
+        content: `Trade status: ${trade.status}`,
+        read: true
       });
     });
     
@@ -196,53 +201,6 @@ export default function WelcomeBack({ user, profile }: WelcomeBackProps) {
       setRecentActivity(activities);
     }
   }, [dashboardData, convertToActivities]);
-        profile?.full_name,
-        profile?.bio,
-        profile?.location_city,
-        profile?.location_state,
-      ];
-      const completedFields = profileFields.filter(field => field && field.trim()).length;
-      const profileCompleteness = Math.round((completedFields / profileFields.length) * 100);
-
-      setStats({
-        skillsOffered,
-        skillsWanted,
-        activeExchanges,
-        unreadMessages: unreadMessages.length,
-        completedExchanges,
-        profileCompleteness,
-      });
-
-      // Mock recent activity for now (in real app, would come from actual data)
-      setRecentActivity([
-        {
-          id: 'activity-1',
-          type: 'skill_added',
-          title: 'You added a new skill',
-          description: 'JavaScript Programming',
-          timestamp: new Date().toISOString(),
-          time: '2 hours ago',
-        },
-        {
-          id: 'activity-2',
-          type: 'message',
-          title: 'New message received',
-          description: 'From Sarah about photography tips',
-          timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-          time: '4 hours ago',
-        },
-      ]);
-
-    } catch (error) {
-      console.error('Error fetching dashboard data:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [user.id, supabase]);
-
-  useEffect(() => {
-    fetchDashboardData();
-  }, [fetchDashboardData]);
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -253,8 +211,8 @@ export default function WelcomeBack({ user, profile }: WelcomeBackProps) {
     return `Good evening, ${name}!`;
   };
 
-  const getQuickTips = () => {
-    const tips = [];
+  const getQuickTips = (): QuickTip[] => {
+    const tips: QuickTip[] = [];
     
     if (stats.profileCompleteness < 80) {
       tips.push({
@@ -289,53 +247,40 @@ export default function WelcomeBack({ user, profile }: WelcomeBackProps) {
     return tips.slice(0, 2); // Show max 2 tips
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
-
   const quickTips = getQuickTips();
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome Header */}
+        {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
             {getGreeting()}
           </h1>
-          <p className="text-lg text-gray-600 mt-2">
-            Welcome back to your SkillSwap dashboard
+          <p className="text-gray-600">
+            Here's your skill exchange activity and opportunities.
           </p>
         </div>
 
-        {/* Quick Tips (if any) */}
+        {/* Quick Tips */}
         {quickTips.length > 0 && (
-          <div className="mb-8 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
-              🚀 Quick Tips to Get Started
-            </h2>
-            <div className="grid md:grid-cols-2 gap-4">
-              {quickTips.map((tip, index) => (
-                <div key={index} className="bg-white rounded-lg p-4 border">
-                  <div className="flex items-start">
-                    <span className="text-2xl mr-3">{tip.icon}</span>
-                    <div className="flex-1">
-                      <h3 className="font-medium text-gray-900">{tip.title}</h3>
-                      <p className="text-sm text-gray-600 mb-3">{tip.description}</p>
-                      <Link href={tip.href}>
-                        <Button variant="outline" size="sm">
-                          {tip.action}
-                        </Button>
-                      </Link>
-                    </div>
+          <div className="mb-8 grid md:grid-cols-2 gap-4">
+            {quickTips.map((tip, index) => (
+              <div key={index} className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="flex items-start">
+                  <span className="text-2xl mr-3">{tip.icon}</span>
+                  <div className="flex-1">
+                    <h3 className="font-medium text-gray-900">{tip.title}</h3>
+                    <p className="text-sm text-gray-600 mb-3">{tip.description}</p>
+                    <Link href={tip.href}>
+                      <Button variant="outline" size="sm">
+                        {tip.action}
+                      </Button>
+                    </Link>
                   </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         )}
 
@@ -364,7 +309,6 @@ export default function WelcomeBack({ user, profile }: WelcomeBackProps) {
             value={stats.unreadMessages}
             to="/messages"
             icon="💬"
-            variant={stats.unreadMessages > 0 ? 'highlight' : 'default'}
           />
         </div>
 
@@ -377,7 +321,20 @@ export default function WelcomeBack({ user, profile }: WelcomeBackProps) {
               <h2 className="text-xl font-semibold text-gray-900 mb-6">
                 Quick Actions
               </h2>
-              <QuickActions />
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <Link href="/skills/my-skills" className="flex flex-col items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100">
+                  <span className="text-2xl mb-2">🎯</span>
+                  <span className="text-sm font-medium">Manage Skills</span>
+                </Link>
+                <Link href="/skills/browse" className="flex flex-col items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100">
+                  <span className="text-2xl mb-2">🔍</span>
+                  <span className="text-sm font-medium">Find Skills</span>
+                </Link>
+                <Link href="/messages" className="flex flex-col items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100">
+                  <span className="text-2xl mb-2">💬</span>
+                  <span className="text-sm font-medium">Messages</span>
+                </Link>
+              </div>
             </div>
 
             {/* Recent Activity */}
@@ -396,7 +353,7 @@ export default function WelcomeBack({ user, profile }: WelcomeBackProps) {
             )}
 
             {/* My Skills Summary */}
-            {userSkills.length > 0 && (
+            {dashboardData?.userSkills && dashboardData.userSkills.length > 0 && (
               <div className="bg-white rounded-lg shadow-sm border p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-semibold text-gray-900">
@@ -407,15 +364,15 @@ export default function WelcomeBack({ user, profile }: WelcomeBackProps) {
                   </Link>
                 </div>
                 <div className="grid md:grid-cols-2 gap-4">
-                  {userSkills.slice(0, 4).map((userSkill) => (
+                  {dashboardData.userSkills.slice(0, 4).map((userSkill) => (
                     <div key={userSkill.id} className="border rounded-lg p-4">
                       <div className="flex items-start justify-between">
                         <div>
                           <h3 className="font-medium text-gray-900">
-                            {userSkill.skills?.title || 'Unknown Skill'}
+                            {userSkill.title || 'Unknown Skill'}
                           </h3>
                           <p className="text-sm text-gray-600 capitalize">
-                            {userSkill.skill_type} • {userSkill.proficiency_level}
+                            {userSkill.skill_type} • {userSkill.experience_level}
                           </p>
                         </div>
                         <span className={`px-2 py-1 rounded-full text-xs ${
@@ -429,11 +386,11 @@ export default function WelcomeBack({ user, profile }: WelcomeBackProps) {
                     </div>
                   ))}
                 </div>
-                {userSkills.length > 4 && (
+                {dashboardData.userSkills.length > 4 && (
                   <div className="text-center mt-4">
                     <Link href="/skills/my-skills">
                       <Button variant="outline" size="sm">
-                        View All {userSkills.length} Skills
+                        View All {dashboardData.userSkills.length} Skills
                       </Button>
                     </Link>
                   </div>
@@ -444,7 +401,14 @@ export default function WelcomeBack({ user, profile }: WelcomeBackProps) {
 
           {/* Right Column - Recommendations */}
           <div className="space-y-8">
-            <RecommendationPanel />
+            <div className="bg-white rounded-lg shadow-sm border p-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-6">
+                Recommendations
+              </h2>
+              <p className="text-gray-600 text-sm">
+                Personalized recommendations coming soon...
+              </p>
+            </div>
             
             {/* Profile Completeness */}
             {stats.profileCompleteness < 100 && (
@@ -461,14 +425,11 @@ export default function WelcomeBack({ user, profile }: WelcomeBackProps) {
                     <div 
                       className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                       style={{ width: `${stats.profileCompleteness}%` }}
-                    />
+                    ></div>
                   </div>
                 </div>
-                <p className="text-sm text-gray-600 mb-4">
-                  Complete your profile to help others find and connect with you.
-                </p>
                 <Link href="/profile">
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" className="w-full">
                     Complete Profile
                   </Button>
                 </Link>
