@@ -10,7 +10,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { useSupabase } from '@/contexts/SupabaseContext';
-import { emailService } from '@/lib/email/emailService';
 import PasswordStrengthIndicator from './PasswordStrengthIndicator';
 
 export default function SignupForm() {
@@ -144,31 +143,15 @@ export default function SignupForm() {
               // Non-critical error - signup can continue without user profile update
             }
             
-            // Send welcome email
-            try {
-              const welcomeEmailResult = await emailService.sendEmail('welcome', {
-                recipientName: fullName,
-                recipientEmail: email,
-                verificationLink: undefined // Supabase handles verification emails separately
-              });
-              
-              if (!welcomeEmailResult.success) {
-                console.error('Failed to send welcome email:', welcomeEmailResult.error);
-                // Don't fail the signup process if email fails
-              } else {
-                console.log('Welcome email sent successfully');
-              }
-            } catch (emailError) {
-              console.error('Error sending welcome email:', emailError);
-              // Don't fail the signup process if email fails
-            }
+            // Note: Welcome email will be sent via Supabase trigger or webhook
+            // to avoid client-side environment variable issues
           }
         } catch (userProfileError) {
           console.error('Error getting user or updating user profile:', userProfileError);
         }
         
         // Show success message
-        setSuccessMessage('Account created successfully! Please check your email for verification and welcome information.');
+        setSuccessMessage('Account created successfully! Please check your email for verification.');
         
         // Clear form
         setEmail('');

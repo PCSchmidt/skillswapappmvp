@@ -95,11 +95,11 @@ function analyzePageContent(html, page) {
   };
   
   // Check for application errors
-  if (html.includes('Application error') || 
-      html.includes('client-side exception') ||
+  if (html.includes('Application error:') || 
+      html.includes('client-side exception has occurred') ||
       html.includes('Internal Server Error') ||
-      html.includes('500') ||
-      html.includes('Runtime Error')) {
+      html.includes('500 Internal Server Error') ||
+      html.includes('Runtime Error:')) {
     analysis.hasErrors = true;
     analysis.errorIndicators.push('Application Error Detected');
   }

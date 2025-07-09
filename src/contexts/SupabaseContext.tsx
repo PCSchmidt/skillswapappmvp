@@ -403,11 +403,16 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
   // Sign up with email and password
   const signUp = async (email: string, password: string) => {
     try {
+      // Get redirect URL safely for client-side
+      const redirectTo = typeof window !== 'undefined' 
+        ? `${window.location.origin}/auth/verify`
+        : `${process.env.NEXT_PUBLIC_SITE_URL || 'https://skillswapappmvp-chris-schmidts-projects.vercel.app'}/auth/verify`;
+        
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/verify`,
+          emailRedirectTo: redirectTo,
         }
       });
       if (error) {
