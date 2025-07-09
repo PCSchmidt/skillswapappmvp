@@ -7,6 +7,7 @@
 
 'use client';
 
+import Link from 'next/link';
 import React, { useState } from 'react';
 
 import DemoDataProvider, { DemoSkill } from '@/components/demo/DemoDataProvider';
@@ -192,12 +193,18 @@ export default function EnhancedDiscoveryPage() {
                     Sign up today and get matched with your first skill swap!
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <button className="bg-white text-primary-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                    <Link 
+                      href="/signup" 
+                      className="bg-white text-primary-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+                    >
                       Create Free Account
-                    </button>
-                    <button className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-primary-700 transition-colors">
+                    </Link>
+                    <Link 
+                      href="/signup?premium=true" 
+                      className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-primary-700 transition-colors"
+                    >
                       Join Waitlist for Premium
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </div>

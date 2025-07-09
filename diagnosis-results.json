@@ -9,15 +9,13 @@
       "hasNextJs": false,
       "hasTitle": true,
       "title": "SkillSwap - Trade Skills, Build Community",
-      "hasErrors": true,
-      "errorIndicators": [
-        "Application Error Detected"
-      ],
+      "hasErrors": false,
+      "errorIndicators": [],
       "hasContent": true,
-      "summary": "❌ Issues: Application Error Detected"
+      "summary": "⚠️ Static content, may lack interactivity"
     },
-    "isHealthy": false,
-    "timestamp": "2025-07-09T16:29:26.568Z"
+    "isHealthy": true,
+    "timestamp": "2025-07-09T17:22:32.419Z"
   },
   {
     "name": "Profile Edit",
@@ -35,7 +33,7 @@
       "summary": "⚠️ Static content, may lack interactivity"
     },
     "isHealthy": true,
-    "timestamp": "2025-07-09T16:29:27.147Z"
+    "timestamp": "2025-07-09T17:22:33.008Z"
   },
   {
     "name": "My Skills",
@@ -53,7 +51,7 @@
       "summary": "⚠️ Static content, may lack interactivity"
     },
     "isHealthy": true,
-    "timestamp": "2025-07-09T16:29:27.758Z"
+    "timestamp": "2025-07-09T17:22:33.562Z"
   },
   {
     "name": "Discovery",
@@ -65,15 +63,13 @@
       "hasNextJs": false,
       "hasTitle": true,
       "title": "SkillSwap - Trade Skills, Build Community",
-      "hasErrors": true,
-      "errorIndicators": [
-        "Application Error Detected"
-      ],
+      "hasErrors": false,
+      "errorIndicators": [],
       "hasContent": true,
-      "summary": "❌ Issues: Application Error Detected"
+      "summary": "⚠️ Static content, may lack interactivity"
     },
-    "isHealthy": false,
-    "timestamp": "2025-07-09T16:29:28.344Z"
+    "isHealthy": true,
+    "timestamp": "2025-07-09T17:22:34.138Z"
   },
   {
     "name": "Home Page",
@@ -85,15 +81,13 @@
       "hasNextJs": false,
       "hasTitle": true,
       "title": "SkillSwap - Trade Skills, Build Community",
-      "hasErrors": true,
-      "errorIndicators": [
-        "Application Error Detected"
-      ],
+      "hasErrors": false,
+      "errorIndicators": [],
       "hasContent": true,
-      "summary": "❌ Issues: Application Error Detected"
+      "summary": "⚠️ Static content, may lack interactivity"
     },
-    "isHealthy": false,
-    "timestamp": "2025-07-09T16:29:28.923Z"
+    "isHealthy": true,
+    "timestamp": "2025-07-09T17:22:34.711Z"
   },
   {
     "name": "Email Verification",
@@ -105,14 +99,12 @@
       "hasNextJs": false,
       "hasTitle": true,
       "title": "SkillSwap - Trade Skills, Build Community",
-      "hasErrors": true,
-      "errorIndicators": [
-        "Application Error Detected"
-      ],
+      "hasErrors": false,
+      "errorIndicators": [],
       "hasContent": true,
-      "summary": "❌ Issues: Application Error Detected"
+      "summary": "⚠️ Static content, may lack interactivity"
     },
-    "isHealthy": false,
-    "timestamp": "2025-07-09T16:29:29.505Z"
+    "isHealthy": true,
+    "timestamp": "2025-07-09T17:22:35.287Z"
   }
 ]

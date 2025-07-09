@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import React from 'react';
 
 export default function HomePageClient() {
@@ -41,21 +42,21 @@ export default function HomePageClient() {
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <div className="text-center p-6 bg-primary-50 rounded-xl">
+            <Link href="/signup" className="text-center p-6 bg-primary-50 rounded-xl hover:bg-primary-100 transition-colors">
               <div className="w-16 h-16 bg-primary-600 text-white rounded-full mx-auto mb-4 flex items-center justify-center text-2xl font-bold">1</div>
               <h3 className="text-xl font-semibold mb-3">Create Profile</h3>
               <p className="text-gray-600">Tell us about your skills and what you'd like to learn</p>
-            </div>
-            <div className="text-center p-6 bg-secondary-50 rounded-xl">
+            </Link>
+            <Link href="/discovery" className="text-center p-6 bg-secondary-50 rounded-xl hover:bg-secondary-100 transition-colors">
               <div className="w-16 h-16 bg-secondary-600 text-white rounded-full mx-auto mb-4 flex items-center justify-center text-2xl font-bold">2</div>
               <h3 className="text-xl font-semibold mb-3">Connect</h3>
               <p className="text-gray-600">Browse skills and connect with other members</p>
-            </div>
-            <div className="text-center p-6 bg-accent-yellow-50 rounded-xl">
+            </Link>
+            <Link href="/skills/browse" className="text-center p-6 bg-accent-yellow-50 rounded-xl hover:bg-accent-yellow-100 transition-colors">
               <div className="w-16 h-16 bg-accent-yellow-600 text-white rounded-full mx-auto mb-4 flex items-center justify-center text-2xl font-bold">3</div>
               <h3 className="text-xl font-semibold mb-3">Trade</h3>
               <p className="text-gray-600">Exchange skills and start learning</p>
-            </div>
+            </Link>
           </div>
         </div>
       </section>
