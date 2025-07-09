@@ -1,0 +1,89 @@
+
+> skillswap-mvp@0.1.0 build
+> next build
+
+   ▲ Next.js 14.0.2
+   - Environments: .env.local
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Skipping validation of types
+   Skipping linting
+   Collecting page data ...
+   Generating static pages (0/43) ...
+   Generating static pages (10/43) 
+ ⚠ Entire page /auth/verify deopted into client-side rendering. https://nextjs.org/docs/messages/deopted-into-client-rendering /auth/verify
+   Generating static pages (21/43) 
+ ⚠ Entire page /search deopted into client-side rendering. https://nextjs.org/docs/messages/deopted-into-client-rendering /search
+ ⚠ Entire page /skills/browse deopted into client-side rendering. https://nextjs.org/docs/messages/deopted-into-client-rendering /skills/browse
+ ⚠ Entire page /trades/new deopted into client-side rendering. https://nextjs.org/docs/messages/deopted-into-client-rendering /trades/new
+   Generating static pages (32/43) 
+ ⚠ Entire page /auth/reset-password deopted into client-side rendering. https://nextjs.org/docs/messages/deopted-into-client-rendering /auth/reset-password
+ ✓ Generating static pages (43/43) 
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                              Size     First Load JS
+┌ ○ /                                    1.38 kB        85.9 kB
+├ ○ /_not-found                          0 B                0 B
+├ ○ /about                               1.17 kB        93.5 kB
+├ ○ /accessibility                       1.17 kB        93.5 kB
+├ ○ /admin/feedback                      4.73 kB        97.1 kB
+├ ○ /api/health                          0 B                0 B
+├ ○ /api/robots                          0 B                0 B
+├ λ /api/sentry-example-api              0 B                0 B
+├ ○ /api/sitemap                         0 B                0 B
+├ λ /api/skills                          0 B                0 B
+├ λ /api/user-skills                     0 B                0 B
+├ λ /api/users                           0 B                0 B
+├ ○ /auth/complete-profile               4.77 kB         137 kB
+├ ○ /auth/forgot-password                3.93 kB         137 kB
+├ ○ /auth/resend-verification            1.92 kB         135 kB
+├ ○ /auth/reset-password                 3.61 kB         144 kB
+├ ○ /auth/verify                         3.87 kB         136 kB
+├ ○ /contact                             147 B          84.7 kB
+├ ○ /cookies                             1.17 kB        93.5 kB
+├ ○ /dashboard                           12.3 kB         153 kB
+├ ○ /demo                                7.06 kB        91.6 kB
+├ ○ /discover                            811 B          85.4 kB
+├ ○ /discovery                           9.97 kB         106 kB
+├ ○ /help                                147 B          84.7 kB
+├ ○ /how-it-works                        1.17 kB        93.5 kB
+├ ○ /login                               4.7 kB          137 kB
+├ ○ /maintenance                         1.49 kB        91.2 kB
+├ ○ /matches                             5.07 kB        97.4 kB
+├ ○ /messages                            5.03 kB         143 kB
+├ λ /messages/[trade_id]                 6.69 kB         145 kB
+├ ○ /notifications                       2.09 kB         140 kB
+├ ○ /privacy                             1.17 kB        93.5 kB
+├ ○ /profile                             7.1 kB          156 kB
+├ λ /profile/[id]                        4.92 kB         155 kB
+├ ○ /profile/edit                        5.49 kB         137 kB
+├ λ /ratings/[trade_id]                  3.37 kB         146 kB
+├ ○ /search                              12.1 kB         158 kB
+├ ○ /sentry-example-page                 2.52 kB        94.9 kB
+├ ○ /settings/email-preferences          3.81 kB         133 kB
+├ ○ /signup                              6.84 kB         139 kB
+├ λ /skills/[id]                         7.12 kB         146 kB
+├ λ /skills/[id]/edit                    1.48 kB         138 kB
+├ ○ /skills/browse                       3.76 kB         153 kB
+├ ○ /skills/manage                       6.57 kB         147 kB
+├ ○ /skills/my-skills                    7.09 kB         141 kB
+├ ○ /skills/new                          701 B           137 kB
+├ ○ /terms                               1.17 kB        93.5 kB
+├ ○ /trades                              4.95 kB         138 kB
+├ λ /trades/[id]                         6.09 kB         139 kB
+├ ○ /trades/new                          6.22 kB         140 kB
+└ ○ /welcome                             9.7 kB          159 kB
++ First Load JS shared by all            84.6 kB
+  ├ chunks/2472-485b47ade06228db.js      29.2 kB
+  ├ chunks/fd9d1056-fdb532cf82bcab3e.js  53.3 kB
+  ├ chunks/main-app-e886110dc1bb017c.js  216 B
+  └ chunks/webpack-e035d52de95dd28d.js   1.83 kB
+
+
+ƒ Middleware                             28 kB
+
+○  (Static)   prerendered as static content
+λ  (Dynamic)  server-rendered on demand using Node.js
+
