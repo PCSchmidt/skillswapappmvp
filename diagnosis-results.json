@@ -1,0 +1,118 @@
+[
+  {
+    "name": "Signup Form",
+    "path": "/signup",
+    "url": "https://skillswapappmvp-chris-schmidts-projects.vercel.app/signup",
+    "status": 200,
+    "contentLength": 10502,
+    "analysis": {
+      "hasNextJs": false,
+      "hasTitle": true,
+      "title": "SkillSwap - Trade Skills, Build Community",
+      "hasErrors": true,
+      "errorIndicators": [
+        "Application Error Detected"
+      ],
+      "hasContent": true,
+      "summary": "❌ Issues: Application Error Detected"
+    },
+    "isHealthy": false,
+    "timestamp": "2025-07-09T15:15:14.525Z"
+  },
+  {
+    "name": "Profile Edit",
+    "path": "/profile/edit",
+    "url": "https://skillswapappmvp-chris-schmidts-projects.vercel.app/profile/edit",
+    "status": 200,
+    "contentLength": 7705,
+    "analysis": {
+      "hasNextJs": false,
+      "hasTitle": true,
+      "title": "SkillSwap - Trade Skills, Build Community",
+      "hasErrors": false,
+      "errorIndicators": [],
+      "hasContent": true,
+      "summary": "⚠️ Static content, may lack interactivity"
+    },
+    "isHealthy": true,
+    "timestamp": "2025-07-09T15:15:15.146Z"
+  },
+  {
+    "name": "My Skills",
+    "path": "/skills/my-skills",
+    "url": "https://skillswapappmvp-chris-schmidts-projects.vercel.app/skills/my-skills",
+    "status": 200,
+    "contentLength": 7704,
+    "analysis": {
+      "hasNextJs": false,
+      "hasTitle": true,
+      "title": "SkillSwap - Trade Skills, Build Community",
+      "hasErrors": false,
+      "errorIndicators": [],
+      "hasContent": true,
+      "summary": "⚠️ Static content, may lack interactivity"
+    },
+    "isHealthy": true,
+    "timestamp": "2025-07-09T15:15:15.843Z"
+  },
+  {
+    "name": "Discovery",
+    "path": "/discovery",
+    "url": "https://skillswapappmvp-chris-schmidts-projects.vercel.app/discovery",
+    "status": 200,
+    "contentLength": 38475,
+    "analysis": {
+      "hasNextJs": false,
+      "hasTitle": true,
+      "title": "SkillSwap - Trade Skills, Build Community",
+      "hasErrors": true,
+      "errorIndicators": [
+        "Application Error Detected"
+      ],
+      "hasContent": true,
+      "summary": "❌ Issues: Application Error Detected"
+    },
+    "isHealthy": false,
+    "timestamp": "2025-07-09T15:15:16.434Z"
+  },
+  {
+    "name": "Home Page",
+    "path": "/",
+    "url": "https://skillswapappmvp-chris-schmidts-projects.vercel.app/",
+    "status": 200,
+    "contentLength": 8213,
+    "analysis": {
+      "hasNextJs": false,
+      "hasTitle": true,
+      "title": "SkillSwap - Trade Skills, Build Community",
+      "hasErrors": true,
+      "errorIndicators": [
+        "Application Error Detected"
+      ],
+      "hasContent": true,
+      "summary": "❌ Issues: Application Error Detected"
+    },
+    "isHealthy": false,
+    "timestamp": "2025-07-09T15:15:17.015Z"
+  },
+  {
+    "name": "Email Verification",
+    "path": "/auth/resend-verification",
+    "url": "https://skillswapappmvp-chris-schmidts-projects.vercel.app/auth/resend-verification",
+    "status": 200,
+    "contentLength": 8814,
+    "analysis": {
+      "hasNextJs": false,
+      "hasTitle": true,
+      "title": "SkillSwap - Trade Skills, Build Community",
+      "hasErrors": true,
+      "errorIndicators": [
+        "Application Error Detected"
+      ],
+      "hasContent": true,
+      "summary": "❌ Issues: Application Error Detected"
+    },
+    "isHealthy": false,
+    "timestamp": "2025-07-09T15:15:17.611Z"
+  }
+]

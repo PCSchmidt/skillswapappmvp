@@ -43,7 +43,7 @@ export default function ProfileEditPage() {
   // Fetch user profile data
   useEffect(() => {
     const fetchProfile = async () => {
-      if (!user) return;
+      if (!user?.id) return;
       
       try {
         const { data, error } = await supabase
@@ -68,7 +68,8 @@ export default function ProfileEditPage() {
           if (data.profile_image_url) {
             setImagePreview(data.profile_image_url);
           }
-        }      } catch (err: unknown) {
+        }
+      } catch (err: unknown) {
         console.error('Error fetching profile:', err);
         setError('Failed to load profile data');
       } finally {
@@ -77,7 +78,7 @@ export default function ProfileEditPage() {
     };
     
     fetchProfile();
-  }, [user, supabase]);
+  }, [user?.id]); // Only depend on user.id, not the entire user object or supabase
   
   // Handle form input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {

@@ -60,8 +60,8 @@ export default function UserSkillsManager({
   const [newSkillCategory, setNewSkillCategory] = useState('');
   const [newSkillDescription, setNewSkillDescription] = useState('');
 
-  // Fetch user's skills
-  const fetchUserSkills = useCallback(async () => {
+  // Refresh user skills after adding/removing
+  const refreshUserSkills = useCallback(async () => {
     try {
       const response = await fetch(`/api/user-skills?user_id=${userId}&skill_type=${skillType}`);
       if (!response.ok) {
@@ -88,17 +88,38 @@ export default function UserSkillsManager({
       console.error('Error fetching available skills:', error);
     }
   }, []);
+  // Load data when component mounts or key props change
   useEffect(() => {
     const loadData = async () => {
+      if (!userId) return;
+      
       setIsLoading(true);
-      await Promise.all([fetchUserSkills(), fetchAvailableSkills()]);
-      setIsLoading(false);
+      try {
+        // Fetch user skills and available skills in parallel
+        const [userSkillsResponse, availableSkillsResponse] = await Promise.all([
+          fetch(`/api/user-skills?user_id=${userId}&skill_type=${skillType}`),
+          fetch('/api/skills')
+        ]);
+        
+        if (userSkillsResponse.ok) {
+          const userSkillsData = await userSkillsResponse.json();
+          setUserSkills(userSkillsData.userSkills || []);
+        }
+        
+        if (availableSkillsResponse.ok) {
+          const availableSkillsData = await availableSkillsResponse.json();
+          setAvailableSkills(availableSkillsData.skills || []);
+        }
+      } catch (error) {
+        console.error('Error loading skills data:', error);
+        setError('Failed to load skills data');
+      } finally {
+        setIsLoading(false);
+      }
     };
     
-    if (userId) {
-      loadData();
-    }
-  }, [userId, skillType, fetchUserSkills, fetchAvailableSkills]);
+    loadData();
+  }, [userId, skillType]); // Only depend on the essential props, not callback functions
 
   const handleAddSkill = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -136,7 +157,7 @@ export default function UserSkillsManager({
       setError('');
       
       // Refresh user skills
-      await fetchUserSkills();
+      await refreshUserSkills();
     } catch (error) {
       console.error('Error adding skill:', error);
       setError(error instanceof Error ? error.message : 'Failed to add skill');
@@ -219,7 +240,7 @@ export default function UserSkillsManager({
       setShowCreateNew(false);
       setIsAdding(false);
       setError('');
-      await Promise.all([fetchUserSkills(), fetchAvailableSkills()]);
+      await refreshUserSkills(); // Only refresh user skills, available skills don't change
     } catch (error) {
       console.error('Error creating and adding skill:', error);
       setError(error instanceof Error ? error.message : 'Failed to create and add skill');
