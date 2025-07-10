@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { useSupabase } from '@/contexts/SupabaseContext';
+import { auditPasswordStrength } from '@/lib/auth/passwordAudit';
 
 export default function LoginForm() {
   const router = useRouter();
@@ -78,6 +79,13 @@ export default function LoginForm() {
       const { success, error: authError } = await signIn(email, password);
       
       if (success) {
+        // Check if password is weak and needs to be reset
+        const passwordAudit = auditPasswordStrength(password, email);
+        if (passwordAudit.requiresReset) {
+          router.push('/auth/forced-reset');
+          return;
+        }
+        
         router.push('/dashboard');
       } else {
         // Check for specific error messages that tests expect

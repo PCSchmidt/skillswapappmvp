@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { useSupabase } from '@/contexts/SupabaseContext';
+import { validatePasswordStrength } from '@/lib/auth/passwordAudit';
 import PasswordStrengthIndicator from './PasswordStrengthIndicator';
 
 export default function SignupForm() {
@@ -42,21 +43,12 @@ export default function SignupForm() {
   
   const validatePassword = (password: string) => {
     if (!password) return 'Password is required';
-    if (password.length < 12) return 'Password must be at least 12 characters long';
-    if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/.test(password)) {
-      return 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)';
+    
+    const validation = validatePasswordStrength(password);
+    if (!validation.isValid) {
+      return validation.errors.join(', ');
     }
-    if (/(.)\1{2,}/.test(password)) {
-      return 'Password cannot contain more than 2 consecutive identical characters';
-    }
-    if (/^(.{1,2})\1+$/.test(password)) {
-      return 'Password cannot be a simple repeated pattern';
-    }
-    // Check for common weak passwords
-    const commonPasswords = ['password', '123456', 'qwerty', 'abc123', 'password123', 'admin', 'welcome'];
-    if (commonPasswords.some(common => password.toLowerCase().includes(common))) {
-      return 'Password contains common words that make it vulnerable';
-    }
+    
     return '';
   };
   
