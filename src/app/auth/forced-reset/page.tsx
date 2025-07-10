@@ -72,8 +72,28 @@ export default function ForcedPasswordResetPage() {
         return;
       }
       
-      // Success - redirect to dashboard
-      router.push('/dashboard?message=Password updated successfully');
+      // Show success message briefly before redirect
+      setError(null);
+      
+      // Create a success notification
+      const successDiv = document.createElement('div');
+      successDiv.innerHTML = `
+        <div class="fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded shadow-lg z-50">
+          <div class="flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+            <span class="font-medium">Password updated successfully!</span>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(successDiv);
+      
+      // Remove notification after 2 seconds and redirect
+      setTimeout(() => {
+        document.body.removeChild(successDiv);
+        router.push('/dashboard');
+      }, 2000);
       
     } catch (err) {
       console.error('Password update error:', err);

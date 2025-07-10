@@ -433,8 +433,13 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
   // Send a password reset email
   const sendPasswordReset = async (email: string) => {
     try {
+      // Determine the correct base URL for the reset link
+      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 
+                     (typeof window !== 'undefined' ? window.location.origin : 
+                      'https://skillswapappmvp.vercel.app');
+      
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/reset-password`,
+        redirectTo: `${baseUrl}/auth/reset-password`,
       });
       if (error) {
         return { success: false, error: error.message };

@@ -88,16 +88,19 @@ export default function LoginForm() {
         
         router.push('/dashboard');
       } else {
-        // Check for specific error messages that tests expect
+        // Provide more helpful error messages
         if (authError?.toLowerCase().includes('invalid login credentials')) {
-          const errorMsg = 'Invalid login credentials';
+          const errorMsg = 'The email or password you entered is incorrect. Please check your credentials and try again.';
           setError(errorMsg);
         } else if (authError?.toLowerCase().includes('email not confirmed') || 
             authError?.toLowerCase().includes('email not verified')) {
           const errorMsg = 'Your email is not verified. Please check your inbox or request a new verification email.';
           setError(errorMsg);
+        } else if (authError?.toLowerCase().includes('too many requests')) {
+          const errorMsg = 'Too many login attempts. Please wait a few minutes before trying again.';
+          setError(errorMsg);
         } else {
-          const errorMsg = authError || 'Invalid login credentials';
+          const errorMsg = authError || 'Unable to sign in. Please check your email and password, or try resetting your password.';
           setError(errorMsg);
         }
       }

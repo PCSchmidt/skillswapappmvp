@@ -1,7 +1,22 @@
 /**
  * Reset Password Page
  * 
- * This page allows users to set a new password after receiving a reset link.
+ * This page allows  // Check for error parameters from URL (like expired tokens)
+  useEffect(() => {
+    const error = searchParams.get('error');
+    const errorCode = searchParams.get('error_code');
+    
+    if (error || errorCode) {
+      setValidToken(false);
+      
+      // Handle specific errors
+      if (errorCode === 'otp_expired' || error === 'access_denied') {
+        setError('This password reset link has expired or is invalid. Please request a new password reset email.');
+      } else {
+        setError('There was an error with your password reset link. Please request a new password reset email.');
+      }
+    }
+  }, [searchParams]);ew password after receiving a reset link.
  * It validates the reset token and allows the user to create a new password.
  */
 
@@ -49,6 +64,24 @@ export default function ResetPassword() {
     };
     
     verifyToken();
+  }, [searchParams]);
+  
+  // Check for error parameters from URL (like expired OTP tokens)
+  useEffect(() => {
+    const error = searchParams.get('error');
+    const errorCode = searchParams.get('error_code');
+    const errorDescription = searchParams.get('error_description');
+    
+    if (error || errorCode) {
+      setValidToken(false);
+      
+      // Handle specific errors
+      if (errorCode === 'otp_expired' || error === 'access_denied') {
+        setError('This password reset link has expired or is invalid. Please request a new password reset email.');
+      } else {
+        setError('There was an error with your password reset link. Please request a new password reset email.');
+      }
+    }
   }, [searchParams]);
   
   const handleSubmit = async (e: React.FormEvent) => {
