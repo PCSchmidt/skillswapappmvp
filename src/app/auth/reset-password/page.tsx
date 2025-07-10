@@ -44,12 +44,12 @@ export default function ResetPassword() {
   // Check if the reset token is valid on component mount
   useEffect(() => {
     const verifyToken = async () => {
-      // Get token from URL
-      const token = searchParams.get('token');
+      // Get code from URL (Supabase uses 'code' parameter for password reset)
+      const code = searchParams.get('code');
       
-      if (!token) {
+      if (!code) {
         setValidToken(false);
-        setError('Invalid or missing reset token. Please request a new password reset.');
+        setError('Invalid or missing reset code. Please request a new password reset.');
         return;
       }
       
@@ -57,9 +57,9 @@ export default function ResetPassword() {
         // We can't fully verify the token on the client side, but we can check its presence
         setValidToken(true);
       } catch (err) {
-        console.error('Error verifying token:', err);
+        console.error('Error verifying code:', err);
         setValidToken(false);
-        setError('Invalid password reset token. Please request a new password reset.');
+        setError('Invalid password reset code. Please request a new password reset.');
       }
     };
     
@@ -120,20 +120,30 @@ export default function ResetPassword() {
     setError(null);
     
     try {
-      // Get token from URL
-      const token = searchParams.get('token');
+      // Get code from URL (Supabase uses 'code' parameter)
+      const code = searchParams.get('code');
       
-      if (!token) {
-        throw new Error('Missing reset token');
+      if (!code) {
+        throw new Error('Missing reset code');
       }
-      
-      // Update the password
-      const { error } = await supabase.auth.updateUser({
-        password: password
+
+      // Use verifyOtp for password reset with the code from URL
+      const { data, error } = await supabase.auth.verifyOtp({
+        token_hash: code,
+        type: 'recovery',
       });
-      
+
       if (error) {
         throw error;
+      }
+
+      // Now update the password for the authenticated user
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: password
+      });
+
+      if (updateError) {
+        throw updateError;
       }
       
       setSuccess(true);

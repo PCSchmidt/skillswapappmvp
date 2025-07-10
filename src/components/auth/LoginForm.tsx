@@ -8,7 +8,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSupabase } from '@/contexts/SupabaseContext';
 import { auditPasswordStrength } from '@/lib/auth/passwordAudit';
 
@@ -21,6 +21,18 @@ export default function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<{email?: string; password?: string}>({});
+  const [failedAttempts, setFailedAttempts] = useState(0);
+  const [isLocked, setIsLocked] = useState(false);
+  const [lockoutTimer, setLockoutTimer] = useState<number | null>(null);
+  
+  // Cleanup timer on component unmount
+  useEffect(() => {
+    return () => {
+      if (lockoutTimer) {
+        clearTimeout(lockoutTimer);
+      }
+    };
+  }, [lockoutTimer]);
   
   // Email validation
   const validateEmail = (email: string) => {
@@ -61,8 +73,29 @@ export default function LoginForm() {
   const handleSignUp = (e: React.MouseEvent) => {
     e.preventDefault();
     router.push('/signup');
-  };  const handleLogin = async (e: React.FormEvent) => {
+  };  // Handle rate limiting - lock account after 3 failed attempts
+  const handleLockout = () => {
+    setIsLocked(true);
+    setFailedAttempts(0);
+    const lockoutTime = 15 * 60 * 1000; // 15 minutes in milliseconds
+    
+    const timer = setTimeout(() => {
+      setIsLocked(false);
+      setLockoutTimer(null);
+    }, lockoutTime);
+    
+    setLockoutTimer(timer as unknown as number);
+    setError('Account temporarily locked due to multiple failed login attempts. Please try again in 15 minutes or reset your password.');
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Check if account is locked
+    if (isLocked) {
+      setError('Account is temporarily locked. Please wait 15 minutes or reset your password.');
+      return;
+    }
     
     // Clear previous errors
     setError(null);
@@ -79,6 +112,9 @@ export default function LoginForm() {
       const { success, error: authError } = await signIn(email, password);
       
       if (success) {
+        // Reset failed attempts on successful login
+        setFailedAttempts(0);
+        
         // Check if password is weak and needs to be reset
         const passwordAudit = auditPasswordStrength(password, email);
         if (passwordAudit.requiresReset) {
@@ -88,9 +124,20 @@ export default function LoginForm() {
         
         router.push('/dashboard');
       } else {
+        // Increment failed attempts
+        const newFailedAttempts = failedAttempts + 1;
+        setFailedAttempts(newFailedAttempts);
+        
+        // Lock account after 3 failed attempts
+        if (newFailedAttempts >= 3) {
+          handleLockout();
+          return;
+        }
+        
         // Provide more helpful error messages
         if (authError?.toLowerCase().includes('invalid login credentials')) {
-          const errorMsg = 'The email or password you entered is incorrect. Please check your credentials and try again.';
+          const remainingAttempts = 3 - newFailedAttempts;
+          const errorMsg = `The email or password you entered is incorrect. ${remainingAttempts} attempt${remainingAttempts !== 1 ? 's' : ''} remaining before account lockout.`;
           setError(errorMsg);
         } else if (authError?.toLowerCase().includes('email not confirmed') || 
             authError?.toLowerCase().includes('email not verified')) {
@@ -100,14 +147,23 @@ export default function LoginForm() {
           const errorMsg = 'Too many login attempts. Please wait a few minutes before trying again.';
           setError(errorMsg);
         } else {
-          const errorMsg = authError || 'Unable to sign in. Please check your email and password, or try resetting your password.';
+          const remainingAttempts = 3 - newFailedAttempts;
+          const errorMsg = `${authError || 'Unable to sign in. Please check your email and password.'} ${remainingAttempts} attempt${remainingAttempts !== 1 ? 's' : ''} remaining.`;
           setError(errorMsg);
         }
       }
     } catch (err) {
       console.error('Login error:', err);
-      const errorMsg = 'An unexpected error occurred';
-      setError(errorMsg);
+      const newFailedAttempts = failedAttempts + 1;
+      setFailedAttempts(newFailedAttempts);
+      
+      if (newFailedAttempts >= 3) {
+        handleLockout();
+        return;
+      }
+      
+      const remainingAttempts = 3 - newFailedAttempts;
+      setError(`An unexpected error occurred. ${remainingAttempts} attempt${remainingAttempts !== 1 ? 's' : ''} remaining.`);
     } finally {
       setLoading(false);
     }
