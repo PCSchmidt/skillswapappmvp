@@ -1,0 +1,22 @@
+🔧 QUICK FIX REFERENCE CARD
+============================
+
+Your Project: mdmydtumpwilynhdrtqp
+
+🎯 FIX #1: Site URL
+Navigation: Settings → General → Configuration
+Current: http://localhost:3000 (WRONG)
+Change to: https://skillswapappmvp.vercel.app
+
+🎯 FIX #2: Email Template  
+Navigation: Authentication → Email Templates → Reset Password
+Look for: localhost:3000 or 127.0.0.1
+Replace with: https://skillswapappmvp.vercel.app
+Or use: {{ .SiteURL }} variable
+
+🧪 TEST:
+1. Fresh email at: https://skillswapappmvp.vercel.app/auth/forgot-password
+2. Check email link starts with: https://skillswapappmvp.vercel.app
+
+Expected: https://skillswapappmvp.vercel.app/auth/reset-password?code=...
+NOT: http://localhost:3000/?code=...
