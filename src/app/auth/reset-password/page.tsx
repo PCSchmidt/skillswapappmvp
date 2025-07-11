@@ -39,7 +39,21 @@ export default function ResetPassword() {
       }
       
       try {
-        // We can't fully verify the token on the client side, but we can check its presence
+        // For password reset, we should verify the OTP immediately when the page loads
+        // This exchanges the code for a session that allows password updates
+        const { data, error } = await supabase.auth.verifyOtp({
+          token: code,
+          type: 'recovery',
+        });
+
+        if (error) {
+          console.error('Error verifying reset code:', error);
+          setValidToken(false);
+          setError('Invalid or expired password reset link. Please request a new password reset.');
+          return;
+        }
+
+        // If verification succeeds, the user is now authenticated and can update password
         setValidToken(true);
       } catch (err) {
         console.error('Error verifying code:', err);
@@ -105,24 +119,8 @@ export default function ResetPassword() {
     setError(null);
     
     try {
-      // Get code from URL (Supabase uses 'code' parameter)
-      const code = searchParams.get('code');
-      
-      if (!code) {
-        throw new Error('Missing reset code');
-      }
-
-      // Use verifyOtp for password reset with the code from URL
-      const { data, error } = await supabase.auth.verifyOtp({
-        token: code,
-        type: 'recovery',
-      });
-
-      if (error) {
-        throw error;
-      }
-
-      // Now update the password for the authenticated user
+      // The OTP verification was already done when the page loaded
+      // Now we can directly update the password for the authenticated user
       const { error: updateError } = await supabase.auth.updateUser({
         password: password
       });
