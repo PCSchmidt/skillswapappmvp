@@ -152,14 +152,14 @@ const NotificationSettingsPage = () => {
       
       if (channelError) throw channelError;
       
-      setSuccess('Your notification preferences have been saved!');
+      setSuccess('Settings saved successfully!');
       
       // Clear success message after 3 seconds
       setTimeout(() => {
         setSuccess(null);      }, 3000);
     } catch (error: unknown) {
       console.error('Error saving preferences:', error);
-      setError('Failed to save your preferences. Please try again.');
+      setError('Error saving settings: Failed to save settings');
     } finally {
       setSaving(false);
     }
