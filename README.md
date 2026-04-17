@@ -1,6 +1,26 @@
 # SkillSwap
 
-A skill-sharing and bartering platform where users trade expertise within hyper-local communities. Built as a full-stack portfolio project showcasing Next.js 14, Supabase, and an editorial dark-mode design system.
+A skill-sharing and bartering platform where users trade expertise within hyper-local communities. Built as a full-stack portfolio project showcasing Next.js 14, Supabase, and an AI-powered skill matching backend.
+
+**Live:** [skillswapappmvp.vercel.app](https://skillswapappmvp.vercel.app)
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                      Vercel (Frontend)                  │
+│  Next.js 14 · React 18 · TypeScript · Tailwind CSS     │
+│  skillswapappmvp.vercel.app                             │
+└──────────────┬──────────────────────┬───────────────────┘
+               │  Auth / Data (REST)  │  AI Matching (REST)
+               ▼                      ▼
+┌──────────────────────────┐ ┌────────────────────────────┐
+│     Supabase (Database)  │ │   Railway (AI Backend)     │
+│  PostgreSQL · pgvector   │ │   FastAPI · Python 3.12    │
+│  RLS · Auth · Triggers   │ │   sentence-transformers    │
+│  384-dim embeddings      │ │   all-MiniLM-L6-v2 (384d) │
+└──────────────────────────┘ └────────────────────────────┘
+```
 
 ## License
 
@@ -11,20 +31,20 @@ Copyright Paul C. Schmidt 2025. All rights reserved. Unauthorized use, reproduct
 | Layer | Technology |
 |-------|-----------|
 | Frontend | Next.js 14 (App Router), React 18, TypeScript 5.2, Tailwind CSS 3.3 |
-| Database | Supabase (PostgreSQL, RLS, triggers, materialized views) |
+| Database | Supabase (PostgreSQL, pgvector, RLS, triggers) |
 | Auth | Supabase Auth with email verification |
-| AI Backend | Python / FastAPI on Railway (planned) |
-| Hosting | Vercel (frontend) + Railway (backend) |
+| AI Backend | Python 3.12 / FastAPI / sentence-transformers on Railway |
+| Hosting | Vercel (frontend) + Railway (AI backend) |
 
 ## Features
 
-- **Skill Listings** — Create, browse, and search skills with categories and proficiency levels
+- **Skill Listings** — Create, browse, and search skills across 10 categories with proficiency levels
+- **AI Skill Matching** — Semantic similarity via 384-dim embeddings (all-MiniLM-L6-v2) with pgvector storage
 - **Trade Proposals** — Request skill swaps with message threads and accept/decline workflow
 - **Real-time Messaging** — Direct chat between trade partners
 - **Ratings & Reviews** — Post-trade rating system with star ratings and comments
 - **User Profiles** — Editable profiles with skill portfolios and trade history
 - **Email Notifications** — Configurable notification preferences
-- **AI Skill Matching** — Embedding-based skill recommendations (planned)
 
 ## Design System
 
@@ -58,6 +78,7 @@ Open [http://localhost:3000](http://localhost:3000).
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key |
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key (server-side only) |
+| `NEXT_PUBLIC_AI_BACKEND_URL` | AI backend URL (Railway) |
 
 ## Project Structure
 
@@ -65,7 +86,7 @@ Open [http://localhost:3000](http://localhost:3000).
 src/
 ├── app/                    # Next.js App Router pages
 │   ├── dashboard/          # User dashboard
-│   ├── skills/             # Skill CRUD pages
+│   ├── skills/             # Skill CRUD + browse + detail
 │   ├── trades/             # Trade proposals
 │   ├── messages/           # Messaging
 │   ├── profiles/           # User profiles
@@ -81,12 +102,18 @@ src/
 │   ├── ratings/            # Star ratings, review forms
 │   └── auth/               # Login/signup forms
 ├── lib/
-│   └── supabase/           # Supabase client configuration
+│   ├── supabase/           # Supabase client configuration
+│   └── api/                # AI backend client (aiClient.ts)
 ├── hooks/                  # Custom React hooks
 ├── providers/              # Context providers (auth, responsive)
 └── types/                  # TypeScript type definitions
+backend/
+├── main.py                 # FastAPI app (embed, match, health)
+└── requirements.txt        # Python dependencies
 supabase/
-└── migrations/             # Database schema migrations
+└── migrations/             # Database schema migrations (6 files)
+scripts/
+└── seed_demo_data.py       # Demo data seeder (3 users, 15 skills)
 ```
 
 ## Testing
