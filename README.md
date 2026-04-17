@@ -1,150 +1,102 @@
-# SkillSwap MVP
+# SkillSwap
+
+A skill-sharing and bartering platform where users trade expertise within hyper-local communities. Built as a full-stack portfolio project showcasing Next.js 14, Supabase, and an editorial dark-mode design system.
 
 ## License
 
 Copyright Paul C. Schmidt 2025. All rights reserved. Unauthorized use, reproduction, or distribution of this software is prohibited.
 
-## Project Status
+## Tech Stack
 
-✅ **Phase 9: Testing & Optimization Complete**
+| Layer | Technology |
+|-------|-----------|
+| Frontend | Next.js 14 (App Router), React 18, TypeScript 5.2, Tailwind CSS 3.3 |
+| Database | Supabase (PostgreSQL, RLS, triggers, materialized views) |
+| Auth | Supabase Auth with email verification |
+| AI Backend | Python / FastAPI on Railway (planned) |
+| Hosting | Vercel (frontend) + Railway (backend) |
 
-## Quick Start
+## Features
 
-To prepare for deployment after fixing ESLint dependency issues:
+- **Skill Listings** — Create, browse, and search skills with categories and proficiency levels
+- **Trade Proposals** — Request skill swaps with message threads and accept/decline workflow
+- **Real-time Messaging** — Direct chat between trade partners
+- **Ratings & Reviews** — Post-trade rating system with star ratings and comments
+- **User Profiles** — Editable profiles with skill portfolios and trade history
+- **Email Notifications** — Configurable notification preferences
+- **AI Skill Matching** — Embedding-based skill recommendations (planned)
+
+## Design System
+
+Editorial dark-mode aesthetic:
+- **Fonts**: Manrope (body) + Cormorant Garamond (display)
+- **Accent**: Emerald `#047857`
+- **Canvas**: Near-black `#06070b` with `rgba(255,255,255,0.08)` borders
+- **Radius**: Zero globally — sharp rectangular cards and inputs
+- **Effects**: Emerald ambient glow, backdrop-blur navigation
+
+## Getting Started
 
 ```bash
-# On Windows
-.\prepare_for_deployment.bat
+# Install dependencies
+npm install
 
-# On Linux/Mac
-./prepare_for_deployment.sh
+# Set up environment variables
+cp .env.example .env.local
+# Fill in your Supabase URL, anon key, and service role key
+
+# Run development server
+npm run dev
 ```
 
-## ESLint Dependency Fix
+Open [http://localhost:3000](http://localhost:3000).
 
-This project recently addressed an ESLint dependency conflict that caused Vercel build failures. The specific error was related to `@eslint/config-array@^3.0.0` not being found. 
+## Environment Variables
 
-The fix includes:
-- Specifying exact versions for ESLint-related packages
-- Adding dependency validation tools
-- Updating build scripts with validation steps
-- Creating documentation on the issue and solution
-
-For more details, see [ESLint Dependency Fix Documentation](docs/eslint_dependency_fix.md).
-
-## Deployment Steps
-
-Follow these steps to deploy the application:
-
-1. Run the dependency validation to ensure compatibility:
-   ```
-   node scripts/validate-dependencies.js
-   ```
-
-2. Test the build process locally:
-   ```
-   # On Windows
-   .\build.bat
-   
-   # On Linux/Mac 
-   ./build.sh
-   ```
-
-3. Set up Git pre-commit hooks (optional but recommended):
-   ```
-   # On Windows
-   .\pre-commit-hook-setup.bat
-   
-   # On Linux/Mac
-   ./pre-commit-hook-setup.sh
-   ```
-
-4. Commit and push changes to the repository:
-   ```
-   git add package.json vercel.json docs/eslint_dependency_fix.md
-   git commit -m "Fix ESLint dependency conflicts for Vercel deployment"
-   git push origin dev
-   ```
-
-5. Monitor the Vercel build at: https://vercel.com/dashboard
-
-6. Test the staging environment thoroughly
-
-7. Deploy to production when staging is verified
-
-For complete deployment steps, see [Deployment Verification Steps](docs/deployment_verification_steps.md).
+| Variable | Description |
+|----------|-------------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key (server-side only) |
 
 ## Project Structure
 
-The SkillSwap MVP is a Next.js application with the following key components:
-
-- `/src`: Application source code
-- `/public`: Static assets
-- `/docs`: Documentation
-- `/scripts`: Utility scripts
-- `/supabase`: Database migrations and functions
-- `/tests`: Unit tests (Jest)
-- `/cypress`: End-to-end tests (Cypress)
-
-## Testing Infrastructure
-
-SkillSwap includes comprehensive testing at multiple levels:
-
-### Unit Testing (Jest)
-
-Run unit tests with:
-```bash
-# Run all unit tests
-npm test
-
-# Run with coverage report
-npm run test:coverage
-
-# Run only UI component tests
-npm run test:ui
-
-# Run only library function tests
-npm run test:lib
+```
+src/
+├── app/                    # Next.js App Router pages
+│   ├── dashboard/          # User dashboard
+│   ├── skills/             # Skill CRUD pages
+│   ├── trades/             # Trade proposals
+│   ├── messages/           # Messaging
+│   ├── profiles/           # User profiles
+│   ├── notifications/      # Notification center
+│   ├── settings/           # User settings
+│   ├── login/              # Auth pages
+│   └── signup/
+├── components/             # Reusable UI components
+│   ├── navigation/         # Navbar
+│   ├── skills/             # Skill cards, forms, lists
+│   ├── trades/             # Trade proposal components
+│   ├── messages/           # Chat UI
+│   ├── ratings/            # Star ratings, review forms
+│   └── auth/               # Login/signup forms
+├── lib/
+│   └── supabase/           # Supabase client configuration
+├── hooks/                  # Custom React hooks
+├── providers/              # Context providers (auth, responsive)
+└── types/                  # TypeScript type definitions
+supabase/
+└── migrations/             # Database schema migrations
 ```
 
-### End-to-End Testing (Cypress)
+## Testing
 
-Run E2E tests with:
 ```bash
-# Open Cypress Test Runner UI
-npm run cypress:open
-# OR
-./run-cypress-tests.bat open
-
-# Run all E2E tests headlessly
-npm run cypress:run
-# OR
-./run-cypress-tests.bat
-
-# Run specific test suite
-npm run cypress:skill-search
-# OR
-./run-cypress-tests.bat skill-search
-
-# Run in specific browser
-npm run cypress:chrome
-# OR
-./run-cypress-tests.bat chrome
+npm test              # Run Jest unit tests
+npm run test:coverage # With coverage report
+npm run cypress       # Open Cypress E2E runner
 ```
 
-For detailed information on our testing approach:
-- [Cypress Testing Guide](docs/cypress_testing_guide.md)
-- [Testing Setup](docs/testing_setup.md)
-- [Test Output Management](docs/test_output_management.md)
+## Current Status
 
-## Environment Setup
-
-Before deploying, ensure all environment variables are properly configured. See [Environment Variables Setup](docs/environment_variables_setup.md) for details.
-
-## Deployment
-
-Follow the [Deployment Verification Steps](docs/deployment_verification_steps.md) for deploying to staging and production environments.
-
-## Troubleshooting
-
-If you encounter deployment issues, refer to [Deployment Troubleshooting](docs/deployment_troubleshooting.md).
+See [PROGRESS.md](PROGRESS.md) for detailed status and [ROADMAP.md](ROADMAP.md) for the development plan.
