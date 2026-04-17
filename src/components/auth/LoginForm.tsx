@@ -56,16 +56,16 @@ export default function LoginForm() {
   
   return (
     <div className="w-full max-w-md mx-auto">
-      <form onSubmit={handleLogin} className="bg-white p-8 shadow-md rounded-lg">
-        <h2 className="text-2xl font-bold mb-6 text-gray-800">Sign In</h2>
+      <form onSubmit={handleLogin} className="card p-8">
+        <h2 className="text-2xl font-semibold mb-6 text-text-primary">Sign In</h2>
         
         {error && (
-          <div className="mb-4 p-3 bg-error-50 text-error-700 rounded-md">
+          <div className="mb-4 p-3 bg-error-500/10 border border-error-500/20 text-error-500">
             {error}
             {(error.toLowerCase().includes('email not verified') || 
               error.toLowerCase().includes('email not confirmed')) && (
               <div className="mt-2">
-                <Link href={`/auth/resend-verification?email=${encodeURIComponent(email)}`} className="text-primary-600 hover:text-primary-500 font-medium">
+                <Link href={`/auth/resend-verification?email=${encodeURIComponent(email)}`} className="text-emerald-400 hover:text-emerald-300 font-medium">
                   Resend verification email
                 </Link>
               </div>
@@ -102,7 +102,7 @@ export default function LoginForm() {
             required
           />
           <div className="mt-1 text-sm text-right">
-            <Link href="/auth/forgot-password" className="text-primary-600 hover:text-primary-500">
+            <Link href="/auth/forgot-password" className="text-emerald-400 hover:text-emerald-300">
               Forgot password?
             </Link>
           </div>
@@ -117,9 +117,9 @@ export default function LoginForm() {
         </button>
         
         <div className="mt-6 text-center text-sm">
-          <p>
+          <p className="text-text-secondary">
             Don't have an account?{' '}
-            <Link href="/signup" className="text-primary-600 hover:text-primary-500 font-medium">
+            <Link href="/signup" className="text-emerald-400 hover:text-emerald-300 font-medium">
               Sign up
             </Link>
           </p>

@@ -130,8 +130,8 @@ export default function SkillList({
   if (loading && skills.length === 0) {
     return (
       <div className="py-8 text-center">
-        <div className="inline-block w-8 h-8 border-t-2 border-primary-600 rounded-full animate-spin"></div>
-        <p className="mt-2 text-gray-600">Loading skills...</p>
+        <div className="inline-block w-8 h-8 border-t-2 border-emerald-500 rounded-full animate-spin"></div>
+        <p className="mt-2 text-text-secondary">Loading skills...</p>
       </div>
     );
   }
@@ -139,12 +139,12 @@ export default function SkillList({
   if (error && skills.length === 0) {
     return (
       <div className="py-8 text-center">
-        <div className="bg-error-50 text-error-700 p-4 rounded-md mx-auto max-w-md">
+        <div className="bg-error-500/10 border border-error-500/20 text-error-500 p-4 mx-auto max-w-md">
           <p className="font-medium">Error</p>
           <p>{error}</p>
           <button
             onClick={() => fetchSkills(1)}
-            className="mt-2 text-sm font-medium text-error-700 hover:text-error-800"
+            className="mt-2 text-sm font-medium text-error-500 hover:text-error-400"
           >
             Try Again
           </button>
@@ -156,9 +156,9 @@ export default function SkillList({
   if (skills.length === 0) {
     return (
       <div className="py-8 text-center">
-        <div className="bg-gray-50 p-6 rounded-lg shadow-sm mx-auto max-w-md">
-          <h3 className="text-lg font-medium text-gray-800">No skills found</h3>
-          <p className="mt-2 text-gray-600">
+        <div className="card p-6 mx-auto max-w-md">
+          <h3 className="text-lg font-medium text-text-primary">No skills found</h3>
+          <p className="mt-2 text-text-secondary">
             Try adjusting your filters or search criteria to find skills matching your interests.
           </p>
         </div>

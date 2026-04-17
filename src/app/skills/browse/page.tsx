@@ -158,24 +158,25 @@ export default function BrowseSkillsPage() {
   };
   
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-canvas py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-extrabold text-gray-900">Browse Skills</h1>
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="eyebrow">Discover</p>
+          <h1 className="text-3xl font-display font-semibold text-text-primary">Browse Skills</h1>
+          <p className="mt-2 text-sm text-text-muted">
             Discover skills from our community members
           </p>
         </div>
         
         {/* Filters section */}
         <div className="mb-8">
-          <div className="bg-white shadow-md rounded-lg overflow-hidden">
+          <div className="card overflow-hidden">
             <div className="p-6">
               <div className="flex flex-col md:flex-row justify-between gap-4 items-start md:items-end">
-                <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
+                <h2 className="text-lg font-semibold text-text-primary">Filters</h2>
                 <button
                   onClick={clearFilters}
-                  className="text-sm text-primary-600 hover:text-primary-500"
+                  className="text-sm text-emerald-400 hover:text-emerald-300"
                 >
                   Clear all filters
                 </button>
@@ -188,14 +189,14 @@ export default function BrowseSkillsPage() {
                     <input
                       type="text"
                       placeholder="Search for skills..."
-                      className="block w-full pl-4 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                      className="form-input pl-4 pr-10"
                       value={filters.search}
                       onChange={(e) => handleFilterChange('search', e.target.value)}
                     />
                     {filters.search && (
                       <button
                         type="button"
-                        className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
+                        className="absolute right-3 top-2.5 text-text-muted hover:text-text-secondary"
                         onClick={() => handleFilterChange('search', '')}
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -206,7 +207,7 @@ export default function BrowseSkillsPage() {
                   </div>
                   <button
                     type="submit"
-                    className="px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                    className="btn btn-primary"
                   >
                     Search
                   </button>
@@ -217,12 +218,12 @@ export default function BrowseSkillsPage() {
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
                 {/* Category filter */}
                 <div>
-                  <label htmlFor="category-filter" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="category-filter" className="form-label mb-1">
                     Category
                   </label>
                   <select
                     id="category-filter"
-                    className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                    className="form-input"
                     value={filters.category}
                     onChange={(e) => handleFilterChange('category', e.target.value)}
                   >
@@ -235,12 +236,12 @@ export default function BrowseSkillsPage() {
                 
                 {/* Offering/Seeking filter */}
                 <div>
-                  <label htmlFor="offering-filter" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="offering-filter" className="form-label mb-1">
                     Type
                   </label>
                   <select
                     id="offering-filter"
-                    className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                    className="form-input"
                     value={filters.offering}
                     onChange={(e) => handleFilterChange('offering', e.target.value)}
                   >
@@ -252,12 +253,12 @@ export default function BrowseSkillsPage() {
                 
                 {/* Experience level filter */}
                 <div>
-                  <label htmlFor="experience-filter" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="experience-filter" className="form-label mb-1">
                     Experience Level
                   </label>
                   <select
                     id="experience-filter"
-                    className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                    className="form-input"
                     value={filters.experience}
                     onChange={(e) => handleFilterChange('experience', e.target.value)}
                   >
@@ -273,11 +274,11 @@ export default function BrowseSkillsPage() {
                   <input
                     id="remote-filter"
                     type="checkbox"
-                    className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded mt-5"
+                    className="h-4 w-4 accent-emerald-600 border-border mt-5"
                     checked={filters.remote}
                     onChange={(e) => handleFilterChange('remote', e.target.checked)}
                   />
-                  <label htmlFor="remote-filter" className="ml-2 block text-sm text-gray-700 mt-5">
+                  <label htmlFor="remote-filter" className="ml-2 block text-sm text-text-secondary mt-5">
                     Remote Friendly Only
                   </label>
                 </div>
@@ -290,7 +291,7 @@ export default function BrowseSkillsPage() {
         <div>
           {/* Results count and add skill button */}
           <div className="flex justify-between items-center mb-6">
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-text-muted">
               {loading ? 'Loading skills...' : `${skills.length} skill${skills.length !== 1 ? 's' : ''} found`}
             </p>
             
@@ -308,19 +309,19 @@ export default function BrowseSkillsPage() {
           {loading && (
             <div className="text-center py-12">
               <div className="spinner mx-auto mb-4"></div>
-              <p className="text-gray-500">Loading skills...</p>
+              <p className="text-text-muted">Loading skills...</p>
             </div>
           )}
           
           {/* Error state */}
           {error && !loading && (
             <div className="text-center py-12">
-              <div className="text-error-600 mb-4">
+              <div className="text-error-500 mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <p className="text-gray-700 mb-4">{error}</p>
+              <p className="text-text-secondary mb-4">{error}</p>
               <button
                 onClick={() => window.location.reload()}
                 className="btn btn-primary"
@@ -332,14 +333,14 @@ export default function BrowseSkillsPage() {
           
           {/* Empty state */}
           {!loading && !error && skills.length === 0 && (
-            <div className="text-center py-12 bg-white rounded-lg shadow-sm">
+            <div className="text-center py-12 card">
               <div className="mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                 </svg>
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No skills found</h3>
-              <p className="text-gray-500 mb-6 max-w-md mx-auto">
+              <h3 className="text-lg font-medium text-text-primary mb-2">No skills found</h3>
+              <p className="text-text-muted mb-6 max-w-md mx-auto">
                 No skills match your current filters. Try adjusting your search criteria or add your own skill to the platform.
               </p>
               <div className="space-x-4">

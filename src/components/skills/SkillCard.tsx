@@ -28,24 +28,24 @@ interface SkillCardProps {
 
 export default function SkillCard({ skill, showActions = true }: SkillCardProps) {
   const experienceBadgeColor = {
-    beginner: 'bg-blue-100 text-blue-800',
-    intermediate: 'bg-green-100 text-green-800',
-    expert: 'bg-purple-100 text-purple-800',
+    beginner: 'bg-blue-900/20 text-blue-400 border border-blue-500/20',
+    intermediate: 'bg-emerald-900/20 text-emerald-400 border border-emerald-500/20',
+    expert: 'bg-purple-900/20 text-purple-400 border border-purple-500/20',
   }[skill.experience_level || 'beginner'];
   
   const offeringBadgeColor = skill.is_offering
-    ? 'bg-primary-100 text-primary-800'
-    : 'bg-secondary-100 text-secondary-800';
+    ? 'bg-emerald-900/30 text-emerald-400 border border-emerald-500/20'
+    : 'bg-amber-900/30 text-amber-400 border border-amber-500/20';
   
   const offeringText = skill.is_offering ? 'Offering' : 'Seeking';
   
   return (
-    <div className="card overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+    <div className="card overflow-hidden hover:shadow-glow-sm transition-shadow">
       <div className="p-5">
         <div className="flex justify-between items-start">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">{skill.title}</h3>
-            <p className="text-sm text-gray-500 mb-2">
+            <h3 className="text-lg font-semibold text-text-primary">{skill.title}</h3>
+            <p className="text-sm text-text-muted mb-2">
               {skill.category} {skill.subcategory ? `• ${skill.subcategory}` : ''}
             </p>
           </div>
@@ -63,13 +63,13 @@ export default function SkillCard({ skill, showActions = true }: SkillCardProps)
           </div>
         </div>
         
-        <p className="text-gray-700 mb-4 line-clamp-2">
+        <p className="text-text-secondary mb-4 line-clamp-2">
           {skill.description || 'No description provided.'}
         </p>
         
         {skill.users && (
           <div className="flex items-center mt-4">
-            <div className="relative w-10 h-10 rounded-full overflow-hidden bg-gray-200 mr-3">
+            <div className="relative w-10 h-10 rounded-full overflow-hidden bg-surface-raised mr-3">
               {skill.users.profile_image_url ? (
                 <Image
                   src={skill.users.profile_image_url}
@@ -78,15 +78,15 @@ export default function SkillCard({ skill, showActions = true }: SkillCardProps)
                   className="object-cover"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-primary-100 text-primary-600 font-semibold text-xl">
+                <div className="w-full h-full flex items-center justify-center bg-emerald-900/30 text-emerald-400 font-semibold text-xl">
                   {(skill.users.full_name?.charAt(0) || '?').toUpperCase()}
                 </div>
               )}
             </div>
             
             <div>
-              <p className="font-medium text-gray-900">{skill.users.full_name || 'Anonymous User'}</p>
-              <p className="text-sm text-gray-500">
+              <p className="font-medium text-text-primary">{skill.users.full_name || 'Anonymous User'}</p>
+              <p className="text-sm text-text-muted">
                 {skill.users.location_city && skill.users.location_state
                   ? `${skill.users.location_city}, ${skill.users.location_state}`
                   : skill.users.location_city || skill.users.location_state || 'Location not specified'}
@@ -99,7 +99,7 @@ export default function SkillCard({ skill, showActions = true }: SkillCardProps)
           <div className="mt-4 flex justify-between items-center">
             <Link
               href={`/skills/${skill.id}`}
-              className="text-sm font-medium text-primary-600 hover:text-primary-500"
+              className="text-sm font-medium text-emerald-400 hover:text-emerald-300"
             >
               View Details
             </Link>

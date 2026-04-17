@@ -97,17 +97,17 @@ export default function SignupForm() {
   
   return (
     <div className="w-full max-w-md mx-auto">
-      <form onSubmit={handleSignup} className="bg-white p-8 shadow-md rounded-lg">
-        <h2 className="text-2xl font-bold mb-6 text-gray-800">Create Account</h2>
+      <form onSubmit={handleSignup} className="card p-8">
+        <h2 className="text-2xl font-semibold mb-6 text-text-primary">Create Account</h2>
         
         {error && (
-          <div className="mb-4 p-3 bg-error-50 text-error-700 rounded-md">
+          <div className="mb-4 p-3 bg-error-500/10 border border-error-500/20 text-error-500">
             {error}
           </div>
         )}
         
         {successMessage && (
-          <div className="mb-4 p-3 bg-success-50 text-success-700 rounded-md">
+          <div className="mb-4 p-3 bg-emerald-900/20 border border-emerald-700/30 text-emerald-400">
             {successMessage}
           </div>
         )}
@@ -155,7 +155,7 @@ export default function SignupForm() {
             placeholder="Create a password"
             required
           />
-          <div className="mt-1 text-xs text-gray-500">
+          <div className="mt-1 text-xs text-text-muted">
             Password must be at least 8 characters long
           </div>
         </div>
@@ -179,16 +179,16 @@ export default function SignupForm() {
           <label className="flex items-center">
             <input
               type="checkbox"
-              className="mr-2"
+              className="mr-2 accent-emerald-600"
               required
             />
-            <span className="text-sm text-gray-700">
+            <span className="text-sm text-text-secondary">
               I agree to the{' '}
-              <Link href="/terms" className="text-primary-600 hover:text-primary-500">
+              <Link href="/terms" className="text-emerald-400 hover:text-emerald-300">
                 Terms of Service
               </Link>{' '}
               and{' '}
-              <Link href="/privacy" className="text-primary-600 hover:text-primary-500">
+              <Link href="/privacy" className="text-emerald-400 hover:text-emerald-300">
                 Privacy Policy
               </Link>
             </span>
@@ -204,9 +204,9 @@ export default function SignupForm() {
         </button>
         
         <div className="mt-6 text-center text-sm">
-          <p>
+          <p className="text-text-secondary">
             Already have an account?{' '}
-            <Link href="/login" className="text-primary-600 hover:text-primary-500 font-medium">
+            <Link href="/login" className="text-emerald-400 hover:text-emerald-300 font-medium">
               Sign in
             </Link>
           </p>

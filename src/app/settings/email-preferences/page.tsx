@@ -19,12 +19,12 @@ export default function EmailPreferencesPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-3xl mx-auto">
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="card p-6">
             <div className="animate-pulse space-y-4">
-              <div className="h-8 bg-gray-200 rounded w-1/2"></div>
+              <div className="h-8 bg-surface-raised rounded w-1/2"></div>
               <div className="space-y-2">
-                <div className="h-4 bg-gray-200 rounded"></div>
-                <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+                <div className="h-4 bg-surface-raised rounded"></div>
+                <div className="h-4 bg-surface-raised rounded w-5/6"></div>
               </div>
             </div>
           </div>
@@ -42,8 +42,8 @@ export default function EmailPreferencesPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-2xl font-bold mb-6">Email Notification Settings</h1>
-        <p className="text-gray-600 mb-8">
+        <h1 className="text-2xl font-display font-semibold text-text-primary mb-6">Email Notification Settings</h1>
+        <p className="text-text-secondary mb-8">
           Control which emails you receive from SkillSwap. You'll always receive essential
           emails like account security updates.
         </p>

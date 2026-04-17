@@ -120,11 +120,11 @@ export default function MessageComposer({ tradeId, receiverId, onMessageSent }: 
   };
   
   return (
-    <form onSubmit={handleSubmit} className="bg-white border-t border-gray-200 p-4">
+    <form onSubmit={handleSubmit} className="bg-surface border-t border-border p-4">
       {/* Attachment preview */}
       {attachmentPreview && (
         <div className="mb-3 relative">
-          <div className="relative w-32 h-32 rounded overflow-hidden border border-gray-200">
+          <div className="relative w-32 h-32 overflow-hidden border border-border">
             <img src={attachmentPreview} alt="Attachment preview" className="object-cover w-full h-full" />
             <button
               type="button"
@@ -146,7 +146,7 @@ export default function MessageComposer({ tradeId, receiverId, onMessageSent }: 
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="p-2 text-gray-500 hover:text-gray-700 focus:outline-none flex-shrink-0"
+          className="p-2 text-text-muted hover:text-text-secondary focus:outline-none flex-shrink-0"
           disabled={isSubmitting}
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -168,7 +168,7 @@ export default function MessageComposer({ tradeId, receiverId, onMessageSent }: 
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder="Type a message..."
-            className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+            className="form-input w-full resize-none"
             rows={1}
             style={{ minHeight: '40px', maxHeight: '120px' }}
             disabled={isSubmitting}
@@ -178,7 +178,7 @@ export default function MessageComposer({ tradeId, receiverId, onMessageSent }: 
         {/* Send button */}
         <button
           type="submit"
-          className="p-2 rounded-full bg-primary-500 text-white hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 flex-shrink-0 disabled:opacity-60"
+          className="p-2 rounded-full bg-emerald-700 text-white hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 flex-shrink-0 disabled:opacity-60"
           disabled={isSubmitting || (!message.trim() && !attachment)}
         >
           {isSubmitting ? (

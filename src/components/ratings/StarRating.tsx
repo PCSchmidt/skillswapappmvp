@@ -101,7 +101,7 @@ interface StarProps {
 // Star component for rendering individual stars
 function Star({ filled, size, color, interactive, onMouseEnter, onClick }: StarProps) {
   const cursorStyle = interactive ? 'cursor-pointer' : '';
-  const fillColor = filled ? color : 'text-gray-300';
+  const fillColor = filled ? color : 'text-text-muted';
   
   return (
     <svg

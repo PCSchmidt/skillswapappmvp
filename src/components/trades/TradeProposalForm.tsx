@@ -197,21 +197,21 @@ export default function TradeProposalForm({
   // Show loading state
   if (loading) {
     return (
-      <div className="bg-white p-6 rounded-lg shadow">
+      <div className="card p-6">
         <div className="text-center py-6">
           <div className="spinner mb-4"></div>
-          <p className="text-gray-700">Loading your skills...</p>
+          <p className="text-text-secondary">Loading your skills...</p>
         </div>
       </div>
     );
   }
   
   return (
-    <div className="bg-white p-6 rounded-lg shadow">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">Propose a Trade</h2>
+    <div className="card p-6">
+      <h2 className="text-2xl font-semibold text-text-primary mb-6">Propose a Trade</h2>
       
       {error && (
-        <div className="mb-6 p-4 bg-error-50 text-error-700 rounded-md">
+        <div className="mb-6 p-4 bg-error-500/10 border border-error-500/20 text-error-500">
           {error}
         </div>
       )}
@@ -220,15 +220,15 @@ export default function TradeProposalForm({
         <div className="space-y-6">
           {/* Requested Skill (Read-only) */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="form-label mb-2">
               Requesting Skill
             </label>
-            <div className="bg-gray-50 p-4 rounded border border-gray-200">
-              <div className="font-medium text-gray-900">{requestedSkill.title}</div>
-              <div className="text-sm text-gray-500">
+            <div className="bg-surface p-4 border border-border">
+              <div className="font-medium text-text-primary">{requestedSkill.title}</div>
+              <div className="text-sm text-text-muted">
                 {requestedSkill.category} {requestedSkill.subcategory ? `• ${requestedSkill.subcategory}` : ''}
               </div>
-              <div className="text-sm text-gray-500 mt-1">
+              <div className="text-sm text-text-muted mt-1">
                 From: {requestedSkill.users?.full_name || 'Unknown User'}
               </div>
             </div>
@@ -236,19 +236,19 @@ export default function TradeProposalForm({
           
           {/* User's Skills to Offer */}
           <div>
-            <label htmlFor="offered-skill" className="block text-sm font-medium text-gray-700 mb-2">
-              Your Offered Skill <span className="text-error-600">*</span>
+            <label htmlFor="offered-skill" className="form-label mb-2">
+              Your Offered Skill <span className="text-error-500">*</span>
             </label>
             
             {mySkills.length === 0 ? (
-              <div className="bg-yellow-50 p-4 rounded border border-yellow-200">
-                <p className="text-yellow-700">
+              <div className="bg-amber-900/20 p-4 border border-amber-700/30">
+                <p className="text-amber-400">
                   You don't have any skills to offer. Please add a skill first.
                 </p>
                 <button
                   type="button"
                   onClick={() => router.push('/skills/new?type=offering')}
-                  className="mt-2 text-sm text-primary-600 hover:text-primary-500"
+                  className="mt-2 text-sm text-emerald-400 hover:text-emerald-300"
                 >
                   Add a skill to offer →
                 </button>
@@ -256,7 +256,7 @@ export default function TradeProposalForm({
             ) : (
               <select
                 id="offered-skill"
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                className="form-input"
                 value={selectedSkillId}
                 onChange={(e) => setSelectedSkillId(e.target.value)}
                 required
@@ -273,12 +273,12 @@ export default function TradeProposalForm({
           
           {/* Proposed Hours */}
           <div>
-            <label htmlFor="proposed-hours" className="block text-sm font-medium text-gray-700 mb-2">
-              Proposed Hours <span className="text-error-600">*</span>
+            <label htmlFor="proposed-hours" className="form-label mb-2">
+              Proposed Hours <span className="text-error-500">*</span>
             </label>
             <select
               id="proposed-hours"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+              className="form-input"
               value={proposedHours}
               onChange={(e) => setProposedHours(e.target.value)}
               required
@@ -299,10 +299,10 @@ export default function TradeProposalForm({
           
           {/* Proposed Dates */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Proposed Dates <span className="text-error-600">*</span>
+            <label className="form-label mb-2">
+              Proposed Dates <span className="text-error-500">*</span>
             </label>
-            <p className="text-sm text-gray-500 mb-2">
+            <p className="text-sm text-text-muted mb-2">
               Select all dates that work for you. The other person can choose one.
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
@@ -311,11 +311,11 @@ export default function TradeProposalForm({
                   <input
                     id={`date-${date.value}`}
                     type="checkbox"
-                    className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                    className="h-4 w-4 accent-emerald-600 border-border"
                     checked={proposedDates.includes(date.value)}
                     onChange={() => handleDateToggle(date.value)}
                   />
-                  <label htmlFor={`date-${date.value}`} className="ml-2 block text-sm text-gray-700">
+                  <label htmlFor={`date-${date.value}`} className="ml-2 block text-sm text-text-secondary">
                     {date.label}
                   </label>
                 </div>
@@ -325,8 +325,8 @@ export default function TradeProposalForm({
           
           {/* Location Type */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Meeting Type <span className="text-error-600">*</span>
+            <label className="form-label mb-2">
+              Meeting Type <span className="text-error-500">*</span>
             </label>
             <div className="flex space-x-4">
               <div className="flex items-center">
@@ -334,11 +334,11 @@ export default function TradeProposalForm({
                   id="remote"
                   name="location-type"
                   type="radio"
-                  className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300"
+                  className="h-4 w-4 accent-emerald-600 border-border"
                   checked={locationType === 'remote'}
                   onChange={() => setLocationType('remote')}
                 />
-                <label htmlFor="remote" className="ml-2 block text-sm text-gray-700">
+                <label htmlFor="remote" className="ml-2 block text-sm text-text-secondary">
                   Remote (virtual)
                 </label>
               </div>
@@ -347,11 +347,11 @@ export default function TradeProposalForm({
                   id="in-person"
                   name="location-type"
                   type="radio"
-                  className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300"
+                  className="h-4 w-4 accent-emerald-600 border-border"
                   checked={locationType === 'in-person'}
                   onChange={() => setLocationType('in-person')}
                 />
-                <label htmlFor="in-person" className="ml-2 block text-sm text-gray-700">
+                <label htmlFor="in-person" className="ml-2 block text-sm text-text-secondary">
                   In-person
                 </label>
               </div>
@@ -360,15 +360,15 @@ export default function TradeProposalForm({
           
           {/* Location Details */}
           <div>
-            <label htmlFor="location-details" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="location-details" className="form-label mb-2">
               {locationType === 'remote' ? 'Virtual Meeting Details' : 'Meeting Location'} 
-              {locationType === 'in-person' && <span className="text-error-600">*</span>}
+              {locationType === 'in-person' && <span className="text-error-500">*</span>}
             </label>
             <textarea
               id="location-details"
               name="location-details"
               rows={3}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+              className="form-input"
               placeholder={locationType === 'remote' 
                 ? "Optional: Suggest Zoom, Google Meet, etc."
                 : "Please provide the address or general location"
@@ -377,7 +377,7 @@ export default function TradeProposalForm({
               onChange={(e) => setLocationDetails(e.target.value)}
               required={locationType === 'in-person'}
             />
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-text-muted">
               {locationType === 'remote'
                 ? "You'll be able to share specific meeting links after the trade is accepted."
                 : "For safety, consider meeting in public places."
@@ -387,14 +387,14 @@ export default function TradeProposalForm({
           
           {/* Notes */}
           <div>
-            <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="notes" className="form-label mb-2">
               Additional Notes
             </label>
             <textarea
               id="notes"
               name="notes"
               rows={3}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+              className="form-input"
               placeholder="Share any additional details about your trade proposal"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
@@ -406,14 +406,14 @@ export default function TradeProposalForm({
             <button
               type="button"
               onClick={onCancel}
-              className="px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+              className="btn btn-ghost"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={submitting || mySkills.length === 0}
-              className="px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:bg-gray-300 disabled:cursor-not-allowed"
+              className="btn btn-primary disabled:opacity-40"
             >
               {submitting ? 'Sending Proposal...' : 'Propose Trade'}
             </button>

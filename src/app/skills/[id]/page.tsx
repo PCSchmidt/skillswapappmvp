@@ -149,10 +149,10 @@ export default function SkillDetailPage({ params }: { params: { id: string } }) 
   // Show loading state
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-canvas">
         <div className="text-center">
           <div className="spinner mb-4"></div>
-          <p className="text-gray-700">Loading skill details...</p>
+          <p className="text-text-secondary">Loading skill details...</p>
         </div>
       </div>
     );
@@ -161,15 +161,15 @@ export default function SkillDetailPage({ params }: { params: { id: string } }) 
   // Show error state
   if (error || !skill) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-canvas">
         <div className="text-center max-w-md mx-auto px-4">
-          <div className="text-error-600 text-5xl mb-4">
+          <div className="text-error-500 text-5xl mb-4">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Skill Not Found</h1>
-          <p className="text-gray-600 mb-6">
+          <h1 className="text-2xl font-semibold text-text-primary mb-2">Skill Not Found</h1>
+          <p className="text-text-secondary mb-6">
             {error || 'The skill you are looking for does not exist or has been removed.'}
           </p>
           <Link href="/dashboard" className="btn btn-primary">
@@ -182,25 +182,25 @@ export default function SkillDetailPage({ params }: { params: { id: string } }) 
   
   // Determine badge colors for experience level and offering type
   const experienceBadgeColor = {
-    beginner: 'bg-blue-100 text-blue-800',
-    intermediate: 'bg-green-100 text-green-800',
-    expert: 'bg-purple-100 text-purple-800',
+    beginner: 'bg-blue-900/20 text-blue-400 border border-blue-500/20',
+    intermediate: 'bg-emerald-900/20 text-emerald-400 border border-emerald-500/20',
+    expert: 'bg-purple-900/20 text-purple-400 border border-purple-500/20',
   }[skill.experience_level || 'beginner'];
   
   const offeringBadgeColor = skill.is_offering
-    ? 'bg-primary-100 text-primary-800'
-    : 'bg-secondary-100 text-secondary-800';
+    ? 'bg-emerald-900/30 text-emerald-400 border border-emerald-500/20'
+    : 'bg-amber-900/30 text-amber-400 border border-amber-500/20';
   
   const offeringText = skill.is_offering ? 'Offering' : 'Seeking';
   
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-canvas py-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Back button */}
         <div className="mb-6">
           <button
             onClick={() => router.back()}
-            className="flex items-center text-sm text-gray-600 hover:text-gray-900"
+            className="flex items-center text-sm text-text-muted hover:text-text-primary"
           >
             <svg className="h-5 w-5 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -211,10 +211,10 @@ export default function SkillDetailPage({ params }: { params: { id: string } }) 
         
         {/* Trade success message */}
         {tradeSuccess && (
-          <div className="mb-6 bg-success-100 border border-success-400 text-success-700 px-4 py-5 rounded-md shadow-sm">
+          <div className="mb-6 bg-emerald-900/20 border border-emerald-700/30 text-emerald-400 px-4 py-5">
             <div className="flex items-start">
               <div className="flex-shrink-0">
-                <svg className="h-6 w-6 text-success-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="h-6 w-6 text-emerald-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
@@ -227,7 +227,7 @@ export default function SkillDetailPage({ params }: { params: { id: string } }) 
                   <div className="mt-4">
                     <Link 
                       href={`/trades/${tradeId}`} 
-                      className="text-success-700 font-medium hover:text-success-600"
+                      className="text-emerald-400 font-medium hover:text-emerald-300"
                     >
                       View Trade Details →
                     </Link>
@@ -250,30 +250,30 @@ export default function SkillDetailPage({ params }: { params: { id: string } }) 
         ) : (
           /* Main content - only show if not showing the trade form */
           !tradeSuccess && (
-            <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+            <div className="card overflow-hidden">
               {/* Header section */}
-              <div className="px-4 py-5 border-b border-gray-200 sm:px-6">
+              <div className="px-4 py-5 border-b border-border sm:px-6">
                 <div className="flex justify-between flex-wrap gap-4">
                   <div>
-                    <h1 className="text-2xl font-bold text-gray-900">{skill.title}</h1>
-                    <p className="mt-1 text-sm text-gray-500">
+                    <h1 className="text-2xl font-semibold text-text-primary">{skill.title}</h1>
+                    <p className="mt-1 text-sm text-text-muted">
                       {skill.category} {skill.subcategory ? `• ${skill.subcategory}` : ''}
                     </p>
                   </div>
                   
                   <div className="flex items-start gap-2">
-                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${offeringBadgeColor}`}>
+                    <span className={`px-2 py-1 text-xs font-medium ${offeringBadgeColor}`}>
                       {offeringText}
                     </span>
                     
                     {skill.experience_level && (
-                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${experienceBadgeColor}`}>
+                      <span className={`px-2 py-1 text-xs font-medium ${experienceBadgeColor}`}>
                         {formatExperienceLevel(skill.experience_level)}
                       </span>
                     )}
                     
                     {skill.is_remote_friendly && (
-                      <span className="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">
+                      <span className="px-2 py-1 text-xs font-medium bg-surface-raised text-text-secondary border border-border">
                         Remote Friendly
                       </span>
                     )}
@@ -284,8 +284,8 @@ export default function SkillDetailPage({ params }: { params: { id: string } }) 
               <div className="px-4 py-5 sm:p-6">
                 {/* Description */}
                 <div className="mb-8">
-                  <h2 className="text-lg font-medium text-gray-900 mb-2">Description</h2>
-                  <p className="text-gray-700 whitespace-pre-wrap">
+                  <h2 className="text-lg font-medium text-text-primary mb-2">Description</h2>
+                  <p className="text-text-secondary whitespace-pre-wrap">
                     {skill.description || 'No description provided.'}
                   </p>
                 </div>
@@ -294,16 +294,16 @@ export default function SkillDetailPage({ params }: { params: { id: string } }) 
                 <div className="mb-8 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
                   {/* Availability */}
                   <div>
-                    <h3 className="text-sm font-medium text-gray-500">Availability</h3>
-                    <p className="mt-1 text-gray-900">
+                    <h3 className="text-sm font-medium text-text-muted">Availability</h3>
+                    <p className="mt-1 text-text-primary">
                       {formatAvailability(skill.availability as string)}
                     </p>
                   </div>
                   
                   {/* Hourly Value */}
                   <div>
-                    <h3 className="text-sm font-medium text-gray-500">Estimated Value</h3>
-                    <p className="mt-1 text-gray-900">
+                    <h3 className="text-sm font-medium text-text-muted">Estimated Value</h3>
+                    <p className="mt-1 text-text-primary">
                       {skill.hourly_equivalent_value 
                         ? `$${skill.hourly_equivalent_value.toFixed(2)}/hour` 
                         : 'Not specified'}
@@ -313,13 +313,13 @@ export default function SkillDetailPage({ params }: { params: { id: string } }) 
                 
                 {/* User/owner information */}
                 {skill.users && (
-                  <div className="mt-8 pt-8 border-t border-gray-200">
-                    <h2 className="text-lg font-medium text-gray-900 mb-4">
+                  <div className="mt-8 pt-8 border-t border-border">
+                    <h2 className="text-lg font-medium text-text-primary mb-4">
                       {skill.is_offering ? 'Offered by' : 'Requested by'}
                     </h2>
                     
                     <div className="flex items-center">
-                      <div className="flex-shrink-0 relative h-16 w-16 rounded-full overflow-hidden bg-gray-200">
+                      <div className="flex-shrink-0 relative h-16 w-16 rounded-full overflow-hidden bg-surface-raised">
                         {skill.users.profile_image_url ? (
                           <Image
                             src={skill.users.profile_image_url}
@@ -328,24 +328,24 @@ export default function SkillDetailPage({ params }: { params: { id: string } }) 
                             className="object-cover"
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-primary-100 text-primary-600 font-semibold text-2xl">
+                          <div className="w-full h-full flex items-center justify-center bg-emerald-900/30 text-emerald-400 font-semibold text-2xl">
                             {(skill.users.full_name?.charAt(0) || '?').toUpperCase()}
                           </div>
                         )}
                       </div>
                       
                       <div className="ml-4">
-                        <h3 className="text-lg font-medium text-gray-900">
+                        <h3 className="text-lg font-medium text-text-primary">
                           {skill.users.full_name || 'Anonymous User'}
                         </h3>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-text-muted">
                           {skill.users.location_city && skill.users.location_state
                             ? `${skill.users.location_city}, ${skill.users.location_state}`
                             : skill.users.location_city || skill.users.location_state || 'Location not specified'}
                         </p>
                         
                         {skill.users.bio && (
-                          <p className="mt-2 text-sm text-gray-600 line-clamp-2">
+                          <p className="mt-2 text-sm text-text-secondary line-clamp-2">
                             {skill.users.bio}
                           </p>
                         )}
@@ -355,7 +355,7 @@ export default function SkillDetailPage({ params }: { params: { id: string } }) 
                 )}
                 
                 {/* Action buttons */}
-                <div className="mt-8 pt-4 border-t border-gray-200 flex flex-wrap justify-end gap-3">
+                <div className="mt-8 pt-4 border-t border-border flex flex-wrap justify-end gap-3">
                   {userOwnsSkill ? (
                     // Actions for skill owner
                     <>

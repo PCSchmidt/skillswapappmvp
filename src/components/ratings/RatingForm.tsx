@@ -128,13 +128,13 @@ export default function RatingForm({
   };
   
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6">
-      <h2 className="text-xl font-semibold text-gray-900 mb-4">
+    <div className="card p-6">
+      <h2 className="text-xl font-semibold text-text-primary mb-4">
         Rate Your Experience
       </h2>
       
       {error && (
-        <div className="mb-4 p-3 bg-error-50 border border-error-200 text-error-700 rounded-md">
+        <div className="mb-4 p-3 bg-error-500/10 border border-error-500/20 text-error-500">
           {error}
         </div>
       )}
@@ -142,7 +142,7 @@ export default function RatingForm({
       <form onSubmit={handleSubmit}>
         {/* Star Rating */}
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="form-label">
             How would you rate this skill exchange?
           </label>
           <div className="flex items-center space-x-2">
@@ -154,7 +154,7 @@ export default function RatingForm({
               onChange={handleRatingChange}
               disabled={isSubmitting}
             />
-            <span className="text-sm text-gray-500 ml-2">
+            <span className="text-sm text-text-muted ml-2">
               {rating > 0 ? `${rating} star${rating !== 1 ? 's' : ''}` : 'Select a rating'}
             </span>
           </div>
@@ -162,14 +162,14 @@ export default function RatingForm({
         
         {/* Review Text */}
         <div className="mb-6">
-          <label htmlFor="review-text" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="review-text" className="form-label">
             Write your review (optional)
           </label>
           <textarea
             id="review-text"
             rows={4}
             placeholder="Tell others about your experience..."
-            className="w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+            className="form-input w-full"
             value={reviewText}
             onChange={handleReviewTextChange}
             disabled={isSubmitting}
@@ -181,15 +181,15 @@ export default function RatingForm({
           <input
             type="checkbox"
             id="is-public"
-            className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+            className="h-4 w-4 accent-emerald-600 border-border"
             checked={isPublic}
             onChange={handlePrivacyToggle}
             disabled={isSubmitting}
           />
-          <label htmlFor="is-public" className="ml-2 block text-sm text-gray-700">
+          <label htmlFor="is-public" className="ml-2 block text-sm text-text-secondary">
             Make this review public
           </label>
-          <div className="ml-2 text-xs text-gray-500">
+          <div className="ml-2 text-xs text-text-muted">
             {isPublic 
               ? 'Your review will be visible to all users'
               : 'Your review will only be visible to you and the person you rated'}
@@ -202,7 +202,7 @@ export default function RatingForm({
             <button
               type="button"
               onClick={onCancel}
-              className="btn btn-outline"
+              className="btn btn-ghost"
               disabled={isSubmitting}
             >
               Cancel

@@ -25,10 +25,10 @@ export default function NewSkillPage() {
   // Show loading state
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-canvas">
         <div className="text-center">
           <div className="spinner mb-4"></div>
-          <p className="text-gray-700">Loading...</p>
+          <p className="text-text-secondary">Loading...</p>
         </div>
       </div>
     );
@@ -37,9 +37,9 @@ export default function NewSkillPage() {
   // If not authenticated, show a message
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-canvas">
         <div className="text-center">
-          <p className="text-gray-700">You need to be logged in to create a skill.</p>
+          <p className="text-text-secondary">You need to be logged in to create a skill.</p>
         </div>
       </div>
     );
@@ -54,11 +54,12 @@ export default function NewSkillPage() {
   };
   
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-canvas py-12">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-extrabold text-gray-900">Add a New Skill</h1>
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="eyebrow">Create</p>
+          <h1 className="text-3xl font-display font-semibold text-text-primary">Add a New Skill</h1>
+          <p className="mt-2 text-sm text-text-muted">
             Share what you have to offer or what you're looking to learn
           </p>
         </div>

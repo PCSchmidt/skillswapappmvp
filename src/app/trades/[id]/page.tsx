@@ -380,19 +380,19 @@ export default function TradeDetailPage({ params }: { params: { id: string } }) 
   // Render cancellation/decline form
   const renderCancellationForm = () => {
     return (
-      <div className="mt-8 pt-6 border-t border-gray-200">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">
+      <div className="mt-8 pt-6 border-t border-border">
+        <h3 className="text-lg font-medium text-text-primary mb-4">
           {isProposer() ? 'Cancel Trade Proposal' : 'Decline Trade'}
         </h3>
         <div className="space-y-4">
           <div>
-            <label htmlFor="cancellation-reason" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="cancellation-reason" className="form-label mb-1">
               Reason (optional)
             </label>
             <textarea
               id="cancellation-reason"
               rows={3}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+              className="form-input"
               value={cancellationReason}
               onChange={(e) => setCancellationReason(e.target.value)}
               placeholder={isProposer() ? "Why are you cancelling this trade?" : "Why are you declining this trade?"}
@@ -424,10 +424,10 @@ export default function TradeDetailPage({ params }: { params: { id: string } }) 
   // Show loading state
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-canvas">
         <div className="text-center">
           <div className="spinner mb-4"></div>
-          <p className="text-gray-700">Loading trade details...</p>
+          <p className="text-text-secondary">Loading trade details...</p>
         </div>
       </div>
     );
@@ -436,15 +436,15 @@ export default function TradeDetailPage({ params }: { params: { id: string } }) 
   // Show error state
   if (error || !trade) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-canvas">
         <div className="text-center max-w-md mx-auto px-4">
-          <div className="text-error-600 text-5xl mb-4">
+          <div className="text-error-500 text-5xl mb-4">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Trade Not Found</h1>
-          <p className="text-gray-600 mb-6">
+          <h1 className="text-2xl font-semibold text-text-primary mb-2">Trade Not Found</h1>
+          <p className="text-text-secondary mb-6">
             {error || 'The trade you are looking for does not exist or you may not have permission to view it.'}
           </p>
           <Link href="/trades" className="btn btn-primary">
@@ -459,13 +459,13 @@ export default function TradeDetailPage({ params }: { params: { id: string } }) 
   const proposedDates = parseProposedDates();
   
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-canvas py-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Back button */}
         <div className="mb-6 flex justify-between items-center">
           <Link
             href="/trades"
-            className="flex items-center text-sm text-gray-600 hover:text-gray-900"
+            className="flex items-center text-sm text-text-muted hover:text-text-primary"
           >
             <svg className="h-5 w-5 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -473,7 +473,7 @@ export default function TradeDetailPage({ params }: { params: { id: string } }) 
             Back to Trades
           </Link>
           
-          <Link href={`/messages/${trade.id}`} className="flex items-center text-sm text-primary-600 hover:text-primary-700">
+          <Link href={`/messages/${trade.id}`} className="flex items-center text-sm text-emerald-400 hover:text-emerald-300">
             <svg className="h-5 w-5 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
             </svg>
@@ -483,10 +483,10 @@ export default function TradeDetailPage({ params }: { params: { id: string } }) 
         
         {/* Success message */}
         {actionSuccess && (
-          <div className="mb-6 bg-success-100 border border-success-400 text-success-700 px-4 py-3 rounded-md shadow-sm">
+          <div className="mb-6 bg-emerald-900/20 border border-emerald-700/30 text-emerald-400 px-4 py-3">
             <div className="flex">
               <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-success-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <svg className="h-5 w-5 text-emerald-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
               </div>
@@ -500,17 +500,17 @@ export default function TradeDetailPage({ params }: { params: { id: string } }) 
         )}
         
         {/* Main content */}
-        <div className="bg-white shadow-sm rounded-lg mb-6">
-          <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
+        <div className="card mb-6">
+          <div className="px-4 py-5 sm:px-6 border-b border-border">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-4">
-              <h1 className="text-2xl font-bold text-gray-900">
+              <h1 className="text-2xl font-semibold text-text-primary">
                 {isProposer() ? 'Your Trade Proposal' : 'Trade Proposal'}
               </h1>
-              <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusBadgeColor(trade.status || '')}`}>
+              <span className={`inline-flex items-center px-3 py-1 text-sm font-medium ${getStatusBadgeColor(trade.status || '')}`}>
                 {(trade.status?.charAt(0).toUpperCase() || '') + (trade.status?.slice(1) || '')}
               </span>
             </div>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-text-muted">
               Proposed on {formatDate(trade.created_at)} at {formatTime(trade.created_at)}
             </p>
           </div>
@@ -521,7 +521,6 @@ export default function TradeDetailPage({ params }: { params: { id: string } }) 
               renderCancellationForm()
             ) : (
               <div className="flex justify-end gap-3 mb-6">
-                {/* Proposed state - receiver actions */}
                 {trade.status === 'proposed' && isReceiver() && (
                   <>
                     <button
@@ -541,7 +540,6 @@ export default function TradeDetailPage({ params }: { params: { id: string } }) 
                   </>
                 )}
                 
-                {/* Proposed state - proposer actions */}
                 {trade.status === 'proposed' && isProposer() && (
                   <button
                     onClick={() => setShowCancellationForm(true)}
@@ -552,7 +550,6 @@ export default function TradeDetailPage({ params }: { params: { id: string } }) 
                   </button>
                 )}
                 
-                {/* Accepted state - both parties can complete */}
                 {trade.status === 'accepted' && (
                   <button
                     onClick={handleCompleteTrade}
@@ -563,14 +560,12 @@ export default function TradeDetailPage({ params }: { params: { id: string } }) 
                   </button>
                 )}
                 
-                {/* Completed state - add rating button */}
                 {trade.status === 'completed' && (
                   <Link href={`/ratings/${trade.id}`} className="btn btn-primary">
                     Rate This Trade
                   </Link>
                 )}
                 
-                {/* Accepted state - proposer can cancel */}
                 {trade.status === 'accepted' && isProposer() && (
                   <button
                     onClick={() => setShowCancellationForm(true)}
@@ -581,7 +576,6 @@ export default function TradeDetailPage({ params }: { params: { id: string } }) 
                   </button>
                 )}
                 
-                {/* Accepted state - date update */}
                 {trade.status === 'accepted' && selectedDate && selectedDate !== trade.scheduled_date && (
                   <button
                     onClick={handleUpdateScheduledDate}
@@ -594,15 +588,15 @@ export default function TradeDetailPage({ params }: { params: { id: string } }) 
               </div>
             )}
             
-            {/* Trade details section - simplified for this version */}
+            {/* Trade details section */}
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <div className="col-span-full">
-                <h2 className="text-lg font-medium text-gray-900 mb-4">Trade Details</h2>
-                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <h2 className="text-lg font-medium text-text-primary mb-4">Trade Details</h2>
+                <div className="bg-surface p-4 border border-border">
                   <dl className="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
                     <div className="sm:col-span-2">
-                      <dt className="text-sm font-medium text-gray-500">Skills Exchange</dt>
-                      <dd className="mt-1 text-sm text-gray-900">
+                      <dt className="text-sm font-medium text-text-muted">Skills Exchange</dt>
+                      <dd className="mt-1 text-sm text-text-primary">
                         {isProposer() ? "You're offering" : `${trade.proposer?.full_name || 'User'} is offering`}: <span className="font-medium">{trade.skill_offered?.title}</span>
                         <br />
                         In exchange for: <span className="font-medium">{trade.skill_requested?.title}</span>
@@ -610,23 +604,22 @@ export default function TradeDetailPage({ params }: { params: { id: string } }) 
                     </div>
                     
                     <div>
-                      <dt className="text-sm font-medium text-gray-500">Duration</dt>
-                      <dd className="mt-1 text-sm text-gray-900">
+                      <dt className="text-sm font-medium text-text-muted">Duration</dt>
+                      <dd className="mt-1 text-sm text-text-primary">
                         {trade.proposed_hours} hour{trade.proposed_hours !== 1 ? 's' : ''}
                       </dd>
                     </div>
                     
                     <div>
-                      <dt className="text-sm font-medium text-gray-500">Meeting Type</dt>
-                      <dd className="mt-1 text-sm text-gray-900">
+                      <dt className="text-sm font-medium text-text-muted">Meeting Type</dt>
+                      <dd className="mt-1 text-sm text-text-primary">
                         {trade.location_type || 'Not specified'}
                       </dd>
                     </div>
                     
-                    {/* Date selection for receiver on proposed trades */}
                     {trade.status === 'proposed' && isReceiver() && proposedDates.length > 0 && (
                       <div className="sm:col-span-2">
-                        <dt className="text-sm font-medium text-gray-500">Select a Meeting Date</dt>
+                        <dt className="text-sm font-medium text-text-muted">Select a Meeting Date</dt>
                         <dd className="mt-2">
                           <div className="grid grid-cols-1 gap-2">
                             {proposedDates.map((date: string, index: number) => (
@@ -637,9 +630,9 @@ export default function TradeDetailPage({ params }: { params: { id: string } }) 
                                   type="radio"
                                   checked={selectedDate === date}
                                   onChange={() => setSelectedDate(date)}
-                                  className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300"
+                                  className="h-4 w-4 accent-emerald-600 border-border"
                                 />
-                                <label htmlFor={`date-${index}`} className="ml-3 text-sm text-gray-700">
+                                <label htmlFor={`date-${index}`} className="ml-3 text-sm text-text-secondary">
                                   {formatDate(date)}
                                 </label>
                               </div>
@@ -649,21 +642,19 @@ export default function TradeDetailPage({ params }: { params: { id: string } }) 
                       </div>
                     )}
                     
-                    {/* Scheduled date for accepted trades */}
                     {trade.status === 'accepted' && (
                       <div className="sm:col-span-2">
-                        <dt className="text-sm font-medium text-gray-500">Scheduled Meeting</dt>
-                        <dd className="mt-1 text-sm text-gray-900">
+                        <dt className="text-sm font-medium text-text-muted">Scheduled Meeting</dt>
+                        <dd className="mt-1 text-sm text-text-primary">
                           {trade.scheduled_date ? formatDate(trade.scheduled_date) : 'Not yet scheduled'}
                         </dd>
                       </div>
                     )}
                     
-                    {/* Notes */}
                     {trade.notes && (
                       <div className="sm:col-span-2">
-                        <dt className="text-sm font-medium text-gray-500">Additional Notes</dt>
-                        <dd className="mt-1 text-sm text-gray-900 whitespace-pre-wrap">
+                        <dt className="text-sm font-medium text-text-muted">Additional Notes</dt>
+                        <dd className="mt-1 text-sm text-text-primary whitespace-pre-wrap">
                           {trade.notes}
                         </dd>
                       </div>

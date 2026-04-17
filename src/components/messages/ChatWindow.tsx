@@ -131,23 +131,23 @@ export default function ChatWindow({ tradeId, otherUserId, otherUserName }: Chat
   
   if (loading) {
     return (
-      <div className="flex flex-col h-full items-center justify-center bg-gray-50 p-4">
+      <div className="flex flex-col h-full items-center justify-center bg-canvas p-4">
         <div className="spinner mb-4"></div>
-        <p className="text-gray-700">Loading messages...</p>
+        <p className="text-text-secondary">Loading messages...</p>
       </div>
     );
   }
   
   if (error) {
     return (
-      <div className="flex flex-col h-full items-center justify-center bg-gray-50 p-4">
-        <div className="text-error-600 text-5xl mb-4">
+      <div className="flex flex-col h-full items-center justify-center bg-canvas p-4">
+        <div className="text-error-500 text-5xl mb-4">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </div>
-        <h3 className="text-lg font-medium text-gray-900 mb-2">Failed to load messages</h3>
-        <p className="text-gray-500 mb-4">{error}</p>
+        <h3 className="text-lg font-medium text-text-primary mb-2">Failed to load messages</h3>
+        <p className="text-text-muted mb-4">{error}</p>
         <button 
           onClick={() => {
             setError(null);
@@ -165,23 +165,23 @@ export default function ChatWindow({ tradeId, otherUserId, otherUserName }: Chat
   return (
     <div className="flex flex-col h-full">
       {/* Chat header */}
-      <div className="bg-white border-b border-gray-200 p-4 flex items-center">
-        <h2 className="text-lg font-semibold text-gray-900">
+      <div className="bg-surface border-b border-border p-4 flex items-center">
+        <h2 className="text-lg font-semibold text-text-primary">
           Chat with {otherUserName || 'User'}
         </h2>
       </div>
       
       {/* Messages area */}
-      <div className="flex-grow p-4 overflow-y-auto bg-gray-50">
+      <div className="flex-grow p-4 overflow-y-auto bg-canvas">
         {messages.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center">
-            <div className="bg-gray-100 rounded-full p-4 mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="bg-surface-raised rounded-full p-4 mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
               </svg>
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No messages yet</h3>
-            <p className="text-gray-500">
+            <h3 className="text-lg font-medium text-text-primary mb-2">No messages yet</h3>
+            <p className="text-text-muted">
               Send a message to start the conversation about this trade.
             </p>
           </div>

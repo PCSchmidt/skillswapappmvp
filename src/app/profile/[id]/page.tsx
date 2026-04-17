@@ -114,10 +114,10 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
   // Show loading state
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-canvas">
         <div className="text-center">
           <div className="spinner mb-4"></div>
-          <p className="text-gray-700">Loading profile...</p>
+          <p className="text-text-secondary">Loading profile...</p>
         </div>
       </div>
     );
@@ -126,15 +126,15 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
   // Show error state
   if (error || !profile) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-canvas">
         <div className="text-center max-w-md mx-auto px-4">
-          <div className="text-error-600 text-5xl mb-4">
+          <div className="text-error-500 text-5xl mb-4">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">User Not Found</h1>
-          <p className="text-gray-600 mb-6">
+          <h1 className="text-2xl font-semibold text-text-primary mb-2">User Not Found</h1>
+          <p className="text-text-secondary mb-6">
             {error || 'The user profile you are looking for does not exist.'}
           </p>
           <Link href="/dashboard" className="btn btn-primary">
@@ -146,13 +146,13 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
   }
   
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-canvas py-12">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Back button */}
         <div className="mb-6">
           <button
             onClick={() => router.back()}
-            className="flex items-center text-sm text-gray-600 hover:text-gray-900"
+            className="flex items-center text-sm text-text-muted hover:text-text-primary"
           >
             <svg className="h-5 w-5 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -162,9 +162,9 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
         </div>
         
         {/* Profile header */}
-        <div className="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
+        <div className="card overflow-hidden mb-8">
           <div className="px-4 py-6 sm:px-6 flex flex-col md:flex-row items-center md:items-start gap-6">
-            <div className="flex-shrink-0 relative h-32 w-32 rounded-full overflow-hidden bg-gray-200">
+            <div className="flex-shrink-0 relative h-32 w-32 rounded-full overflow-hidden bg-surface-raised">
               {profile.profile_image_url ? (
                 <Image
                   src={profile.profile_image_url}
@@ -173,18 +173,18 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
                   className="object-cover"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-primary-100 text-primary-600 font-semibold text-5xl">
+                <div className="w-full h-full flex items-center justify-center bg-emerald-900/30 text-emerald-400 font-semibold text-5xl">
                   {(profile.full_name?.charAt(0) || profile.email?.charAt(0) || '?').toUpperCase()}
                 </div>
               )}
             </div>
             
             <div className="flex flex-col items-center md:items-start">
-              <h1 className="text-2xl font-bold text-gray-900">
+              <h1 className="text-2xl font-display font-semibold text-text-primary">
                 {profile.full_name || 'Anonymous User'}
               </h1>
               
-              <p className="text-sm text-gray-500 mb-2">
+              <p className="text-sm text-text-muted mb-2">
                 {profile.location_city && profile.location_state
                   ? `${profile.location_city}, ${profile.location_state}`
                   : profile.location_city || profile.location_state || 'Location not specified'}
@@ -193,16 +193,15 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
               </p>
               
               <div className="flex flex-wrap gap-2 mt-2">
-                <span className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full">
+                <span className="bg-surface-raised text-text-muted border border-border text-xs px-2 py-1 rounded-full">
                   Member since {new Date(profile.created_at).toLocaleDateString()}
                 </span>
                 
-                {/* Show other badges */}
-                <span className="bg-primary-100 text-primary-800 text-xs px-2 py-1 rounded-full">
+                <span className="bg-emerald-900/20 text-emerald-400 border border-emerald-500/20 text-xs px-2 py-1 rounded-full">
                   {skills.filter(s => s.is_offering).length} skills offered
                 </span>
                 
-                <span className="bg-secondary-100 text-secondary-800 text-xs px-2 py-1 rounded-full">
+                <span className="bg-amber-900/20 text-amber-400 border border-amber-500/20 text-xs px-2 py-1 rounded-full">
                   {skills.filter(s => !s.is_offering).length} skills sought
                 </span>
               </div>
@@ -232,21 +231,21 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
           
           {/* Bio section */}
           {profile.bio && (
-            <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
-              <h2 className="text-lg font-medium text-gray-900 mb-2">About</h2>
-              <p className="whitespace-pre-wrap text-gray-700">{profile.bio}</p>
+            <div className="border-t border-border px-4 py-5 sm:px-6">
+              <h2 className="text-lg font-medium text-text-primary mb-2">About</h2>
+              <p className="whitespace-pre-wrap text-text-secondary">{profile.bio}</p>
             </div>
           )}
           
           {/* Ratings summary */}
-          <div className={`${profile.bio ? '' : 'border-t'} border-gray-200 px-4 py-5 sm:px-6`}>
+          <div className={`${profile.bio ? '' : 'border-t'} border-border px-4 py-5 sm:px-6`}>
             <div className="flex items-center justify-between mb-2">
-              <h2 className="text-lg font-medium text-gray-900">Ratings & Reviews</h2>
+              <h2 className="text-lg font-medium text-text-primary">Ratings & Reviews</h2>
               <div className="flex items-center">
                 {ratings.length > 0 && (
                   <>
                     <StarRating rating={averageRating} size="md" />
-                    <span className="ml-2 text-sm text-gray-500">
+                    <span className="ml-2 text-sm text-text-muted">
                       {averageRating.toFixed(1)} ({ratings.length} {ratings.length === 1 ? 'review' : 'reviews'})
                     </span>
                   </>
@@ -264,7 +263,7 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
                 />
               ) : (
                 <div className="text-center py-8">
-                  <p className="text-gray-500">
+                  <p className="text-text-muted">
                     {isOwnProfile ? 'You have not received any ratings yet' : 'This user has not received any ratings yet'}
                   </p>
                 </div>
@@ -272,7 +271,7 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
               
               {ratings.length > 3 && (
                 <div className="text-center mt-4">
-                  <button className="text-primary-600 hover:text-primary-800 text-sm font-medium">
+                  <button className="text-emerald-400 hover:text-emerald-300 text-sm font-medium">
                     View all {ratings.length} reviews
                   </button>
                 </div>
@@ -282,10 +281,10 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
         </div>
         
         {/* Skills section */}
-        <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-          <div className="px-4 py-5 border-b border-gray-200 sm:px-6">
+        <div className="card overflow-hidden">
+          <div className="px-4 py-5 border-b border-border sm:px-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-lg font-medium text-gray-900">Skills</h2>
+              <h2 className="text-lg font-medium text-text-primary">Skills</h2>
               
               {isOwnProfile && (
                 <Link href="/skills/new" className="btn btn-sm btn-primary">
@@ -295,15 +294,15 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
             </div>
             
             {/* Tabs */}
-            <div className="mt-4 border-b border-gray-200">
+            <div className="mt-4 border-b border-border">
               <nav className="-mb-px flex space-x-8">
                 <button
                   onClick={() => setActiveTab('offering')}
                   className={`
                     whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm
                     ${activeTab === 'offering'
-                      ? 'border-primary-500 text-primary-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}
+                      ? 'border-emerald-500 text-emerald-400'
+                      : 'border-transparent text-text-muted hover:text-text-secondary hover:border-border'}
                   `}
                 >
                   Offering ({skills.filter(s => s.is_offering).length})
@@ -314,8 +313,8 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
                   className={`
                     whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm
                     ${activeTab === 'seeking'
-                      ? 'border-primary-500 text-primary-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}
+                      ? 'border-emerald-500 text-emerald-400'
+                      : 'border-transparent text-text-muted hover:text-text-secondary hover:border-border'}
                   `}
                 >
                   Seeking ({skills.filter(s => !s.is_offering).length})
@@ -329,14 +328,14 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
             {filteredSkills.length === 0 ? (
               <div className="text-center py-12">
                 <div className="mb-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                <h3 className="text-lg font-medium text-text-primary mb-2">
                   No skills {activeTab === 'offering' ? 'offered' : 'sought'} yet
                 </h3>
-                <p className="text-gray-500 mb-6 max-w-md mx-auto">
+                <p className="text-text-muted mb-6 max-w-md mx-auto">
                   {isOwnProfile
                     ? `You haven't added any skills you're ${activeTab === 'offering' ? 'offering' : 'seeking'} yet.`
                     : `This user hasn't added any skills they're ${activeTab === 'offering' ? 'offering' : 'seeking'} yet.`}

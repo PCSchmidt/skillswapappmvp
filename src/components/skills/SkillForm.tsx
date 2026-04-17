@@ -308,20 +308,20 @@ export default function SkillForm({
   };
   
   return (
-    <div className="bg-white shadow-md rounded-lg overflow-hidden">
+    <div className="card overflow-hidden">
       <div className="p-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">
+        <h2 className="text-2xl font-semibold text-text-primary mb-6">
           {isEdit ? 'Edit Skill' : 'Add a New Skill'}
         </h2>
         
         {error && (
-          <div className="mb-6 p-4 bg-error-50 text-error-700 rounded-md">
+          <div className="mb-6 p-4 bg-error-500/10 border border-error-500/20 text-error-500">
             {error}
           </div>
         )}
         
         {success && (
-          <div className="mb-6 p-4 bg-success-50 text-success-700 rounded-md">
+          <div className="mb-6 p-4 bg-emerald-900/20 border border-emerald-700/30 text-emerald-400">
             Skill {isEdit ? 'updated' : 'created'} successfully!
           </div>
         )}
@@ -337,9 +337,9 @@ export default function SkillForm({
                   name="is_offering"
                   checked={formData.is_offering === true}
                   onChange={() => setFormData({ ...formData, is_offering: true })}
-                  className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300"
+                  className="h-4 w-4 accent-emerald-600 border-border"
                 />
-                <label htmlFor="offering" className="ml-2 block text-sm text-gray-700">
+                <label htmlFor="offering" className="ml-2 block text-sm text-text-secondary">
                   I'm offering this skill
                 </label>
               </div>
@@ -351,9 +351,9 @@ export default function SkillForm({
                   name="is_offering"
                   checked={formData.is_offering === false}
                   onChange={() => setFormData({ ...formData, is_offering: false })}
-                  className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300"
+                  className="h-4 w-4 accent-emerald-600 border-border"
                 />
-                <label htmlFor="seeking" className="ml-2 block text-sm text-gray-700">
+                <label htmlFor="seeking" className="ml-2 block text-sm text-text-secondary">
                   I'm seeking this skill
                 </label>
               </div>
@@ -361,8 +361,8 @@ export default function SkillForm({
             
             {/* Skill Title */}
             <div>
-              <label htmlFor="title" className="block text-sm font-medium text-gray-700">
-                Skill Title <span className="text-error-600">*</span>
+              <label htmlFor="title" className="form-label">
+                Skill Title <span className="text-error-500">*</span>
               </label>
               <input
                 type="text"
@@ -370,7 +370,7 @@ export default function SkillForm({
                 name="title"
                 value={formData.title}
                 onChange={handleInputChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                className="form-input"
                 placeholder="E.g., Web Development, Piano Lessons, French Cooking"
                 required
               />
@@ -378,7 +378,7 @@ export default function SkillForm({
             
             {/* Description */}
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="description" className="form-label">
                 Description
               </label>
               <textarea
@@ -387,7 +387,7 @@ export default function SkillForm({
                 rows={4}
                 value={formData.description}
                 onChange={handleInputChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                className="form-input"
                 placeholder="Describe your skill, experience level, and what you hope to trade it for..."
               />
             </div>
@@ -395,8 +395,8 @@ export default function SkillForm({
             {/* Category and Subcategory */}
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div>
-                <label htmlFor="category" className="block text-sm font-medium text-gray-700">
-                  Category <span className="text-error-600">*</span>
+                <label htmlFor="category" className="form-label">
+                  Category <span className="text-error-500">*</span>
                 </label>
                 <select
                   id="category"
@@ -409,7 +409,7 @@ export default function SkillForm({
                       subcategory: '' // Reset subcategory when category changes
                     });
                   }}
-                  className="mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                  className="form-input"
                   required
                 >
                   <option value="">Select a category</option>
@@ -422,7 +422,7 @@ export default function SkillForm({
               </div>
               
               <div>
-                <label htmlFor="subcategory" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="subcategory" className="form-label">
                   Subcategory
                 </label>
                 <select
@@ -431,7 +431,7 @@ export default function SkillForm({
                   value={formData.subcategory}
                   onChange={handleInputChange}
                   disabled={!formData.category}
-                  className="mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                  className="form-input"
                 >
                   <option value="">Select a subcategory</option>
                   {formData.category && subcategories[formData.category]?.map((subcat) => (
@@ -446,7 +446,7 @@ export default function SkillForm({
             {/* Experience Level and Hourly Value */}
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div>
-                <label htmlFor="experience_level" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="experience_level" className="form-label">
                   Experience Level
                 </label>
                 <select
@@ -454,7 +454,7 @@ export default function SkillForm({
                   name="experience_level"
                   value={formData.experience_level}
                   onChange={handleInputChange}
-                  className="mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                  className="form-input"
                 >
                   {experienceLevels.map((level) => (
                     <option key={level.value} value={level.value}>
@@ -465,12 +465,12 @@ export default function SkillForm({
               </div>
               
               <div>
-                <label htmlFor="hourly_equivalent_value" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="hourly_equivalent_value" className="form-label">
                   Estimated Hourly Value (Optional)
                 </label>
-                <div className="mt-1 relative rounded-md shadow-sm">
+                <div className="mt-1 relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <span className="text-gray-500 sm:text-sm">$</span>
+                    <span className="text-text-muted sm:text-sm">$</span>
                   </div>
                   <input
                     type="number"
@@ -480,11 +480,11 @@ export default function SkillForm({
                     step="0.01"
                     value={formData.hourly_equivalent_value}
                     onChange={handleInputChange}
-                    className="pl-7 mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                    className="form-input pl-7"
                     placeholder="0.00"
                   />
                 </div>
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-text-muted">
                   This helps others understand the value of your skill for bartering
                 </p>
               </div>
@@ -492,7 +492,7 @@ export default function SkillForm({
             
             {/* Availability */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="form-label mb-2">
                 Availability
               </label>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7">
@@ -503,15 +503,15 @@ export default function SkillForm({
                       type="checkbox"
                       checked={formData.availability.includes(day)}
                       onChange={() => handleAvailabilityChange(day)}
-                      className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                      className="h-4 w-4 accent-emerald-600 border-border"
                     />
-                    <label htmlFor={`day-${day}`} className="ml-2 block text-sm text-gray-700">
+                    <label htmlFor={`day-${day}`} className="ml-2 block text-sm text-text-secondary">
                       {day}
                     </label>
                   </div>
                 ))}
               </div>
-              <p className="mt-1 text-xs text-gray-500">
+              <p className="mt-1 text-xs text-text-muted">
                 Select the days you are generally available
               </p>
             </div>
@@ -524,9 +524,9 @@ export default function SkillForm({
                 type="checkbox"
                 checked={formData.is_remote_friendly}
                 onChange={handleCheckboxChange}
-                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                className="h-4 w-4 accent-emerald-600 border-border"
               />
-              <label htmlFor="is_remote_friendly" className="ml-2 block text-sm text-gray-700">
+              <label htmlFor="is_remote_friendly" className="ml-2 block text-sm text-text-secondary">
                 This skill can be provided/received remotely
               </label>
             </div>
@@ -536,14 +536,14 @@ export default function SkillForm({
               <button
                 type="button"
                 onClick={() => router.back()}
-                className="px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                className="btn btn-ghost"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                className="btn btn-primary"
               >
                 {loading 
                   ? (isEdit ? 'Updating...' : 'Creating...') 

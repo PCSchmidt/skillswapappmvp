@@ -49,37 +49,38 @@ export default function ForgotPassword() {
   };
   
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Reset Your Password</h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="eyebrow mb-2">Account Recovery</p>
+          <h2 className="text-display-sm font-display font-semibold">Reset Your Password</h2>
+          <p className="mt-2 text-sm text-text-secondary">
             Enter your email address and we'll send you a link to reset your password
           </p>
         </div>
         
-        <div className="mt-8 bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+        <div className="card py-8 px-4 sm:px-10">
           {error && (
-            <div className="mb-4 p-3 bg-error-50 text-error-700 rounded-md">
+            <div className="mb-4 p-3 bg-error-500/10 border border-error-500/20 text-error-500">
               {error}
             </div>
           )}
           
           {success ? (
             <div className="text-center">
-              <div className="mb-4 mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
-                <svg className="h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="mb-4 mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-emerald-900/30 border border-emerald-700/40">
+                <svg className="h-6 w-6 text-emerald-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h3 className="text-lg leading-6 font-medium text-gray-900">Check Your Email</h3>
+              <h3 className="text-lg leading-6 font-medium text-text-primary">Check Your Email</h3>
               <div className="mt-2">
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-text-muted">
                   We've sent a password reset link to your email address. Please check your inbox.
                 </p>
               </div>
               <div className="mt-5">
-                <Link href="/login" className="text-primary-600 hover:text-primary-500">
+                <Link href="/login" className="text-emerald-400 hover:text-emerald-300">
                   Return to login
                 </Link>
               </div>
@@ -87,7 +88,7 @@ export default function ForgotPassword() {
           ) : (
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="email" className="form-label">
                   Email address
                 </label>
                 <div className="mt-1">
@@ -97,7 +98,7 @@ export default function ForgotPassword() {
                     type="email"
                     autoComplete="email"
                     required
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                    className="form-input"
                     placeholder="you@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -108,7 +109,7 @@ export default function ForgotPassword() {
               <div>
                 <button
                   type="submit"
-                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                  className="btn btn-primary w-full"
                   disabled={loading}
                 >
                   {loading ? 'Sending...' : 'Send Reset Link'}
@@ -117,12 +118,12 @@ export default function ForgotPassword() {
               
               <div className="flex items-center justify-between">
                 <div className="text-sm">
-                  <Link href="/login" className="font-medium text-primary-600 hover:text-primary-500">
+                  <Link href="/login" className="font-medium text-emerald-400 hover:text-emerald-300">
                     Remember your password?
                   </Link>
                 </div>
                 <div className="text-sm">
-                  <Link href="/signup" className="font-medium text-primary-600 hover:text-primary-500">
+                  <Link href="/signup" className="font-medium text-emerald-400 hover:text-emerald-300">
                     Need an account?
                   </Link>
                 </div>

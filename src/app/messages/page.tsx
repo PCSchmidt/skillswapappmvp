@@ -184,26 +184,26 @@ export default function MessagesPage() {
   const getStatusBadgeColor = (status: string): string => {
     switch (status) {
       case 'proposed':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-blue-900/20 text-blue-400 border border-blue-500/20';
       case 'accepted':
-        return 'bg-green-100 text-green-800';
+        return 'bg-emerald-900/20 text-emerald-400 border border-emerald-500/20';
       case 'completed':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-purple-900/20 text-purple-400 border border-purple-500/20';
       case 'declined':
       case 'cancelled':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-900/20 text-red-400 border border-red-500/20';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-surface-raised text-text-muted border border-border';
     }
   };
   
   // Show loading state
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-canvas">
         <div className="text-center">
           <div className="spinner mb-4"></div>
-          <p className="text-gray-700">Loading your messages...</p>
+          <p className="text-text-secondary">Loading your messages...</p>
         </div>
       </div>
     );
@@ -212,15 +212,15 @@ export default function MessagesPage() {
   // Show unauthorized state
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-canvas">
         <div className="text-center max-w-md mx-auto px-4">
-          <div className="text-error-600 text-5xl mb-4">
+          <div className="text-error-500 text-5xl mb-4">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Authentication Required</h1>
-          <p className="text-gray-600 mb-6">
+          <h1 className="text-2xl font-semibold text-text-primary mb-2">Authentication Required</h1>
+          <p className="text-text-secondary mb-6">
             Please login to view your messages.
           </p>
           <button
@@ -235,32 +235,33 @@ export default function MessagesPage() {
   }
   
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-canvas py-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Your Messages</h1>
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="eyebrow">Conversations</p>
+          <h1 className="text-3xl font-display font-semibold text-text-primary">Your Messages</h1>
+          <p className="mt-2 text-sm text-text-muted">
             Conversations for your skill exchanges
           </p>
         </div>
         
         {/* Error message */}
         {error && (
-          <div className="mb-6 p-4 bg-error-50 text-error-700 rounded-md">
+          <div className="mb-6 p-4 bg-error-500/10 border border-error-500/20 text-error-500">
             {error}
           </div>
         )}
         
         {/* Conversations list */}
         {conversations.length === 0 ? (
-          <div className="bg-white shadow-sm rounded-lg p-6 text-center">
+          <div className="card p-6 text-center">
             <div className="mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
               </svg>
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No messages yet</h3>
-            <p className="text-gray-500 mb-6">
+            <h3 className="text-lg font-medium text-text-primary mb-2">No messages yet</h3>
+            <p className="text-text-muted mb-6">
               Start a trade to begin messaging with other users.
             </p>
             <Link href="/skills/browse" className="btn btn-primary">
@@ -268,15 +269,15 @@ export default function MessagesPage() {
             </Link>
           </div>
         ) : (
-          <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-            <ul className="divide-y divide-gray-200">
+          <div className="overflow-hidden card">
+            <ul className="divide-y divide-border">
               {conversations.map((convo) => (
                 <li key={convo.tradeId}>
-                  <Link href={`/messages/${convo.tradeId}`} className="block hover:bg-gray-50">
+                  <Link href={`/messages/${convo.tradeId}`} className="block hover:bg-surface-raised/50">
                     <div className="px-4 py-4 sm:px-6">
                       <div className="flex items-center">
                         {/* User avatar */}
-                        <div className="flex-shrink-0 relative h-10 w-10 rounded-full overflow-hidden bg-gray-200">
+                        <div className="flex-shrink-0 relative h-10 w-10 rounded-full overflow-hidden bg-surface-raised">
                           {convo.otherUserImage ? (
                             <Image
                               src={convo.otherUserImage}
@@ -285,14 +286,14 @@ export default function MessagesPage() {
                               className="object-cover"
                             />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-primary-100 text-primary-600 font-semibold">
+                            <div className="w-full h-full flex items-center justify-center bg-emerald-900/30 text-emerald-400 font-semibold">
                               {(convo.otherUserName || 'U').charAt(0).toUpperCase()}
                             </div>
                           )}
                           
                           {/* Unread indicator */}
                           {convo.unreadCount > 0 && (
-                            <div className="absolute -top-1 -right-1 bg-primary-500 text-white text-xs font-medium rounded-full h-5 w-5 flex items-center justify-center">
+                            <div className="absolute -top-1 -right-1 bg-emerald-600 text-white text-xs font-medium rounded-full h-5 w-5 flex items-center justify-center">
                               {convo.unreadCount > 9 ? '9+' : convo.unreadCount}
                             </div>
                           )}
@@ -300,18 +301,18 @@ export default function MessagesPage() {
                         
                         <div className="ml-4 flex-1">
                           <div className="flex items-center justify-between">
-                            <p className="text-sm font-medium text-primary-600 truncate">
+                            <p className="text-sm font-medium text-emerald-400 truncate">
                               {convo.otherUserName}
                             </p>
                             <div className="ml-2 flex-shrink-0 flex">
-                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeColor(convo.status)}`}>
+                              <span className={`inline-flex items-center px-2.5 py-0.5 text-xs font-medium ${getStatusBadgeColor(convo.status)}`}>
                                 {convo.status.charAt(0).toUpperCase() + convo.status.slice(1)}
                               </span>
                             </div>
                           </div>
                           
                           <div className="mt-2 flex justify-between">
-                            <div className="flex items-center text-sm text-gray-500">
+                            <div className="flex items-center text-sm text-text-muted">
                               <p className="truncate">
                                 <span className="font-medium">Trade: </span>
                                 {convo.isUserProposer ? 
@@ -319,14 +320,14 @@ export default function MessagesPage() {
                                   `${convo.skillRequestedTitle} ↔ ${convo.skillOfferedTitle}`}
                               </p>
                             </div>
-                            <p className="text-xs text-gray-400">
+                            <p className="text-xs text-text-muted">
                               {formatTimeAgo(convo.lastMessageTime)}
                             </p>
                           </div>
                           
                           {/* Last message preview */}
                           {convo.lastMessage && (
-                            <p className="mt-1 text-sm text-gray-600 truncate">
+                            <p className="mt-1 text-sm text-text-secondary truncate">
                               {convo.lastMessage}
                             </p>
                           )}

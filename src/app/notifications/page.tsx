@@ -198,12 +198,12 @@ export default function NotificationsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-canvas py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-          <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
+        <div className="card overflow-hidden">
+          <div className="px-4 py-5 sm:px-6 border-b border-border">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-              <h1 className="text-2xl font-bold text-gray-900">
+              <h1 className="text-2xl font-display font-semibold text-text-primary">
                 Notifications
               </h1>
               
@@ -212,7 +212,7 @@ export default function NotificationsPage() {
                 <select
                   value={filter}
                   onChange={(e) => setFilter(e.target.value as 'all' | 'unread' | 'read')}
-                  className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm rounded-md"
+                  className="form-input"
                 >
                   <option value="all">All notifications</option>
                   <option value="unread">Unread only</option>
@@ -223,7 +223,7 @@ export default function NotificationsPage() {
                   <select
                     value={typeFilter || ''}
                     onChange={(e) => setTypeFilter(e.target.value || null)}
-                    className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm rounded-md"
+                    className="form-input"
                   >
                     <option value="">All types</option>
                     {availableTypes.map(type => (
@@ -239,15 +239,15 @@ export default function NotificationsPage() {
           
           {/* Error display */}
           {error && (
-            <div className="bg-error-50 border-l-4 border-error-400 p-4 m-4">
+            <div className="bg-error-500/10 border-l-4 border-error-500 p-4 m-4">
               <div className="flex">
                 <div className="flex-shrink-0">
-                  <svg className="h-5 w-5 text-error-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <svg className="h-5 w-5 text-error-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                   </svg>
                 </div>
                 <div className="ml-3">
-                  <p className="text-sm text-error-700">{error}</p>
+                  <p className="text-sm text-error-500">{error}</p>
                 </div>
               </div>
             </div>
@@ -255,17 +255,17 @@ export default function NotificationsPage() {
           
           {/* Action buttons */}
           {notifications.length > 0 && (
-            <div className="px-4 py-3 border-b border-gray-200 bg-gray-50">
+            <div className="px-4 py-3 border-b border-border bg-surface">
               <div className="flex justify-end space-x-3">
                 <button
                   onClick={handleMarkAllAsRead}
-                  className="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                  className="btn btn-ghost text-sm"
                 >
                   Mark all as read
                 </button>
                 <button
                   onClick={handleClearAll}
-                  className="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                  className="btn btn-ghost text-sm"
                 >
                   Clear all
                 </button>
@@ -274,7 +274,7 @@ export default function NotificationsPage() {
           )}
           
           {/* Notification list */}
-          <div className="bg-white">
+          <div>
             <NotificationList
               notifications={notifications}
               loading={loading}
