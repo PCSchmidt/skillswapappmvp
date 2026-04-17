@@ -7,13 +7,15 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSupabase } from '@/contexts/SupabaseContext';
 import { Database } from '@/types/supabase';
 import TradeProposalForm from '@/components/trades/TradeProposalForm';
+import { getSkillMatches, type MatchResult } from '@/lib/api/aiClient';
+import { getSkillMatches, type MatchResult } from '@/lib/api/aiClient';
 
 type Skill = Database['public']['Tables']['skills']['Row'] & {
   users?: {
@@ -36,7 +38,11 @@ export default function SkillDetailPage({ params }: { params: { id: string } }) 
   const [userOwnsSkill, setUserOwnsSkill] = useState(false);
   const [showTradeForm, setShowTradeForm] = useState(false);
   const [tradeSuccess, setTradeSuccess] = useState(false);
+  const [similarSkills, setSimilarSkills] = useState<MatchResult[]>([]);
+  const [similarLoading, setSimilarLoading] = useState(false);
   const [tradeId, setTradeId] = useState<string | null>(null);
+  const [similarSkills, setSimilarSkills] = useState<MatchResult[]>([]);
+  const [similarLoading, setSimilarLoading] = useState(false);
   
   // Fetch skill data on initial load
   useEffect(() => {
@@ -75,9 +81,37 @@ export default function SkillDetailPage({ params }: { params: { id: string } }) 
       } finally {
         setLoading(false);
       }
+
+    // Fetch similar skills from AI backend
+    const fetchSimilar = async () => {
+      setSimilarLoading(true);
+      try {
+        const result = await getSkillMatches(params.id, undefined, 3);
+        setSimilarSkills(result.matches);
+      } catch {
+        // Silently fail — similar skills are non-critical
+      } finally {
+        setSimilarLoading(false);
+      }
+    };
+    fetchSimilar();
     };
     
     fetchSkill();
+
+    // Fetch similar skills from AI backend
+    const fetchSimilar = async () => {
+      setSimilarLoading(true);
+      try {
+        const result = await getSkillMatches(params.id, undefined, 3);
+        setSimilarSkills(result.matches);
+      } catch {
+        // Silently fail — similar skills are non-critical
+      } finally {
+        setSimilarLoading(false);
+      }
+    };
+    fetchSimilar();
   }, [params.id, supabase, user]);
   
   // Format availability for display
@@ -337,7 +371,29 @@ export default function SkillDetailPage({ params }: { params: { id: string } }) 
                       <div className="ml-4">
                         <h3 className="text-lg font-medium text-text-primary">
                           {skill.users.full_name || 'Anonymous User'}
-                        </h3>
+                    Similar Skills */}
+                {similarSkills.length > 0 && (
+                  <div className="mt-8 pt-8 border-t border-border">
+                    <h2 className="text-lg font-medium text-text-primary mb-4">Similar Skills</h2>
+                    <div className="space-y-3">
+                      {similarSkills.map((match) => (
+                        <Link
+                          key={match.skill_id}
+                          href={`/skills/${match.skill_id}`}
+                          className="block p-3 border border-border hover:border-emerald-800 transition-colors"
+                        >
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-sm font-medium text-text-primary">{match.title}</span>
+                            <span className="text-xs text-emerald-400">{Math.round(match.score * 100)}% match</span>
+                          </div>
+                          <p className="text-xs text-text-muted">{match.explanation}</p>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/*     </h3>
                         <p className="text-sm text-text-muted">
                           {skill.users.location_city && skill.users.location_state
                             ? `${skill.users.location_city}, ${skill.users.location_state}`
@@ -354,6 +410,28 @@ export default function SkillDetailPage({ params }: { params: { id: string } }) 
                   </div>
                 )}
                 
+                {/* Similar Skills */}
+                {similarSkills.length > 0 && (
+                  <div className="mt-8 pt-8 border-t border-border">
+                    <h2 className="text-lg font-medium text-text-primary mb-4">Similar Skills</h2>
+                    <div className="space-y-3">
+                      {similarSkills.map((match) => (
+                        <Link
+                          key={match.skill_id}
+                          href={`/skills/${match.skill_id}`}
+                          className="block p-3 border border-border hover:border-emerald-800 transition-colors"
+                        >
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-sm font-medium text-text-primary">{match.title}</span>
+                            <span className="text-xs text-emerald-400">{Math.round(match.score * 100)}% match</span>
+                          </div>
+                          <p className="text-xs text-text-muted">{match.explanation}</p>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Action buttons */}
                 <div className="mt-8 pt-4 border-t border-border flex flex-wrap justify-end gap-3">
                   {userOwnsSkill ? (

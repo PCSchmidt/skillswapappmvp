@@ -7,16 +7,20 @@
 
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useSupabase } from '@/contexts/SupabaseContext';
+import { getSkillMatches, type MatchResult } from '@/lib/api/aiClient';
 
 export default function DashboardPage() {
   const router = useRouter();
   const { user, isLoading, signOut, isVerified, refreshUser, supabase } = useSupabase();
   const [verifying, setVerifying] = useState(false);
+  const [aiMatches, setAiMatches] = useState<MatchResult[]>([]);
+  const [aiLoading, setAiLoading] = useState(true);
+  const [aiError, setAiError] = useState<string | null>(null);
   
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -43,6 +47,40 @@ export default function DashboardPage() {
       setVerifying(false);
     }
   };
+
+  // Fetch AI-powered skill recommendations
+  const fetchAiMatches = useCallback(async () => {
+    if (!user) return;
+    setAiLoading(true);
+    setAiError(null);
+    try {
+      // Get user's first active skill to use as the query
+      const { data: mySkills } = await supabase
+        .from('skills')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('is_active', true)
+        .limit(1);
+
+      if (!mySkills || mySkills.length === 0) {
+        setAiLoading(false);
+        return;
+      }
+
+      const result = await getSkillMatches(mySkills[0].id, user.id, 3);
+      setAiMatches(result.matches);
+    } catch {
+      setAiError('Could not load recommendations');
+    } finally {
+      setAiLoading(false);
+    }
+  }, [user, supabase]);
+
+  useEffect(() => {
+    if (user && !isLoading && isVerified) {
+      fetchAiMatches();
+    }
+  }, [user, isLoading, isVerified, fetchAiMatches]);
   
   const handleSignOut = async () => {
     await signOut();
@@ -182,17 +220,43 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* AI Recommendations placeholder */}
+          {/* AI Recommendations */}
           <div className="card p-6">
             <span className="eyebrow mb-4 block">AI Recommendations</span>
             <p className="text-sm text-text-muted mb-4">
               Personalized skill matches powered by semantic similarity.
             </p>
-            <div className="flex items-center justify-center py-8 border border-border-subtle">
-              <span className="text-xs text-text-muted uppercase tracking-eyebrow">
-                Matching engine loading…
-              </span>
-            </div>
+            {aiLoading ? (
+              <div className="flex items-center justify-center py-8 border border-border-subtle">
+                <span className="text-xs text-text-muted uppercase tracking-eyebrow">
+                  Matching engine loading…
+                </span>
+              </div>
+            ) : aiError ? (
+              <div className="flex items-center justify-center py-8 border border-border-subtle">
+                <span className="text-xs text-text-muted">{aiError}</span>
+              </div>
+            ) : aiMatches.length === 0 ? (
+              <div className="flex items-center justify-center py-8 border border-border-subtle">
+                <span className="text-xs text-text-muted">Add a skill to see AI-powered matches</span>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {aiMatches.map((match) => (
+                  <Link
+                    key={match.skill_id}
+                    href={`/skills/${match.skill_id}`}
+                    className="block p-3 border border-border hover:border-emerald-800 transition-colors"
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sm font-medium text-text-primary">{match.title}</span>
+                      <span className="text-xs text-emerald-400">{Math.round(match.score * 100)}%</span>
+                    </div>
+                    <p className="text-xs text-text-muted">{match.explanation}</p>
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

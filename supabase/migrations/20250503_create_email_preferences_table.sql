@@ -46,10 +46,10 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Trigger to create email preferences for new profiles
-DROP TRIGGER IF EXISTS create_email_preferences_for_new_profile ON public.profiles;
+-- Trigger to create email preferences for new users
+DROP TRIGGER IF EXISTS create_email_preferences_for_new_profile ON public.users;
 CREATE TRIGGER create_email_preferences_for_new_profile
-  AFTER INSERT ON public.profiles
+  AFTER INSERT ON public.users
   FOR EACH ROW
   EXECUTE FUNCTION public.create_initial_email_preferences();
 
