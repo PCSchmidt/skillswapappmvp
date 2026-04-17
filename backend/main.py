@@ -58,7 +58,7 @@ app = FastAPI(
 # CORS — allow the Next.js frontend
 allowed_origins = os.environ.get(
     "ALLOWED_ORIGINS",
-    "http://localhost:3000,https://skillswap.vercel.app",
+    "http://localhost:3000,https://skillswapappmvp.vercel.app",
 ).split(",")
 
 app.add_middleware(
