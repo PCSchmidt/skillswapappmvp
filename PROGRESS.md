@@ -36,33 +36,35 @@ Single source of truth for project status. Updated as work is completed.
 
 ---
 
-## Phase 2: Editorial Token Migration 🔲
+## Phase 2: Editorial Token Migration ✅
 
-~85% of the codebase still uses old tokens (`primary-600`, `bg-gray-*`, `rounded-lg`). All feature logic is 100% complete — this phase is purely visual.
+**Committed**: `ea6cb27` (April 2026)
+
+Migrated 24 files from light-theme Tailwind tokens to the dark editorial design system. No feature changes — purely visual.
 
 ### 2A: High-Priority Pages
-- [ ] Landing page (`src/app/page.tsx`)
-- [ ] Signup page (`src/app/signup/page.tsx`)
-- [ ] Auth components (`LoginForm.tsx`, `SignupForm.tsx`)
-- [ ] Auth flow pages (verify, forgot-password, complete-profile)
+- [x] Landing page (`src/app/page.tsx`)
+- [x] Signup page (`src/app/signup/page.tsx`)
+- [x] Auth components (`LoginForm.tsx`, `SignupForm.tsx`)
+- [x] Auth flow pages (verify, forgot-password, complete-profile)
 
 ### 2B: Core Components
-- [ ] `SkillCard.tsx` — Replace primary/gray/rounded tokens
-- [ ] `SkillForm.tsx` — Form fields to editorial tokens
-- [ ] `SkillList.tsx` — Grid layout with editorial cards
-- [ ] `TradeProposalForm.tsx` — Form to editorial tokens
+- [x] `SkillCard.tsx` — Editorial card with emerald/canvas badges
+- [x] `SkillForm.tsx` — form-input, form-label, btn classes
+- [x] `SkillList.tsx` — Editorial grid with error states
+- [x] `TradeProposalForm.tsx` — Editorial form with status tokens
 
 ### 2C: Feature Pages
-- [ ] `src/app/skills/*` — Browse, detail, create, edit pages
-- [ ] `src/app/trades/*` — Trade list, detail pages
-- [ ] `src/app/messages/*` — Chat interface
-- [ ] `src/app/profiles/*` — Profile view/edit
-- [ ] `src/app/notifications/*` — Notification center
-- [ ] `src/app/settings/*` — Settings page
+- [x] `src/app/skills/*` — Browse, detail, create pages
+- [x] `src/app/trades/*` — Trade list, detail pages
+- [x] `src/app/messages/*` — Chat interface with status badges
+- [x] `src/app/profile/[id]/*` — Profile view with editorial layout
+- [x] `src/app/notifications/*` — Notification center
+- [x] `src/app/settings/*` — Email preferences
 
 ### 2D: Remaining Components
-- [ ] `ChatWindow.tsx`, `MessageComposer.tsx`
-- [ ] `RatingForm.tsx`, `StarRating.tsx`
+- [x] `ChatWindow.tsx`, `MessageComposer.tsx`
+- [x] `RatingForm.tsx`, `StarRating.tsx`
 
 ---
 
@@ -102,4 +104,4 @@ Single source of truth for project status. Updated as work is completed.
 |-------|----------|-------|
 | `typescript.ignoreBuildErrors: true` | Medium | `@supabase/ssr@0.0.10` doesn't pass `Database` generic, causing `never` types on `.from()` queries. Fix: upgrade SSR or add manual type assertions. |
 | No `.env.local` in repo | Expected | Supabase credentials are not committed. See `.env.example`. |
-| Old Tailwind tokens in ~85% of components | Visual only | All feature logic works — just needs token replacement (Phase 2). |
+| Old Tailwind tokens in ~85% of components | ~~Visual only~~ | ~~Fixed in Phase 2~~ (`ea6cb27`) |

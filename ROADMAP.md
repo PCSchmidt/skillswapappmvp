@@ -17,19 +17,19 @@ Establish the editorial design system and clean up technical debt.
 
 ---
 
-## v0.2 — Visual Consistency (Current)
+## v0.2 — Visual Consistency ✅
 
-Apply the editorial design system across all pages and components. No feature changes — purely visual migration.
+Editorial design system applied across all 24 pages and components.
 
-- Landing page and signup flow
-- Auth components (LoginForm, SignupForm)
-- Skill components (SkillCard, SkillForm, SkillList)
-- Trade, messaging, rating, and profile UIs
-- Settings and notification pages
+- ✅ Landing page and signup flow
+- ✅ Auth components (LoginForm, SignupForm)
+- ✅ Skill components (SkillCard, SkillForm, SkillList)
+- ✅ Trade, messaging, rating, and profile UIs
+- ✅ Settings and notification pages
 
 ---
 
-## v0.3 — AI Skill Matching
+## v0.3 — AI Skill Matching (Current)
 
 Add an intelligent backend for skill recommendations.
 
