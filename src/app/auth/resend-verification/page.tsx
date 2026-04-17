@@ -65,16 +65,16 @@ export default function ResendVerification() {
   };
   
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-canvas py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Resend Verification Email</h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <h2 className="mt-6 text-3xl font-extrabold text-text-primary">Resend Verification Email</h2>
+          <p className="mt-2 text-sm text-text-secondary">
             Enter your email address and we'll send a new verification link
           </p>
         </div>
         
-        <div className="mt-8 bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+        <div className="mt-8 bg-surface py-8 px-4 shadow sm:rounded-lg sm:px-10">
           {error && (
             <div className="mb-4 p-3 bg-error-50 text-error-700 rounded-md">
               {error}
@@ -83,14 +83,14 @@ export default function ResendVerification() {
           
           {success ? (
             <div className="text-center">
-              <div className="mb-4 mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
-                <svg className="h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="mb-4 mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-emerald-950/30">
+                <svg className="h-6 w-6 text-emerald-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h3 className="text-lg leading-6 font-medium text-gray-900">Verification Email Sent</h3>
+              <h3 className="text-lg leading-6 font-medium text-text-primary">Verification Email Sent</h3>
               <div className="mt-2">
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-text-muted">
                   We've sent a verification email to your inbox. Please check your email and click the link to verify your account.
                 </p>
               </div>
@@ -103,7 +103,7 @@ export default function ResendVerification() {
           ) : (
             <form className="space-y-6" onSubmit={handleResend}>
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="email" className="block text-sm font-medium text-text-secondary">
                   Email address
                 </label>
                 <div className="mt-1">
@@ -113,7 +113,7 @@ export default function ResendVerification() {
                     type="email"
                     autoComplete="email"
                     required
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                    className="appearance-none block w-full px-3 py-2 border border-border rounded-md shadow-sm placeholder-text-muted focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />

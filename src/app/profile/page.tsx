@@ -30,10 +30,10 @@ export default function ProfileRedirect() {
   
   // Show a loading state while redirecting
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-canvas">
       <div className="text-center">
         <div className="spinner mb-4"></div>
-        <p className="text-gray-700">Redirecting to your profile...</p>
+        <p className="text-text-secondary">Redirecting to your profile...</p>
       </div>
     </div>
   );

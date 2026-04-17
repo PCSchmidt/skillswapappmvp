@@ -94,10 +94,10 @@ export default function EditSkillPage({ params }: { params: { id: string } }) {
   // Show loading state
   if (isLoading || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-canvas">
         <div className="text-center">
           <div className="spinner mb-4"></div>
-          <p className="text-gray-700">Loading...</p>
+          <p className="text-text-secondary">Loading...</p>
         </div>
       </div>
     );
@@ -106,15 +106,15 @@ export default function EditSkillPage({ params }: { params: { id: string } }) {
   // Show unauthorized message
   if (unauthorized) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-canvas">
         <div className="text-center max-w-md mx-auto px-4">
           <div className="text-error-600 text-5xl mb-4">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Unauthorized</h1>
-          <p className="text-gray-600 mb-6">
+          <h1 className="text-2xl font-bold text-text-primary mb-2">Unauthorized</h1>
+          <p className="text-text-secondary mb-6">
             {error || "You don't have permission to edit this skill."}
           </p>
           <button
@@ -131,15 +131,15 @@ export default function EditSkillPage({ params }: { params: { id: string } }) {
   // Show error state
   if (error || !skill) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-canvas">
         <div className="text-center max-w-md mx-auto px-4">
           <div className="text-error-600 text-5xl mb-4">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Skill Not Found</h1>
-          <p className="text-gray-600 mb-6">
+          <h1 className="text-2xl font-bold text-text-primary mb-2">Skill Not Found</h1>
+          <p className="text-text-secondary mb-6">
             {error || 'The skill you are trying to edit does not exist or has been removed.'}
           </p>
           <button
@@ -154,11 +154,11 @@ export default function EditSkillPage({ params }: { params: { id: string } }) {
   }
   
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-canvas py-12">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-extrabold text-gray-900">Edit Skill</h1>
-          <p className="mt-2 text-sm text-gray-500">
+          <h1 className="text-3xl font-extrabold text-text-primary">Edit Skill</h1>
+          <p className="mt-2 text-sm text-text-muted">
             Update the details of your skill
           </p>
         </div>

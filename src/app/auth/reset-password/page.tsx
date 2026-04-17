@@ -102,10 +102,10 @@ export default function ResetPassword() {
   // Show loading state while verifying token
   if (validToken === null) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen flex items-center justify-center bg-canvas py-12 px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <div className="spinner mb-4"></div>
-          <p className="text-gray-700">Verifying your reset link...</p>
+          <p className="text-text-secondary">Verifying your reset link...</p>
         </div>
       </div>
     );
@@ -114,22 +114,22 @@ export default function ResetPassword() {
   // Show error if token is invalid
   if (validToken === false) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen flex items-center justify-center bg-canvas py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full">
           <div className="text-center">
-            <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Reset Password Failed</h2>
+            <h2 className="mt-6 text-3xl font-extrabold text-text-primary">Reset Password Failed</h2>
           </div>
           
-          <div className="mt-8 bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          <div className="mt-8 bg-surface py-8 px-4 shadow sm:rounded-lg sm:px-10">
             <div className="text-center">
               <div className="mb-4 mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
                 <svg className="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </div>
-              <h3 className="text-lg leading-6 font-medium text-gray-900">Invalid Reset Link</h3>
+              <h3 className="text-lg leading-6 font-medium text-text-primary">Invalid Reset Link</h3>
               <div className="mt-2">
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-text-muted">
                   {error || 'Your password reset link is invalid or has expired.'}
                 </p>
               </div>
@@ -146,16 +146,16 @@ export default function ResetPassword() {
   }
   
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-canvas py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Reset Your Password</h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <h2 className="mt-6 text-3xl font-extrabold text-text-primary">Reset Your Password</h2>
+          <p className="mt-2 text-sm text-text-secondary">
             Create a new password for your account
           </p>
         </div>
         
-        <div className="mt-8 bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+        <div className="mt-8 bg-surface py-8 px-4 shadow sm:rounded-lg sm:px-10">
           {error && (
             <div className="mb-4 p-3 bg-error-50 text-error-700 rounded-md">
               {error}
@@ -169,9 +169,9 @@ export default function ResetPassword() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h3 className="text-lg leading-6 font-medium text-gray-900">Password Reset Successful</h3>
+              <h3 className="text-lg leading-6 font-medium text-text-primary">Password Reset Successful</h3>
               <div className="mt-2">
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-text-muted">
                   Your password has been successfully reset. You will be redirected to the login page shortly.
                 </p>
               </div>
@@ -184,7 +184,7 @@ export default function ResetPassword() {
           ) : (
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="password" className="block text-sm font-medium text-text-secondary">
                   New Password
                 </label>
                 <div className="mt-1">
@@ -193,19 +193,19 @@ export default function ResetPassword() {
                     name="password"
                     type="password"
                     required
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                    className="appearance-none block w-full px-3 py-2 border border-border rounded-md shadow-sm placeholder-text-muted focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     minLength={8}
                   />
                 </div>
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-text-muted">
                   Must be at least 8 characters long
                 </p>
               </div>
               
               <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-text-secondary">
                   Confirm New Password
                 </label>
                 <div className="mt-1">
@@ -214,7 +214,7 @@ export default function ResetPassword() {
                     name="confirmPassword"
                     type="password"
                     required
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                    className="appearance-none block w-full px-3 py-2 border border-border rounded-md shadow-sm placeholder-text-muted focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                   />

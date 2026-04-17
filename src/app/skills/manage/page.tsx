@@ -105,10 +105,10 @@ export default function ManageSkillsPage() {
   // Show loading state
   if (isLoading || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-canvas">
         <div className="text-center">
           <div className="spinner mb-4"></div>
-          <p className="text-gray-700">Loading your skills...</p>
+          <p className="text-text-secondary">Loading your skills...</p>
         </div>
       </div>
     );
@@ -117,15 +117,15 @@ export default function ManageSkillsPage() {
   // Show unauthorized state
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-canvas">
         <div className="text-center max-w-md mx-auto px-4">
           <div className="text-error-600 text-5xl mb-4">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Authentication Required</h1>
-          <p className="text-gray-600 mb-6">
+          <h1 className="text-2xl font-bold text-text-primary mb-2">Authentication Required</h1>
+          <p className="text-text-secondary mb-6">
             You need to be logged in to manage your skills.
           </p>
           <button
@@ -140,12 +140,12 @@ export default function ManageSkillsPage() {
   }
   
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-canvas py-12">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Manage Your Skills</h1>
-            <p className="mt-1 text-sm text-gray-500">
+            <h1 className="text-3xl font-bold text-text-primary">Manage Your Skills</h1>
+            <p className="mt-1 text-sm text-text-muted">
               View, edit, and delete the skills you're offering or seeking
             </p>
           </div>
@@ -169,10 +169,10 @@ export default function ManageSkillsPage() {
         )}
         
         {/* Tabs */}
-        <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-          <div className="px-4 py-5 border-b border-gray-200 sm:px-6">
+        <div className="bg-surface shadow overflow-hidden sm:rounded-lg">
+          <div className="px-4 py-5 border-b border-border sm:px-6">
             <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between">
-              <h2 className="text-lg font-medium text-gray-900">Your Skills</h2>
+              <h2 className="text-lg font-medium text-text-primary">Your Skills</h2>
               
               <div className="mt-4 sm:mt-0">
                 <nav className="-mb-px flex space-x-8">
@@ -182,7 +182,7 @@ export default function ManageSkillsPage() {
                       whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm
                       ${activeTab === 'offering'
                         ? 'border-primary-500 text-primary-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}
+                        : 'border-transparent text-text-muted hover:text-text-secondary hover:border-border'}
                     `}
                   >
                     Offering ({skills.filter(s => s.is_offering).length})
@@ -194,7 +194,7 @@ export default function ManageSkillsPage() {
                       whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm
                       ${activeTab === 'seeking'
                         ? 'border-primary-500 text-primary-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}
+                        : 'border-transparent text-text-muted hover:text-text-secondary hover:border-border'}
                     `}
                   >
                     Seeking ({skills.filter(s => !s.is_offering).length})
@@ -209,14 +209,14 @@ export default function ManageSkillsPage() {
             {filteredSkills.length === 0 ? (
               <div className="text-center py-12">
                 <div className="mb-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                <h3 className="text-lg font-medium text-text-primary mb-2">
                   No skills {activeTab === 'offering' ? 'offered' : 'sought'} yet
                 </h3>
-                <p className="text-gray-500 mb-6 max-w-md mx-auto">
+                <p className="text-text-muted mb-6 max-w-md mx-auto">
                   You haven't added any skills you're {activeTab === 'offering' ? 'offering' : 'seeking'} yet.
                 </p>
                 

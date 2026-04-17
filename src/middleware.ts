@@ -95,8 +95,12 @@ export async function middleware(req: NextRequest) {
     '/profile',
     '/skills/new',
     '/skills/edit',
+    '/skills/manage',
     '/trades',
     '/messages',
+    '/notifications',
+    '/ratings',
+    '/settings',
     '/auth/complete-profile',
   ];
   

@@ -182,10 +182,10 @@ export default function TradeRatingPage({ params }: { params: { trade_id: string
   // Show loading state
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-canvas">
         <div className="text-center">
           <div className="spinner mb-4"></div>
-          <p className="text-gray-700">Loading trade rating...</p>
+          <p className="text-text-secondary">Loading trade rating...</p>
         </div>
       </div>
     );
@@ -194,15 +194,15 @@ export default function TradeRatingPage({ params }: { params: { trade_id: string
   // Show error state
   if (error || !trade) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-canvas">
         <div className="text-center max-w-md mx-auto px-4">
           <div className="text-error-600 text-5xl mb-4">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Rating Not Available</h1>
-          <p className="text-gray-600 mb-6">
+          <h1 className="text-2xl font-bold text-text-primary mb-2">Rating Not Available</h1>
+          <p className="text-text-secondary mb-6">
             {error || 'This trade cannot be rated at this time.'}
           </p>
           <Link href="/trades" className="btn btn-primary">
@@ -218,15 +218,15 @@ export default function TradeRatingPage({ params }: { params: { trade_id: string
   
   if (!otherUser || !skillToRate) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-canvas">
         <div className="text-center max-w-md mx-auto px-4">
           <div className="text-error-600 text-5xl mb-4">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">User or Skill Information Missing</h1>
-          <p className="text-gray-600 mb-6">
+          <h1 className="text-2xl font-bold text-text-primary mb-2">User or Skill Information Missing</h1>
+          <p className="text-text-secondary mb-6">
             Unable to find the user or skill information needed to process this rating.
           </p>
           <Link href="/trades" className="btn btn-primary">
@@ -238,13 +238,13 @@ export default function TradeRatingPage({ params }: { params: { trade_id: string
   }
   
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-canvas py-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Back button */}
         <div className="mb-6">
           <Link
             href={`/trades/${trade.id}`}
-            className="flex items-center text-sm text-gray-600 hover:text-gray-900"
+            className="flex items-center text-sm text-text-secondary hover:text-text-primary"
           >
             <svg className="h-5 w-5 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -253,21 +253,21 @@ export default function TradeRatingPage({ params }: { params: { trade_id: string
           </Link>
         </div>
         
-        <div className="bg-white shadow-sm rounded-lg overflow-hidden mb-8">
-          <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
-            <h1 className="text-2xl font-bold text-gray-900">
+        <div className="bg-surface shadow-sm rounded-lg overflow-hidden mb-8">
+          <div className="px-4 py-5 sm:px-6 border-b border-border">
+            <h1 className="text-2xl font-bold text-text-primary">
               Rate Your Experience
             </h1>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-text-muted">
               Share your feedback for this completed skill exchange
             </p>
           </div>
           
           {/* Trade summary */}
-          <div className="px-4 py-5 sm:p-6 border-b border-gray-200">
+          <div className="px-4 py-5 sm:p-6 border-b border-border">
             <div className="flex items-center">
               <div className="flex-shrink-0 mr-4">
-                <div className="relative h-12 w-12 rounded-full overflow-hidden bg-gray-200">
+                <div className="relative h-12 w-12 rounded-full overflow-hidden bg-surface">
                   {otherUser.profile_image_url ? (
                     <Image
                       src={otherUser.profile_image_url}
@@ -283,10 +283,10 @@ export default function TradeRatingPage({ params }: { params: { trade_id: string
                 </div>
               </div>
               <div>
-                <h3 className="text-lg font-medium text-gray-900">
+                <h3 className="text-lg font-medium text-text-primary">
                   {otherUser.full_name || 'User'}
                 </h3>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-text-muted">
                   {isProposer() ? 'Provided you with' : 'Received your'}: <span className="font-medium">{skillToRate.title}</span>
                 </p>
               </div>
@@ -297,10 +297,10 @@ export default function TradeRatingPage({ params }: { params: { trade_id: string
           <div className="px-4 py-5 sm:p-6">
             {ratingSubmitted ? (
               <div>
-                <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md mb-6">
+                <div className="bg-emerald-950/30 border border-emerald-800 text-emerald-400 px-4 py-3 rounded-md mb-6">
                   <div className="flex">
                     <div className="flex-shrink-0">
-                      <svg className="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <svg className="h-5 w-5 text-emerald-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                       </svg>
                     </div>
@@ -313,8 +313,8 @@ export default function TradeRatingPage({ params }: { params: { trade_id: string
                 </div>
                 
                 {existingRating && (
-                  <div className="border border-gray-200 rounded-lg p-4">
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">
+                  <div className="border border-border rounded-lg p-4">
+                    <h3 className="text-lg font-medium text-text-primary mb-4">
                       Your Rating
                     </h3>
                     <RatingsList
@@ -339,12 +339,12 @@ export default function TradeRatingPage({ params }: { params: { trade_id: string
         
         {/* Other user's rating (if exists) */}
         {otherUserRating && (
-          <div className="bg-white shadow-sm rounded-lg overflow-hidden">
-            <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
-              <h2 className="text-lg font-medium text-gray-900">
+          <div className="bg-surface shadow-sm rounded-lg overflow-hidden">
+            <div className="px-4 py-5 sm:px-6 border-b border-border">
+              <h2 className="text-lg font-medium text-text-primary">
                 {otherUser.full_name || 'Other User'}'s Rating
               </h2>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-text-muted">
                 How they rated their experience with you
               </p>
             </div>

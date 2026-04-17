@@ -21,6 +21,7 @@ export default function DashboardPage() {
   const [aiMatches, setAiMatches] = useState<MatchResult[]>([]);
   const [aiLoading, setAiLoading] = useState(true);
   const [aiError, setAiError] = useState<string | null>(null);
+  const [stats, setStats] = useState({ offered: '0', requested: '0', trades: '0', rating: '—' });
   
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -81,6 +82,32 @@ export default function DashboardPage() {
       fetchAiMatches();
     }
   }, [user, isLoading, isVerified, fetchAiMatches]);
+
+  // Fetch dashboard stats
+  useEffect(() => {
+    if (!user || isLoading || !isVerified) return;
+    (async () => {
+      try {
+        const [offered, requested, trades, ratings] = await Promise.all([
+          supabase.from('skills').select('id', { count: 'exact', head: true }).eq('user_id', user.id).eq('is_active', true).eq('is_offering', true),
+          supabase.from('skills').select('id', { count: 'exact', head: true }).eq('user_id', user.id).eq('is_active', true).eq('is_offering', false),
+          supabase.from('trades').select('id', { count: 'exact', head: true }).eq('status', 'completed').or(`proposer_id.eq.${user.id},receiver_id.eq.${user.id}`),
+          supabase.from('ratings').select('rating_score').eq('ratee_id', user.id),
+        ]);
+        const avgRating = ratings.data && ratings.data.length > 0
+          ? (ratings.data.reduce((sum: number, r: { rating_score: number }) => sum + r.rating_score, 0) / ratings.data.length).toFixed(1)
+          : '—';
+        setStats({
+          offered: String(offered.count ?? 0),
+          requested: String(requested.count ?? 0),
+          trades: String(trades.count ?? 0),
+          rating: avgRating,
+        });
+      } catch {
+        // Stats fetch failed silently — keep defaults
+      }
+    })();
+  }, [user, isLoading, isVerified, supabase]);
   
   const handleSignOut = async () => {
     await signOut();
@@ -148,10 +175,10 @@ export default function DashboardPage() {
         {/* Stats row */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
           {[
-            { label: 'Skills Offered', value: '0' },
-            { label: 'Skills Requested', value: '0' },
-            { label: 'Trades Completed', value: '0' },
-            { label: 'Avg Rating', value: '—' },
+            { label: 'Skills Offered', value: stats.offered },
+            { label: 'Skills Requested', value: stats.requested },
+            { label: 'Trades Completed', value: stats.trades },
+            { label: 'Avg Rating', value: stats.rating },
           ].map((stat) => (
             <div key={stat.label} className="card p-5">
               <dt className="text-xs uppercase tracking-eyebrow text-text-muted mb-1">{stat.label}</dt>

@@ -199,10 +199,10 @@ export default function ProfileEditPage() {
   // Show loading state
   if (isLoading || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-canvas">
         <div className="text-center">
           <div className="spinner mb-4"></div>
-          <p className="text-gray-700">Loading your profile...</p>
+          <p className="text-text-secondary">Loading your profile...</p>
         </div>
       </div>
     );
@@ -211,15 +211,15 @@ export default function ProfileEditPage() {
   // Show unauthorized state
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-canvas">
         <div className="text-center max-w-md mx-auto px-4">
           <div className="text-error-600 text-5xl mb-4">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Authentication Required</h1>
-          <p className="text-gray-600 mb-6">
+          <h1 className="text-2xl font-bold text-text-primary mb-2">Authentication Required</h1>
+          <p className="text-text-secondary mb-6">
             You need to be logged in to edit your profile.
           </p>
           <button
@@ -234,16 +234,16 @@ export default function ProfileEditPage() {
   }
   
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-canvas py-12">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-extrabold text-gray-900">Edit Your Profile</h1>
-          <p className="mt-2 text-sm text-gray-500">
+          <h1 className="text-3xl font-extrabold text-text-primary">Edit Your Profile</h1>
+          <p className="mt-2 text-sm text-text-muted">
             Update your profile information visible to other users
           </p>
         </div>
         
-        <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+        <div className="bg-surface shadow overflow-hidden sm:rounded-lg">
           <form onSubmit={handleSubmit}>
             <div className="px-4 py-5 sm:p-6">
               {/* Error/Success messages */}
@@ -261,7 +261,7 @@ export default function ProfileEditPage() {
               
               {/* Profile Image */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-text-secondary mb-2">
                   Profile Image
                 </label>
                 <div className="flex items-center gap-6">
@@ -294,7 +294,7 @@ export default function ProfileEditPage() {
                     >
                       {imagePreview ? 'Change Image' : 'Upload Image'}
                     </label>
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p className="mt-1 text-sm text-text-muted">
                       JPG, PNG or GIF. Max size 5MB.
                     </p>
                   </div>
@@ -303,7 +303,7 @@ export default function ProfileEditPage() {
               
               {/* Name */}
               <div className="mb-6">
-                <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="fullName" className="block text-sm font-medium text-text-secondary mb-1">
                   Full Name
                 </label>
                 <input
@@ -312,14 +312,14 @@ export default function ProfileEditPage() {
                   name="fullName"
                   value={profile.fullName}
                   onChange={handleInputChange}
-                  className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                  className="block w-full border border-border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                   placeholder="Your full name"
                 />
               </div>
               
               {/* Bio */}
               <div className="mb-6">
-                <label htmlFor="bio" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="bio" className="block text-sm font-medium text-text-secondary mb-1">
                   Bio
                 </label>
                 <textarea
@@ -328,14 +328,14 @@ export default function ProfileEditPage() {
                   rows={4}
                   value={profile.bio}
                   onChange={handleInputChange}
-                  className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                  className="block w-full border border-border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                   placeholder="Tell others about yourself, your background, and your interests"
                 />
               </div>
               
               {/* Phone Number */}
               <div className="mb-6">
-                <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="phoneNumber" className="block text-sm font-medium text-text-secondary mb-1">
                   Phone Number (optional)
                 </label>
                 <input
@@ -344,21 +344,21 @@ export default function ProfileEditPage() {
                   name="phoneNumber"
                   value={profile.phoneNumber}
                   onChange={handleInputChange}
-                  className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                  className="block w-full border border-border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                   placeholder="Your phone number"
                 />
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-text-muted">
                   This will only be shared with users when you agree to a skill exchange.
                 </p>
               </div>
               
               {/* Location */}
               <div className="mb-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-3">Location</h3>
+                <h3 className="text-lg font-medium text-text-primary mb-3">Location</h3>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {/* City */}
                   <div>
-                    <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="city" className="block text-sm font-medium text-text-secondary mb-1">
                       City
                     </label>
                     <input
@@ -367,14 +367,14 @@ export default function ProfileEditPage() {
                       name="city"
                       value={profile.city}
                       onChange={handleInputChange}
-                      className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                      className="block w-full border border-border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                       placeholder="Your city"
                     />
                   </div>
                   
                   {/* State/Province */}
                   <div>
-                    <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="state" className="block text-sm font-medium text-text-secondary mb-1">
                       State/Province
                     </label>
                     <input
@@ -383,14 +383,14 @@ export default function ProfileEditPage() {
                       name="state"
                       value={profile.state}
                       onChange={handleInputChange}
-                      className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                      className="block w-full border border-border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                       placeholder="Your state/province"
                     />
                   </div>
                   
                   {/* Country */}
                   <div>
-                    <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="country" className="block text-sm font-medium text-text-secondary mb-1">
                       Country
                     </label>
                     <select
@@ -398,7 +398,7 @@ export default function ProfileEditPage() {
                       name="country"
                       value={profile.country}
                       onChange={handleInputChange}
-                      className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                      className="block w-full border border-border rounded-md shadow-sm py-2 px-3 bg-surface focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                     >
                       <option value="">Select a country</option>
                       <option value="US">United States</option>
@@ -419,11 +419,11 @@ export default function ProfileEditPage() {
             </div>
             
             {/* Form Actions */}
-            <div className="px-4 py-3 bg-gray-50 text-right sm:px-6 flex justify-between">
+            <div className="px-4 py-3 bg-surface text-right sm:px-6 flex justify-between">
               <button
                 type="button"
                 onClick={() => router.push(`/profile/${user.id}`)}
-                className="px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                className="px-4 py-2 border border-border shadow-sm text-sm font-medium rounded-md text-text-secondary bg-surface hover:bg-canvas focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
               >
                 Cancel
               </button>
