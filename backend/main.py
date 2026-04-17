@@ -4,6 +4,7 @@ FastAPI service for embedding-based skill matching.
 """
 
 import os
+import json
 import logging
 from contextlib import asynccontextmanager
 from typing import Optional
@@ -234,8 +235,11 @@ async def match_skills(req: MatchRequest):
         query_vector = all_vectors[0]
         candidate_vectors = all_vectors[1:]
     else:
-        query_vector = np.array(query_embedding)
-        candidate_vectors = np.array(candidate_embeddings)
+        query_vector = np.array(json.loads(query_embedding) if isinstance(query_embedding, str) else query_embedding, dtype=np.float32)
+        candidate_vectors = np.array(
+            [json.loads(e) if isinstance(e, str) else e for e in candidate_embeddings],
+            dtype=np.float32,
+        )
 
     # Cosine similarity (vectors are already L2-normalised)
     scores = candidate_vectors @ query_vector
