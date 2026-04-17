@@ -52,3 +52,5 @@ memory/vector-store/*
 .DS_Store
 *.pem
 __pycache__/
+
+.vercel
