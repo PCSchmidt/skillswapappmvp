@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useSupabase } from '@/contexts/SupabaseContext';
 import { supabase } from '@/lib/supabase/client';
+import PasswordInput from '@/components/ui/PasswordInput';
 
 export default function SignupForm() {
   const router = useRouter();
@@ -146,12 +147,11 @@ export default function SignupForm() {
           <label htmlFor="password" className="form-label">
             Password
           </label>
-          <input
+          <PasswordInput
             id="password"
-            type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="form-input"
+            className="form-input pr-10"
             placeholder="Create a password"
             required
           />
@@ -164,12 +164,11 @@ export default function SignupForm() {
           <label htmlFor="confirmPassword" className="form-label">
             Confirm Password
           </label>
-          <input
+          <PasswordInput
             id="confirmPassword"
-            type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="form-input"
+            className="form-input pr-10"
             placeholder="Confirm your password"
             required
           />

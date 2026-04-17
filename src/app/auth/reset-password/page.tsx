@@ -11,6 +11,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
 import Link from 'next/link';
+import PasswordInput from '@/components/ui/PasswordInput';
 
 export default function ResetPassword() {
   const router = useRouter();
@@ -188,12 +189,11 @@ export default function ResetPassword() {
                   New Password
                 </label>
                 <div className="mt-1">
-                  <input
+                  <PasswordInput
                     id="password"
                     name="password"
-                    type="password"
                     required
-                    className="appearance-none block w-full px-3 py-2 border border-border rounded-md shadow-sm placeholder-text-muted focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                    className="appearance-none block w-full px-3 py-2 pr-10 border border-border rounded-md shadow-sm placeholder-text-muted focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     minLength={8}
@@ -209,12 +209,11 @@ export default function ResetPassword() {
                   Confirm New Password
                 </label>
                 <div className="mt-1">
-                  <input
+                  <PasswordInput
                     id="confirmPassword"
                     name="confirmPassword"
-                    type="password"
                     required
-                    className="appearance-none block w-full px-3 py-2 border border-border rounded-md shadow-sm placeholder-text-muted focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                    className="appearance-none block w-full px-3 py-2 pr-10 border border-border rounded-md shadow-sm placeholder-text-muted focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                   />

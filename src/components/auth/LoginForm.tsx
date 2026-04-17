@@ -10,6 +10,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useSupabase } from '@/contexts/SupabaseContext';
+import PasswordInput from '@/components/ui/PasswordInput';
 
 export default function LoginForm() {
   const router = useRouter();
@@ -92,12 +93,11 @@ export default function LoginForm() {
           <label htmlFor="password" className="form-label">
             Password
           </label>
-          <input
+          <PasswordInput
             id="password"
-            type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="form-input"
+            className="form-input pr-10"
             placeholder="Your password"
             required
           />
