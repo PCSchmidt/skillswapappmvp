@@ -2,58 +2,91 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-rgb: 249, 250, 251;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-rgb: 17, 24, 39;
-  }
-}
-
-body {
-  color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-rgb));
-}
-
 @layer base {
+  html {
+    @apply antialiased;
+  }
+
+  body {
+    @apply bg-canvas text-text-primary font-sans;
+  }
+
+  /* Editorial typography */
+  h1, h2, h3 {
+    @apply font-display font-semibold text-text-primary;
+  }
   h1 {
-    @apply text-3xl font-bold md:text-4xl;
+    @apply text-display-sm md:text-display-md;
   }
   h2 {
-    @apply text-2xl font-bold md:text-3xl;
+    @apply text-display-sm;
   }
   h3 {
-    @apply text-xl font-bold md:text-2xl;
+    @apply text-2xl;
   }
   h4 {
-    @apply text-lg font-bold md:text-xl;
+    @apply text-lg font-sans font-semibold text-text-primary;
   }
   a {
-    @apply text-primary-600 hover:text-primary-500;
+    @apply text-emerald-400 hover:text-emerald-300 transition-colors;
+  }
+
+  /* Selection highlight */
+  ::selection {
+    @apply bg-emerald-700/40 text-white;
   }
 }
 
 @layer components {
+  /* Eyebrow label — ALL-CAPS with wide tracking */
+  .eyebrow {
+    @apply text-eyebrow uppercase tracking-eyebrow text-emerald-400 font-sans;
+  }
+
+  /* Buttons — sharp-edged, 1px borders */
   .btn {
-    @apply inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2;
+    @apply inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold font-sans
+           border border-border-strong transition-all duration-200
+           focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:ring-offset-1 focus:ring-offset-canvas;
   }
   .btn-primary {
-    @apply bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500;
+    @apply bg-emerald-700 text-white border-emerald-600 hover:bg-emerald-600;
   }
   .btn-secondary {
-    @apply bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 focus:ring-primary-500;
+    @apply bg-transparent text-text-primary border-border-strong hover:bg-surface-raised hover:border-emerald-700;
   }
+  .btn-ghost {
+    @apply bg-transparent text-text-secondary border-transparent hover:text-text-primary hover:bg-surface-raised;
+  }
+
+  /* Card — editorial surface */
   .card {
-    @apply bg-white rounded-lg shadow-md overflow-hidden;
+    @apply bg-surface border border-border overflow-hidden;
   }
+
+  /* Form controls */
   .form-input {
-    @apply block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm;
+    @apply block w-full bg-surface-raised border border-border text-text-primary
+           px-3 py-2 text-sm placeholder:text-text-muted
+           focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 focus:outline-none;
   }
   .form-label {
-    @apply block text-sm font-medium text-gray-700 mb-1;
+    @apply block text-sm font-medium text-text-secondary mb-1.5;
+  }
+}
+
+@layer utilities {
+  /* Ambient glow background — emerald diffuse light */
+  .ambient-glow {
+    background: radial-gradient(
+      ellipse 80% 50% at 50% -20%,
+      rgba(4, 120, 87, 0.12) 0%,
+      transparent 70%
+    );
+  }
+
+  /* Subtle border separator */
+  .border-editorial {
+    @apply border-border;
   }
 }

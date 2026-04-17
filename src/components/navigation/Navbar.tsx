@@ -11,6 +11,7 @@ const Navbar = () => {
   const router = useRouter();
   const [notificationCount, setNotificationCount] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   
   // Fetch unread notification count
   useEffect(() => {
@@ -30,13 +31,12 @@ const Navbar = () => {
           setNotificationCount(data.unread_notification_count || 0);
         }
       } catch (err) {
-        console.error('Error fetching notification count:', err);
+        // Notification count fetch failed silently
       }
     };
     
     fetchNotificationCount();
     
-    // Set up real-time subscription for notification count changes
     const subscription = supabase
       .channel('user-notification-count')
       .on('postgres_changes', {
@@ -61,33 +61,40 @@ const Navbar = () => {
     router.push('/');
   };
 
+  const navLinks = [
+    { href: '/', label: 'Discover' },
+    { href: '/how-it-works', label: 'How It Works' },
+    { href: '/about', label: 'About' },
+  ];
+
   return (
-    <header className="bg-white border-b border-gray-200">
-      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        <Link href="/" className="font-bold text-xl text-primary-600">
+    <header className="border-b border-border bg-surface/80 backdrop-blur-sm sticky top-0 z-50">
+      <div className="container mx-auto px-4 h-16 flex justify-between items-center">
+        <Link href="/" className="font-display text-xl font-semibold text-text-primary tracking-tight">
           SkillSwap
         </Link>
         
-        <nav className="hidden md:flex space-x-8">
-          <Link href="/" className="text-gray-600 hover:text-primary-600">
-            Discover
-          </Link>
-          <Link href="/how-it-works" className="text-gray-600 hover:text-primary-600">
-            How It Works
-          </Link>
-          <Link href="/about" className="text-gray-600 hover:text-primary-600">
-            About
-          </Link>
+        {/* Desktop nav */}
+        <nav className="hidden md:flex items-center gap-8">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="text-sm text-text-secondary hover:text-emerald-400 transition-colors"
+            >
+              {link.label}
+            </Link>
+          ))}
         </nav>
         
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center gap-3">
           {isLoading ? (
-            <div className="animate-pulse h-8 w-20 bg-gray-200 rounded"></div>
+            <div className="animate-pulse h-8 w-20 bg-surface-raised" />
           ) : user ? (
             <>
               <Link 
                 href="/dashboard" 
-                className="text-gray-600 hover:text-primary-600"
+                className="hidden md:inline text-sm text-text-secondary hover:text-emerald-400 transition-colors"
               >
                 Dashboard
               </Link>
@@ -96,24 +103,22 @@ const Navbar = () => {
               <div className="relative">
                 <button
                   id="notification-button"
-                  className="text-gray-600 hover:text-primary-600 p-1 rounded-full relative"
+                  className="text-text-secondary hover:text-emerald-400 p-1 relative transition-colors"
                   onClick={() => setShowNotifications(!showNotifications)}
                   aria-expanded={showNotifications}
                   aria-haspopup="true"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                   </svg>
                   
-                  {/* Notification badge */}
                   {notificationCount > 0 && (
-                    <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
-                      {notificationCount > 99 ? '99+' : notificationCount}
+                    <span className="absolute -top-1 -right-1 inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-emerald-600">
+                      {notificationCount > 9 ? '9+' : notificationCount}
                     </span>
                   )}
                 </button>
                 
-                {/* Notification Dropdown */}
                 <NotificationDropdown 
                   isOpen={showNotifications} 
                   onClose={() => setShowNotifications(false)}
@@ -123,13 +128,13 @@ const Navbar = () => {
               
               <Link 
                 href={`/profile/${user.id}`}
-                className="text-gray-600 hover:text-primary-600"
+                className="hidden md:inline text-sm text-text-secondary hover:text-emerald-400 transition-colors"
               >
                 Profile
               </Link>
               <button 
                 onClick={handleSignOut}
-                className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg"
+                className="hidden md:inline-flex btn btn-ghost text-xs"
               >
                 Sign Out
               </button>
@@ -138,20 +143,77 @@ const Navbar = () => {
             <>
               <Link 
                 href="/login" 
-                className="text-gray-600 hover:text-primary-600"
+                className="hidden md:inline text-sm text-text-secondary hover:text-emerald-400 transition-colors"
               >
                 Login
               </Link>
               <Link 
                 href="/signup" 
-                className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg"
+                className="hidden md:inline-flex btn btn-primary text-xs"
               >
                 Sign Up
               </Link>
             </>
           )}
+
+          {/* Mobile hamburger */}
+          <button
+            className="md:hidden p-2 text-text-secondary hover:text-text-primary transition-colors"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Toggle menu"
+            aria-expanded={mobileOpen}
+          >
+            {mobileOpen ? (
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            )}
+          </button>
         </div>
       </div>
+
+      {/* Mobile drawer */}
+      {mobileOpen && (
+        <nav className="md:hidden border-t border-border bg-surface px-4 py-4 space-y-1">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="block py-2 text-sm text-text-secondary hover:text-emerald-400 transition-colors"
+              onClick={() => setMobileOpen(false)}
+            >
+              {link.label}
+            </Link>
+          ))}
+          
+          {user ? (
+            <>
+              <Link href="/dashboard" className="block py-2 text-sm text-text-secondary hover:text-emerald-400" onClick={() => setMobileOpen(false)}>
+                Dashboard
+              </Link>
+              <Link href={`/profile/${user.id}`} className="block py-2 text-sm text-text-secondary hover:text-emerald-400" onClick={() => setMobileOpen(false)}>
+                Profile
+              </Link>
+              <button onClick={() => { handleSignOut(); setMobileOpen(false); }} className="block py-2 text-sm text-text-secondary hover:text-emerald-400 w-full text-left">
+                Sign Out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link href="/login" className="block py-2 text-sm text-text-secondary hover:text-emerald-400" onClick={() => setMobileOpen(false)}>
+                Login
+              </Link>
+              <Link href="/signup" className="block py-2 text-sm text-emerald-400 font-semibold" onClick={() => setMobileOpen(false)}>
+                Sign Up
+              </Link>
+            </>
+          )}
+        </nav>
+      )}
     </header>
   );
 };

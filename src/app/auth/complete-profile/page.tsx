@@ -126,7 +126,6 @@ export default function CompleteProfile() {
           location_state: profile.state,
           location_country: profile.country,
           updated_at: new Date().toISOString(),
-          // We'll handle interest categories separately in a later enhancement
         })
         .eq('id', user.id);
       

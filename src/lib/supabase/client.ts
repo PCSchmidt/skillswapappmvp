@@ -7,7 +7,6 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { createBrowserClient } from '@supabase/ssr';
-import type { Database } from '@/types/supabase';
 
 // Initialize the Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
@@ -21,8 +20,8 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 // For development purposes, we'll use a mock client if credentials are missing
 export const supabase = supabaseUrl && supabaseAnonKey
-  ? createBrowserClient<Database>(supabaseUrl, supabaseAnonKey)
-  : createBrowserClient<Database>('https://example.supabase.co', 'mock-anon-key-for-development');
+  ? createBrowserClient(supabaseUrl, supabaseAnonKey)
+  : createBrowserClient('https://example.supabase.co', 'mock-anon-key-for-development');
 
 // Add a console warning only in development mode
 if (!supabaseUrl || !supabaseAnonKey) {
