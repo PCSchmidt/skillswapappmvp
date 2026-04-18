@@ -124,6 +124,19 @@ npm run test:coverage # With coverage report
 npm run cypress       # Open Cypress E2E runner
 ```
 
+## Inference Performance
+
+SkillSwap's AI matching uses `all-MiniLM-L6-v2` (384-dim) sentence embeddings with pgvector cosine similarity. A companion study benchmarked five deployment configurations for this exact model:
+
+| Configuration | p50 Latency | Throughput | Model Size |
+|---|---|---|---|
+| PyTorch (baseline) | 12.1 ms | 68 req/s | 88 MB |
+| ONNX Runtime | 8.5 ms | 151 req/s | 88 MB |
+| ONNX + INT8 quantized | 3.2 ms | 234 req/s | 23 MB |
+| ONNX + INT8 batch=32 | 2.9 ms | 602 req/s | 23 MB |
+
+See the full [Inference Optimization Study](https://github.com/PCSchmidt/inference-optimization-study) for methodology, accuracy validation, and reproducible benchmarks.
+
 ## Current Status
 
 See [PROGRESS.md](PROGRESS.md) for detailed status and [ROADMAP.md](ROADMAP.md) for the development plan.
