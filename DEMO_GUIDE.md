@@ -31,6 +31,29 @@ Vercel (Next.js 14)  ←→  Supabase (PostgreSQL + pgvector)
                      ←→  Railway (FastAPI + sentence-transformers)
 ```
 
+### AI Backend (`backend/`)
+| Component | Detail |
+|-----------|--------|
+| Framework | FastAPI with async lifespan |
+| Model | `all-MiniLM-L6-v2` (384-dim sentence embeddings) |
+| Database | Supabase PostgreSQL + pgvector (ivfflat index) |
+| Endpoints | `GET /health`, `POST /api/skills/embed`, `POST /api/skills/match` |
+| Matching | Cosine similarity ranking with human-readable explanations |
+| Tests | 16 pytest tests (health, embed, match, helpers) |
+
+### Key Endpoints
+
+**POST /api/skills/match** — Find semantically similar skills:
+```json
+{ "skill_id": "uuid", "user_id": "uuid", "top_k": 5 }
+```
+Returns ranked matches with scores and explanations like *"Same category (Technology). 87% semantic similarity. They're seeking what you're offering."*
+
+**POST /api/skills/embed** — Generate embeddings for up to 100 texts:
+```json
+{ "texts": ["Python programming", "Machine learning"] }
+```
+
 ## Demo Accounts
 
 The app is seeded with 3 demo users and 15 skills for browsing. Sign up with your own email to test the full flow.

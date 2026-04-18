@@ -68,13 +68,29 @@ Migrated 24 files from light-theme Tailwind tokens to the dark editorial design 
 
 ---
 
-## Phase 3: AI Backend 🔲
+## Phase 3: AI Backend ✅
 
-- [ ] Create `backend/` with Python/FastAPI
-- [ ] Add pgvector Supabase migration for skill embeddings
-- [ ] Implement `/api/match` endpoint (embedding-based skill matching)
-- [ ] Wire frontend to backend API
-- [ ] Add Railway deployment config
+**Committed**: April 2026
+
+### Backend Implementation
+- [x] Create `backend/` with Python/FastAPI (`main.py` — 270 lines)
+- [x] Add pgvector Supabase migration for skill embeddings (`006_add_pgvector.sql`)
+- [x] Implement `/api/skills/match` endpoint (embedding-based skill matching with cosine similarity)
+- [x] Implement `/api/skills/embed` endpoint (batch embedding generation, max 100 texts)
+- [x] Implement `/health` endpoint (model + database status)
+- [x] Wire frontend to backend API (`src/lib/api/aiClient.ts`, dashboard UI)
+- [x] Add Railway deployment config (`Dockerfile`, `nixpacks.toml`)
+
+### AI/ML Details
+- Model: `all-MiniLM-L6-v2` (384-dim sentence embeddings)
+- Database: pgvector extension with `embedding vector(384)` column, ivfflat index
+- Matching: Cosine similarity ranking with human-readable explanations
+- Fallback: Computes embeddings on-the-fly when stored embeddings unavailable
+
+### Testing
+- [x] 16 pytest tests across 4 modules (health, embed, match, helpers)
+- [x] Supabase mocked — tests run without database connection
+- [x] Validates ranking quality (ML > Guitar for Python query), normalization, top-K, 404 handling
 
 ---
 
